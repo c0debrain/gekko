@@ -43,7 +43,7 @@ label {
 
 
 /* Custom arrow sits on top of the select - could be an image, SVG, icon font, etc. or the arrow could just baked into the bg image on the select */
-    
+
 .custom-select::after {
   content: "";
   position: absolute;
@@ -85,7 +85,7 @@ body:last-child .custom-select select, x:-moz-any-link {
 /* Show the custom arrow again */
 _::-moz-progress-bar, body:last-child .custom-select:after {
   display: block;
-}    
+}
 /* Hacks to hide the native select appearance */
 _::-moz-progress-bar, body:last-child .custom-select select {
   -moz-appearance: window;
@@ -95,12 +95,12 @@ _::-moz-progress-bar, body:last-child .custom-select select {
   padding-right: 13%;
 }
 
-/* In FF 30+ -- Set overflow:hidden on the wrapper to clip the native select's arrow. Need to get extra wide (120%) because newest Firefox/Android is terrible. The downside is this makes the menu 20% wider than it should be when it opens. Hack targeting via http://browserhacks.com/#hack-cfd4c21603b122acfda8e81f41cdb320 */      
+/* In FF 30+ -- Set overflow:hidden on the wrapper to clip the native select's arrow. Need to get extra wide (120%) because newest Firefox/Android is terrible. The downside is this makes the menu 20% wider than it should be when it opens. Hack targeting via http://browserhacks.com/#hack-cfd4c21603b122acfda8e81f41cdb320 */
 @supports (-moz-appearance:meterbar) and (background-blend-mode:difference,normal) {
    /* Clip select with the container */
    _::-moz-progress-bar, body:last-child .custom-select {
     overflow: hidden;
-  }    
+  }
    /* Make select extra wide */
     _::-moz-progress-bar, body:last-child .custom-select select {
     width: 120%;
@@ -118,7 +118,7 @@ _::-moz-progress-bar, body:last-child .custom-select select:focus {
 /* Opera - Pre-Blink nix the custom arrow, go with a native select button */
 x:-o-prefocus, .custom-select::after {
   display:none;
-}    
+}
 
 
 /* Hover style */
@@ -160,3 +160,22 @@ x:-o-prefocus, .custom-select::after {
   background: -ms-linear-gradient(top, #ffffff 0%,#e5e5e5 100%); /* IE10+ */
   background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C */
 }
+
+
+path.candle {
+        stroke: #000000;
+    }
+
+    path.candle.body {
+        stroke-width: 0;
+    }
+
+    path.candle.up {
+        fill: #00AA00;
+        stroke: #00AA00;
+    }
+
+    path.candle.down {
+        fill: #FF0000;
+        stroke: #FF0000;
+    }
