@@ -37,8 +37,8 @@ strat.update = function(candle) {
 
 // For debugging purposes.
 strat.log = function() {
-  log.debug('calculated random number:');
-  log.debug('\t', this.randomNumber.toFixed(3));
+  //log.debug('calculated random number:');
+  //log.debug('\t', this.randomNumber.toFixed(3));
 }
 
 // Based on the newly calculated
@@ -54,8 +54,8 @@ strat.check = function() {
     return;
   }
 
-  console.log(this.candles[0]);
-  console.log(this.candles[1]);
+  //console.log(this.candles[0]);
+  //console.log(this.candles[1]);
 
   // If it was long, set it to short
   if(this.currentTrend === 'long') {
