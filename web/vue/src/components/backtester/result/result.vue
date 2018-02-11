@@ -5,6 +5,9 @@
       h3 Backtest result
     result-summary(:report='result.report')
     .hr.contain
+    div.contain
+      h3 Backtest plot
+      a.btn--primary(href='#', id="reset-button", v-on:click.prevent='preventDefault') Reset plot
     chart(:data='result', height='500')
     .hr.contain
     roundtripTable(:roundtrips='result.roundtrips')
@@ -20,7 +23,11 @@ export default {
   data: () => {
     return {}
   },
-  methods: {},
+  methods: {
+    preventDefault:function(){
+      return true;
+    }
+  },
   components: {
     roundtripTable,
     resultSummary,

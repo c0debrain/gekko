@@ -322,7 +322,7 @@ export default function(_data, _trades, _height) {
             .attr("class", "supstances analysis")
             .attr("clip-path", "url(#ohlcClip)");
 
-    d3.select("button").on("click", reset);
+    d3.select("#reset-button").on("click", reset);
 
     var accessor = candlestick.accessor(),
         indicatorPreRoll = 33;  // Don't show where indicators don't have data
@@ -376,10 +376,8 @@ export default function(_data, _trades, _height) {
 
     draw();
 
-
     function reset() {
-        zoom.scale(1);
-        zoom.translate([0,0]);
+        zoom.transform(svg, d3.zoomIdentity);
         draw();
     }
 
