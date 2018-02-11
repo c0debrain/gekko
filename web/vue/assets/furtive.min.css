@@ -161,21 +161,26 @@ x:-o-prefocus, .custom-select::after {
   background: linear-gradient(to bottom, #ffffff 0%,#e5e5e5 100%); /* W3C */
 }
 
-
 path.candle {
-        stroke: #000000;
-    }
+    stroke: #000000;
+}
 
-    path.candle.body {
-        stroke-width: 0;
-    }
+path.candle.body {
+    stroke-width: 0;
+}
 
-    path.candle.up {
-        fill: #00AA00;
-        stroke: #00AA00;
-    }
+path.candle.up {
+    fill: #00AA00;
+    stroke: #00AA00;
+}
 
-    path.candle.down {
-        fill: #FF0000;
-        stroke: #FF0000;
-    }
+path.candle.down {
+    fill: #FF0000;
+    stroke: #FF0000;
+}
+
+rect.pane {
+   cursor: move;
+   fill: none;
+   pointer-events: all;
+}

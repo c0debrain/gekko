@@ -42,7 +42,6 @@ export default function(_data, _trades, _height) {
       y2 = d3.scaleLinear().range([height2, 0]);
 
   var xAxis = d3.axisBottom(x),
-      xAxisCan = d3.axisBottom(xCan),
       xAxis2 = d3.axisBottom(x2),
       yAxis = d3.axisLeft(y).ticks(_height / 50);
 
@@ -85,7 +84,7 @@ export default function(_data, _trades, _height) {
   x.domain(d3.extent(data, function(d) { return d.date; }));
   y.domain([
     d3.min(prices) * 0.99,
-    d3.max(prices) * 1.2
+    d3.max(prices) * 1.01
   ]);
   x2.domain(x.domain());
   y2.domain(y.domain());
@@ -159,7 +158,7 @@ export default function(_data, _trades, _height) {
          xCan.domain(data.map(candlestick.accessor().d));
          y.domain(techan.scale.plot.ohlc(data, candlestick.accessor()).domain());
          svg.selectAll("g.candlestick").datum(data).call(candlestick);
-         svg.selectAll("g.x.axis").call(xAxisCan);
+         svg.selectAll("g.x.axis").call(xAxis);
          svg.selectAll("g.y.axis").call(yAxis);
   }
 
