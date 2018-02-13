@@ -16,7 +16,7 @@ var strat = {};
 // Prepare everything our method needs
 strat.init = function() {
   this.input = 'candle';
-  this.currentTrend = 'long';
+  this.currentTrend = 'short';
   this.requiredHistory = 0;
   log.info("starting random strategy");
 }
@@ -45,6 +45,8 @@ strat.check = function() {
   // Only continue if we have a new update.
   if(!this.toUpdate)
     return;
+
+  log.debug("current trend: "+this.currentTrend);
 
   if(this.currentTrend === 'long') {
 
