@@ -4,10 +4,11 @@ services:
     restart: always
     build: ./
     volumes:
-      - ./volumes/gekko/history:/usr/src/app/history
-      - ./config.js:/usr/src/app/config.js
-    links:
-      - redis
+      #- ./volumes/gekko/history:/usr/src/app/history
+      #- ./config.js:/usr/src/app/config.js
+       - ./:/usr/src/app
+    #links:
+    #  - redis
 #      - postgresql
     environment:
      - HOST
@@ -20,10 +21,10 @@ services:
 #     - PORT=3000
 #     - DOMAIN=gekko
 
-  redis:
-    image: redis:latest
-    volumes:
-      - ./volumes/redis:/data
+#  redis:
+#    image: redis:latest
+#    volumes:
+#      - ./volumes/redis:/data
 ## optionally uncomment if you wish to use nginx as a frontend
 #  nginx:
 #    restart: always

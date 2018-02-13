@@ -18,6 +18,7 @@ strat.init = function() {
   this.input = 'candle';
   this.currentTrend = 'long';
   this.requiredHistory = 0;
+  log.info("starting random strategy");
 }
 
 // What happens on every new candle?
@@ -32,8 +33,8 @@ strat.update = function(candle) {
 
 // For debugging purposes.
 strat.log = function() {
-  log.debug('calculated random number:');
-  log.debug('\t', this.randomNumber.toFixed(3));
+  //log.debug('calculated random number:');
+  //log.debug('\t', this.randomNumber.toFixed(3));
 }
 
 // Based on the newly calculated

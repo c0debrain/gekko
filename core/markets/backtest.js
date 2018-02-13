@@ -8,7 +8,8 @@ var moment = require('moment');
 var adapter = config[config.adapter];
 var Reader = require(dirs.gekko + adapter.path + '/reader');
 var daterange = config.backtest.daterange;
-
+log.debug("date range: ");
+log.debug(daterange);
 var to = moment.utc(daterange.to);
 var from = moment.utc(daterange.from);
 
@@ -37,10 +38,12 @@ var Market = function() {
 
   this.reader = new Reader();
   this.batchSize = config.backtest.batchSize;
+  log.debug('Batch size: '+this.batchSize);
   this.iterator = {
     from: from.clone(),
     to: from.clone().add(this.batchSize, 'm').subtract(1, 's')
   }
+  console.log(this.iterator);
 }
 
 var Readable = require('stream').Readable;

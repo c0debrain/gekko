@@ -6,7 +6,7 @@
 
 <script>
 
-import chart from '../../../d3/megaPlot'
+import chart from '../../../d3/chart4'
 import { draw as drawMessage, clear as clearMessage } from '../../../d3/message'
 
 const MIN_CANDLES = 4;
@@ -36,7 +36,7 @@ export default {
     render: function() {
       this.remove();
 
-
+      console.dir(this.data);
       if(_.size(this.data.candles) < MIN_CANDLES) {
         drawMessage('Not enough data to spawn chart');
       } else {
