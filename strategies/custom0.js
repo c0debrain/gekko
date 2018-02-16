@@ -59,19 +59,32 @@ strat.check = function() {
 
   // If it was long, set it to short
   if(this.currentTrend === 'long') {
-    if(cs.isBearishKicker(this.candles[0], this.candles[1])
-        ) {
+    if(this.shouldSell(this.candles[0],this.candles[1])) {
       this.currentTrend = 'short';
       this.advice('short');
     }
   } else {
-    if(cs.isBullishKicker(this.candles[0],this.candles[1]) ||
-        cs.isShootingStar(this.candles[0], this.candles[1])) {
+    if(this.shouldBuy(this.candles[0],this.candles[1])) {
       // If it was short, set it to long
       this.currentTrend = 'long';
       this.advice('long');
     }
   }
+}
+
+strat.shouldSell = function(previous,current) {
+  return cs.isBearishKicker(previous,current) ||
+         cs.isBearishStair(previous,current);
+}
+
+strat.shouldBuy = function(previous,current) {
+  return (cs.isBullishStair(previous,current) && cs.isHammerAlt(current));
+     /*
+      cs.isBullishEngulfing(previous,current) ||
+      cs.isBullishStair(previous,current) ||
+      cs.isBullishKicker(this.candles[0],this.candles[1]) ||
+      cs.isShootingStar(this.candles[0], this.candles[1]);
+      */
 }
 
 module.exports = strat;

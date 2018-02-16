@@ -21,6 +21,7 @@ strat.init = function() {
   this.requiredHistory = 0;
   this.candles=[];
   this.longCandle=null;
+  this.counter = 0;
 }
 
 // What happens on every new candle?
@@ -67,21 +68,56 @@ strat.check = function() {
       this.advice('long');
     }
   }
+
 }
 
-strat.shouldSell = function(candle1, candle2) {
-  if (     candle2.close < this.longCandle - (this.longCandle * .05)
-        || cs.isInvertedHammer(candle2)
-        || cs.isBearishEngulfing(candle1,candle2)
+
+strat.shouldBuy = function(previous, current) {
+  if ( //cs.isBullishKicker(candle1,candle2) ||
+       //cs.isShootingStar(candle1,candle2) ||
+       //(cs.isHammerAlt(current) && cs.isBullish(previous))||
+       //(cs.isBullishEngulfing(candle1,candle2) && ! cs.isInvertedHammerLike(candle1)) ||
+       (cs.isBullishStair(previous,current) && !cs.isInvertedHammerLikeAlt(current) && !cs.isInvertedHammerLikeAlt(previous))
+      ) {
+
+    this.counter++;
+    //console.log("Buying: "+this.counter);
+    return true;
+  }
+}
+
+
+strat.shouldSell = function(previous, current) {
+  if ( (current.close < this.longCandle.close - (this.longCandle.close * .05) && cs.isBearish(current))||
+       (cs.isInvertedHammerLikeAlt(current) && ! cs.isHammerLikeAlt(previous) && cs.isBearish(current)) ||
+       //cs.isBearishEngulfing(previous,current) ||
+       cs.isBearishStair(previous,current)
+      ) {
+
+    //console.log("selling: "+this.counter);
+    //console.log(previous);
+    //console.log(current);
+    return true;
+  }
+}
+
+
+
+strat.shouldSellArray = function(candles) {
+  if (     candles[1].close < this.longCandle.close - (this.longCandle.close * .03)
+        || cs.invertedHammer(candles)
+        || cs.bearishEngulfing(candles)
+
       ) {
     return true;
   }
 }
 
-strat.shouldBuy = function(candle1, candle2) {
-  if (     cs.isBullishKicker(this.candles[0],this.candles[1])
-        || cs.isShootingStar(this.candles[0], this.candles[1])
-        || cs.isHammer(this.candles[1])
+strat.shouldBuyArray = function(candles) {
+  if (    // cs.bullishKicker(candles)
+        //|| cs.shootingStar(candles)
+        //cs.bullishEngulfing(candles)
+        cs.hammer(candles)
       ) {
     return true;
   }
