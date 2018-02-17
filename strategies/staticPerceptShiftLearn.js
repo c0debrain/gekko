@@ -5,6 +5,11 @@ const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
 
+//2017-12-16 00:51
+//11 min 338%
+//13 min
+//warmup 200
+
 // let's create our own method
 var method = {};
 
