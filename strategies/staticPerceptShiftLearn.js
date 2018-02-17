@@ -184,18 +184,18 @@ method.check = function(candle) {
 
     if(percentage > 1 && !this.open_order)
     {
-        //log.info("Buy: $"+candle.close);
+        log.info("Buy: $"+candle.close);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
     }else if(this.open_order && percentage < 0){
         this.open_order = false;
-        //log.info("Sold: $"+candle.close);
+        log.info("Sold: $"+candle.close);
         return this.advice('short');
     }
 
-    //log.info("return no advice");
+    log.info("return no advice");
     return this.advice();
 }
 
