@@ -6,7 +6,7 @@
 
 <script>
 
-import chart from '../../../d3/chart3'
+import chart from '../../../d3/chart4'
 import { draw as drawMessage, clear as clearMessage } from '../../../d3/message'
 
 const MIN_CANDLES = 4;

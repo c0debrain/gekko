@@ -4,17 +4,27 @@ const _ = require('lodash');
 const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
+const fs = require('fs');
 
+//performance data
+//4,3,1
 //2017-12-16 00:51
-//11 min 338%
-//13 min
-//warmup 200
+
+//11 min, 200, 338%
+//13 min, 200, 329%;
+
+//3min, 1000, 369%, 146trades
 
 // let's create our own method
 var method = {};
 
 // prepare everything our method needs
 method.init = function() {
+    this.weightFileName = "staticPercept.json";
+    //this.weightFileName = "staticPercept-3-400-392p.json";
+
+    this.weights = null;
+
     this.normalizer = 10;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
@@ -23,9 +33,19 @@ method.init = function() {
     this.price = 0;
     this.open_order = false;
 
-    // preprate neural network
-    this.network = new neataptic.architect.Perceptron(4,3,1);
-    //this.network = new neataptic.architect.LSTM(4,16,1);
+    this.network=null;
+    this.weights = this.readFromFile(this.weightFileName);
+
+    if(this.weights!=null) {
+      log.info("Creating network from file");
+      this.network = neataptic.Network.fromJSON(this.weights);
+    } else {
+      // preprate neural network
+      log.info("Creating network from scratch");
+      this.network = new neataptic.architect.Perceptron(4,3,1);
+      //this.network = new neataptic.architect.LSTM(4,16,1);
+    }
+
     this.trainingData = [];
     this.obj = {};
 
@@ -40,6 +60,10 @@ method.update = function(candle) {
     if(this.previousCandle==null) {
         this.previousCandle = candle;
         return;
+    }
+
+    if(this.weights!=null) {
+      return;
     }
 
     this.obj['input'] = [this.previousCandle.open,this.previousCandle.close,
@@ -58,7 +82,7 @@ method.update = function(candle) {
 
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length == this.requiredHistory ) {
+    if(this.trainingData.length == this.requiredHistory && !this.weights!=null) {
       log.info("Staring to train: "+this.trainingData.length);
       log.info(this.obj['input']);
       log.info(this.obj['output']);
@@ -72,10 +96,51 @@ method.update = function(candle) {
           iterations: 100000,
           error: 0.00000000001,
           rate: 0.03,
-
       });
+
+      this.writeToFile();
   }
 
+}
+
+
+method.writeToFile = function() {
+  const exported = this.network.toJSON();
+  const content = JSON.stringify(exported);
+
+  fs.writeFile(this.weightFileName, content, function(err, data){
+      if (err) console.log(err);
+      console.log("Successfully Written to File.");
+  });
+}
+
+method.readFromFile = function(filePath) {
+    var data = fs.readFileSync(filePath,'utf8');
+    return JSON.parse(data);
+    /*
+
+    fs.stat(filePath, function(err, stat) {
+      if(err == null) {
+        fs.readFile(filePath, function read(err, data) {
+          if (err) {
+              log.error("ERROR reading weight file");
+              throw err;
+          }
+          log.info("Read weights from file");
+          log.info(data);
+          jsonData = JSON.parse(data);
+          log.info(jsonData);
+        });
+      } else if(err.code == 'ENOENT') {
+          // file does not exist
+          log.error("Network file dont exist")
+          //fs.writeFile('log.txt', 'Some log\n');
+      } else {
+          console.log('Some other error: ', err.code);
+      }
+  });
+  return jsonData;
+  */
 }
 
 
@@ -115,14 +180,14 @@ method.check = function(candle) {
 
     if(percentage > 1 && !this.open_order)
     {
-        log.info("Buy: $"+candle.close);
+        //log.info("Buy: $"+candle.close);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
     }else if(this.open_order && percentage < 0){
         this.open_order = false;
-        log.info("Sold: $"+candle.close);
+        //log.info("Sold: $"+candle.close);
         return this.advice('short');
     }
 
