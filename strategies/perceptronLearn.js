@@ -53,7 +53,7 @@ method.update = function(candle) {
       //log.info(this.obj['output']);
 
       //perceptron
-      console.log("Training with size: "+this.trainingData.length);
+      //console.log("Training with size: "+this.trainingData.length);
 
       this.network.train(this.trainingData, {
           //dropout: 0.5,
