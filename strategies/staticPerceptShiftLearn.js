@@ -20,8 +20,9 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "staticPercept.json";
-    //this.weightFileName = "staticPercept-3-400-392p.json";
+    //this.weightFileName = "weights/staticPercept.json";
+    this.weightFileName = "weights/staticPercept-11-200-338p.json";
+    //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     this.weights = null;
 
@@ -34,17 +35,20 @@ method.init = function() {
     this.open_order = false;
 
     this.network=null;
+    //NOTE: comment out to train and save
     this.weights = this.readFromFile(this.weightFileName);
 
+    log.info("**************************************");
     if(this.weights!=null) {
-      log.info("Creating network from file");
+      log.info("***** Creating network from file *****");
       this.network = neataptic.Network.fromJSON(this.weights);
     } else {
       // preprate neural network
-      log.info("Creating network from scratch");
+      log.info("***** Training network from scratch *****");
       this.network = new neataptic.architect.Perceptron(4,3,1);
       //this.network = new neataptic.architect.LSTM(4,16,1);
     }
+    log.info("**************************************");
 
     this.trainingData = [];
     this.obj = {};
