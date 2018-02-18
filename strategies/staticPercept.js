@@ -20,9 +20,11 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
+    //this.weightFileName = "weights/staticPercept-ethxrp.json";
+    this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
     //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
-    this.weightFileName = "weights/staticPercept-3-400-392p.json";
+    //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     this.weights = null;
 
@@ -99,10 +101,10 @@ method.update = function(candle) {
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
-          log: 1000,
+          log: 10,
           shuffle:true,
           iterations: 100000,
-          error: 0.00000000001,
+          error: 0.0000000001,
           rate: 0.03,
       });
       log.info("Done training .. writing weights to file:");
