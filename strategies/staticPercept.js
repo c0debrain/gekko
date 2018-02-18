@@ -20,8 +20,8 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    //this.weightFileName = "weights/staticPercept.json";
-    this.weightFileName = "weights/staticPercept-11-200-338p.json";
+    this.weightFileName = "weights/staticPercept.json";
+    //this.weightFileName = "weights/staticPercept-11-200-338p.json";
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     this.weights = null;
@@ -36,7 +36,7 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    this.weights = this.readFromFile(this.weightFileName);
+    //this.weights = this.readFromFile(this.weightFileName);
 
     log.info("**************************************");
     if(this.weights!=null) {
@@ -75,18 +75,24 @@ method.update = function(candle) {
     this.obj['output'] = [candle.close];
     this.previousCandle = candle;
 
+
+
+    if(this.trainingData.length > this.requiredHistory) {
+        //log.info("trainDataSize size: "+this.trainingData.length);
+        //this.trainingData.shift();
+        return;
+    }
+
     // train the neural network
+    log.info("pushing training data:");
+    log.info(this.obj);
+
     this.trainingData.push(this.obj);
     //log.info("Pushing train data "+this.trainCounter++);
 
-    if(this.trainingData.length > this.requiredHistory) {
-      //log.info("trainDataSize size: "+this.trainingData.length);
-      //this.trainingData.shift();
-    }
-
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length == this.requiredHistory && !this.weights != null) {
+    if(this.trainingData.length == this.requiredHistory+1 && !this.weights != null) {
       log.info("Staring to train: "+this.trainingData.length);
       log.info(this.obj['input']);
       log.info(this.obj['output']);
@@ -155,6 +161,10 @@ method.log = function() {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
+    if (this.trainingData.length < this.requiredHistory+1) {
+        return;
+    }
+
     /* Candle information
     { id: 103956,
       start: moment("2018-02-04T00:00:00.000"),
@@ -172,7 +182,7 @@ method.check = function(candle) {
     //var predicted_value = this.network.activate(candle.close/this.normalizer)*this.normalizer;
 
     //no normalizer
-    var predicted_value = this.network.activate([candle.open,candle.close,candle.high,candle.close]);
+    var predicted_value = this.network.activate([candle.open,candle.close,candle.high,candle.low]);
 
     // % change in current close and predicted close
     var percentage = ((predicted_value-candle.close)/candle.close)*100;
@@ -185,7 +195,7 @@ method.check = function(candle) {
     if(percentage > 1 && !this.open_order)
     {
         log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        this.price = candle.close;
+        //this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
