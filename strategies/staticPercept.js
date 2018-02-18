@@ -84,8 +84,8 @@ method.update = function(candle) {
     }
 
     // train the neural network
-    log.info("pushing training data:");
-    log.info(this.obj);
+    //log.info("pushing training data:");
+    //log.info(this.obj);
 
     this.trainingData.push(this.obj);
     //log.info("Pushing train data "+this.trainCounter++);
@@ -94,20 +94,18 @@ method.update = function(candle) {
 
     if(this.trainingData.length == this.requiredHistory+1 && !this.weights != null) {
       log.info("Staring to train: "+this.trainingData.length);
-      log.info(this.obj['input']);
-      log.info(this.obj['output']);
 
       //perceptron
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
+          log: 1000,
           shuffle:true,
-          log: 0,
           iterations: 100000,
           error: 0.00000000001,
           rate: 0.03,
       });
-
+      log.info("Done training .. writing weights to file:");
       this.writeToFile();
   }
 
