@@ -20,9 +20,9 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/staticPercept.json";
+    //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
-    //this.weightFileName = "weights/staticPercept-3-400-392p.json";
+    this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     this.weights = null;
 
@@ -36,7 +36,7 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    //this.weights = this.readFromFile(this.weightFileName);
+    this.weights = this.readFromFile(this.weightFileName);
 
     log.info("**************************************");
     if(this.weights!=null) {
@@ -159,7 +159,7 @@ method.log = function() {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    if (this.trainingData.length < this.requiredHistory+1) {
+    if (this.trainingData.length < this.requiredHistory+1 && this.weights==null) {
         return;
     }
 
