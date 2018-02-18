@@ -52,18 +52,6 @@ method.init = function() {
     //NOTE: comment out to train and save
     //this.weights = this.readFromFile(this.weightFileName);
 
-      log.info("**************************************");
-    if(this.weights!=null) {
-      log.info("***** Creating network from file *****");
-      this.network = neataptic.Network.fromJSON(this.weights);
-    } else {
-      // preprate neural network
-      log.info("*** Training network from scratch ****");
-      this.network = new neataptic.architect.Perceptron(12,3,1);
-      //this.network = new neataptic.architect.LSTM(4,16,1);
-    }
-      log.info("**************************************");
-
 
     //use to train
     this.lookbackIndex = 3;
@@ -76,6 +64,20 @@ method.init = function() {
     //use to activate
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
+
+
+    log.info("**************************************");
+    if(this.weights!=null) {
+      log.info("***** Creating network from file *****");
+      this.network = neataptic.Network.fromJSON(this.weights);
+    } else {
+      // preprate neural network
+      log.info("*** Training network from scratch ****");
+      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,3,1);
+      //this.network = new neataptic.architect.LSTM(4,16,1);
+    }
+    log.info("**************************************");
+
 }
 
 
@@ -119,7 +121,7 @@ method.update = function(candle) {
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
-          log: 0,
+          log: 10,
           shuffle:true,
           iterations: 100000,
           error: 0.0000000001,
@@ -146,8 +148,9 @@ method.check = function(candle) {
         this.lookbackCheckData.shift();
     }
 
-    log.info("lookbackchack size: "+this.lookbackCheckData.length);
+    //log.info("lookbackchack size: "+this.lookbackCheckData.length);
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
+    //log.info("lookbackchack input size: "+this.lookbackCheckInput.length);
 
     //let's predict the next close price on the current close price;
     //var predicted_value = this.network.activate(candle.close/this.normalizer)*this.normalizer;
@@ -164,9 +167,9 @@ method.check = function(candle) {
     //log.info("Predicted value: "+predicted_value);
     //log.info("Percent: "+percentage);
 
-    log.info("Value: "+predicted_value+" percent: "+percentage);
+    //log.info("Value: "+predicted_value+" percent: "+percentage);
 
-    if(percentage > 1 && !this.open_order)
+    if(percentage > 2 && !this.open_order)
     {
         log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         //this.price = candle.close;
