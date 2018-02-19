@@ -32,7 +32,7 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/lookbackPercept-ethtrx.json";
+    this.weightFileName = "weights/lookbackPercept-ethxrp.json";
     //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
     //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
@@ -67,12 +67,11 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        log: 1000,
+        log: 10,
         shuffle:true,
-        iterations: 10000,
-        error: 0.00000001,
+        iterations: 100000,
+        error: 0.0000000001,
         rate: 0.03,
-        momentum: 0.1
     };
 
     this.evolveOptions = {
@@ -94,16 +93,16 @@ method.init = function() {
       // preprate neural network
       log.info("*** Training network from scratch ****");
 
-        //this.network = new neataptic.architect.Perceptron(
-          //4*this.lookbackIndex, 3, 1
-      //);
+        this.network = new neataptic.architect.Perceptron(
+          4*this.lookbackIndex, 3, 1
+        );
 
 
       //this.network = new neataptic.architect.LSTM(4,16,1);
 
         // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
 
-        this.network = new neataptic.architect.NARX(4*this.lookbackIndex, [10,20,10], 1, 10, 10);
+        //this.network = new neataptic.architect.NARX(4*this.lookbackIndex, [10,20,10], 1, 10, 10);
     }
     log.info("**************************************");
 
@@ -202,7 +201,7 @@ method.check = function(candle) {
 
     //log.info("Value: "+ predicted_value);
 
-    if(percentage > 5 && !this.open_order)
+    if(percentage > 1 && !this.open_order)
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -211,7 +210,7 @@ method.check = function(candle) {
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 1){
+    } else if(this.open_order && percentage < 0){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
