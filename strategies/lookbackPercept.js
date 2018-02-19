@@ -63,6 +63,29 @@ method.init = function() {
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
 
+
+    this.perceptOptions = {
+        //dropout: 0.5,
+        //clear: true,
+        log: 1000,
+        shuffle:true,
+        iterations: 10000,
+        error: 0.00000000001,
+        rate: 0.03,
+        momentum: 0.9
+    };
+
+    this.evolveOptions = {
+        mutation: neataptic.methods.mutation.FFW,
+        equal: true,
+        popsize: 100,
+        elitism: 10,
+        log: 1,
+        error: 0.000000000000000001,
+        iterations: 10000,
+        mutationRate: 0.5
+    };
+
     log.info("**************************************");
     if(this.weights!=null) {
       log.info("***** Creating network from file *****");
@@ -70,8 +93,11 @@ method.init = function() {
     } else {
       // preprate neural network
       log.info("*** Training network from scratch ****");
-      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,1*this.lookbackIndex,1);
+      this.network = new neataptic.architect.Perceptron(
+          4*this.lookbackIndex, 5, 1
+      );
       //this.network = new neataptic.architect.LSTM(4,16,1);
+        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
     }
     log.info("**************************************");
 
@@ -99,7 +125,7 @@ method.update = function(candle) {
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
     //myObj['output'] = [out];
 
-    myObj['output'] = [candle.close];
+    myObj['output'] = [candle.close * this.normalizer];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -114,22 +140,21 @@ method.update = function(candle) {
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
     if(this.trainingData.length == this.requiredHistory && !this.weights != null) {
-      log.info("Staring to train: "+this.trainingData.length);
-      //log.info(this.trainingData);
 
-      //perceptron
-      this.network.train(this.trainingData, {
-          //dropout: 0.5,
-          //clear: true,
-          log: 1000,
-          shuffle:true,
-          iterations: 100000,
-          error: 0.00000000001,
-          rate: 0.03,
-      });
-      log.info("Done training .. writing weights to file:");
-      this.writeToFile();
-  }
+        log.info("Staring to train: "+this.trainingData.length);
+        //log.info(this.trainingData);
+
+        //perceptron
+        this.network.train(this.trainingData, this.perceptOptions);
+
+        //evolve
+        //(async ()=>{
+          //  await this.network.evolve(this.trainingData, this.evolveOptions);
+        //})();
+
+        log.info("Done training .. writing weights to file:");
+        this.writeToFile();
+    }
 
 }
 
@@ -175,16 +200,16 @@ method.check = function(candle) {
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" expected: "+predicted_value);
+        log.info("Buy: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
         //this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 1){
+    } else if(this.open_order && percentage < 2){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
-        log.info("Sold: $"+candle.close+" expected: "+predicted_value);
+        log.info("Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
         return this.advice('short');
     }
 
