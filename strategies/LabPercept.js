@@ -50,7 +50,7 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    //this.weights = this.readFromFile(this.weightFileName);
+    this.weights = this.readFromFile(this.weightFileName);
 
 
     //use to train
@@ -67,7 +67,7 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        log: 1000,
+        //log: 1000,
         shuffle:true,
         iterations: 100000,
         error: 0.0000000001,
