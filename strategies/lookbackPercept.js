@@ -54,9 +54,8 @@ method.init = function() {
 
 
     //use to train
-    this.lookbackIndex = 3;
+    this.lookbackIndex = 2;
     this.lookbackData = [];
-    this.lookbackInput = [];
 
     this.trainingData = [];
     this.obj = {};
@@ -65,7 +64,6 @@ method.init = function() {
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
 
-
     log.info("**************************************");
     if(this.weights!=null) {
       log.info("***** Creating network from file *****");
@@ -73,7 +71,7 @@ method.init = function() {
     } else {
       // preprate neural network
       log.info("*** Training network from scratch ****");
-      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,3,1);
+      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,10,1);
       //this.network = new neataptic.architect.LSTM(4,16,1);
     }
     log.info("**************************************");
@@ -97,10 +95,11 @@ method.update = function(candle) {
         this.lookbackData.shift();
     }
 
-    this.lookbackInput = this.getLookbackInput(this.lookbackData);
+    var myObj = {};
+    myObj['input'] = this.getLookbackInput(this.lookbackData);
+    var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
+    myObj['output'] = [out];
 
-    this.obj['input'] = this.lookbackInput;
-    this.obj['output'] = [candle.close];
     //remember this candel for next time
     this.lookbackData.push(candle);
 
@@ -108,24 +107,24 @@ method.update = function(candle) {
     //log.info("pushing training data:");
     //log.info(this.obj);
 
-    this.trainingData.push(this.obj);
+    this.trainingData.push(myObj);
     //log.info("Pushing train data "+this.trainCounter++);
 
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
     if(this.trainingData.length == this.requiredHistory && !this.weights != null) {
       log.info("Staring to train: "+this.trainingData.length);
-      //log.info(this.trainingData);
+      log.info(this.trainingData);
 
       //perceptron
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
-          log: 10,
+          log: 500,
           shuffle:true,
           iterations: 100000,
-          error: 0.0000000001,
-          rate: 0.03,
+          error: 0.001,
+          rate: 0.003,
       });
       log.info("Done training .. writing weights to file:");
       this.writeToFile();
@@ -160,7 +159,7 @@ method.check = function(candle) {
     var predicted_value = this.network.activate(this.lookbackCheckInput);
 
     // % change in current close and predicted close
-    var percentage = ((predicted_value-candle.close)/candle.close)*100;
+    //var percentage = ((predicted_value-candle.close)/candle.close)*100;
 
     //log.info("=========================================");
     //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
@@ -169,16 +168,22 @@ method.check = function(candle) {
 
     //log.info("Value: "+predicted_value+" percent: "+percentage);
 
-    if(percentage > 2 && !this.open_order)
+    //log.info("Value: "+predicted_value);
+
+    //if(percentage > 1 && !this.open_order)
+    if(predicted_value > .1 && !this.open_order)
     {
-        log.info("Buy: $"+candle.close+" expected percent: "+percentage);
+        //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
+        log.info("Buy: $"+candle.close+" expected : "+predicted_value);
         //this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 0){
+    //} else if(this.open_order && percentage < 0){
+    } else if(this.open_order && predicted_value < .5){
         this.open_order = false;
-        log.info("Sold: $"+candle.close+" expected percent: "+percentage);
+        //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
+        log.info("Sold: $"+candle.close+" expected percent: "+predicted_value);
         return this.advice('short');
     }
 
@@ -189,11 +194,13 @@ method.check = function(candle) {
 method.getLookbackInput = function(lookbackData) {
     var lookbackInput = [];
     for(var i=0;i<lookbackData.length;i++) {
-        lookbackInput.push(this.lookbackData[i].open);
-        lookbackInput.push(this.lookbackData[i].close);
-        lookbackInput.push(this.lookbackData[i].high);
-        lookbackInput.push(this.lookbackData[i].low);
+        lookbackInput.push(lookbackData[i].open);
+        lookbackInput.push(lookbackData[i].close);
+        lookbackInput.push(lookbackData[i].high);
+        lookbackInput.push(lookbackData[i].low);
     }
+    log.info("Returing lookback input data");
+    log.info(lookbackInput);
     return lookbackInput;
 }
 
