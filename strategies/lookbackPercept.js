@@ -93,11 +93,17 @@ method.init = function() {
     } else {
       // preprate neural network
       log.info("*** Training network from scratch ****");
-      this.network = new neataptic.architect.Perceptron(
-          4*this.lookbackIndex, 3, 1
-      );
+
+        //this.network = new neataptic.architect.Perceptron(
+          //4*this.lookbackIndex, 3, 1
+      //);
+
+
       //this.network = new neataptic.architect.LSTM(4,16,1);
+
         // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
+
+        this.network = new neataptic.architect.NARX(4*this.lookbackIndex, [10,20,10], 1, 10, 10);
     }
     log.info("**************************************");
 
