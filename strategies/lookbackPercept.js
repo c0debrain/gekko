@@ -54,7 +54,7 @@ method.init = function() {
 
 
     //use to train
-    this.lookbackIndex = 3;
+    this.lookbackIndex = 1;
     this.lookbackData = [];
 
     this.trainingData = [];
@@ -125,7 +125,7 @@ method.update = function(candle) {
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
     //myObj['output'] = [out];
 
-    myObj['output'] = [candle.close * this.normalizer];
+    myObj['output'] = [candle.close];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -142,7 +142,7 @@ method.update = function(candle) {
     if(this.trainingData.length == this.requiredHistory && !this.weights != null) {
 
         log.info("Staring to train: "+this.trainingData.length);
-        //log.info(this.trainingData);
+        log.info(this.trainingData);
 
         //perceptron
         this.network.train(this.trainingData, this.perceptOptions);
