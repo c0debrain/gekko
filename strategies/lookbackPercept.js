@@ -32,7 +32,7 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/lookbackPercept-ethxrp.json";
+    this.weightFileName = "weights/lookbackPercept-ethtrx.json";
     //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
     //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
@@ -54,7 +54,7 @@ method.init = function() {
 
 
     //use to train
-    this.lookbackIndex = 5;
+    this.lookbackIndex = 3;
     this.lookbackData = [];
 
     this.trainingData = [];
@@ -70,7 +70,7 @@ method.init = function() {
     } else {
       // preprate neural network
       log.info("*** Training network from scratch ****");
-      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,40,20,1);
+      this.network = new neataptic.architect.Perceptron(4*this.lookbackIndex,1*this.lookbackIndex,1);
       //this.network = new neataptic.architect.LSTM(4,16,1);
     }
     log.info("**************************************");
@@ -96,8 +96,10 @@ method.update = function(candle) {
 
     var myObj = {};
     myObj['input'] = this.getLookbackInput(this.lookbackData);
-    var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
-    myObj['output'] = [out];
+    //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
+    //myObj['output'] = [out];
+
+    myObj['output'] = [candle.close];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -119,10 +121,10 @@ method.update = function(candle) {
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
-          log: 2000,
+          log: 1000,
           shuffle:true,
-          iterations: 10000,
-          error: 0.000001,
+          iterations: 100000,
+          error: 0.00000000001,
           rate: 0.03,
       });
       log.info("Done training .. writing weights to file:");
@@ -148,7 +150,7 @@ method.check = function(candle) {
 
     //log.info("lookbackchack size: "+this.lookbackCheckData.length);
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    //log.info("lookbackchack input size: "+this.lookbackCheckInput.length);
+    //log.info(this.lookbackCheckInput);
 
     //let's predict the next close price on the current close price;
     //var predicted_value = this.network.activate(candle.close/this.normalizer)*this.normalizer;
@@ -158,7 +160,7 @@ method.check = function(candle) {
     var predicted_value = this.network.activate(this.lookbackCheckInput);
 
     // % change in current close and predicted close
-    //var percentage = ((predicted_value-candle.close)/candle.close)*100;
+    var percentage = ((predicted_value-candle.close)/candle.close)*100;
 
     //log.info("=========================================");
     //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
@@ -167,10 +169,10 @@ method.check = function(candle) {
 
     //log.info("Value: "+predicted_value+" percent: "+percentage);
 
-    log.info("Value: "+predicted_value);
+    //log.info("Value: "+ predicted_value);
 
-    //if(percentage > 1 && !this.open_order)
-    if(predicted_value > .8 && !this.open_order)
+    if(percentage > 2 && !this.open_order)
+    //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" expected: "+predicted_value);
@@ -178,8 +180,8 @@ method.check = function(candle) {
         this.open_order = true;
         return this.advice('long');
 
-    //} else if(this.open_order && percentage < 0){
-    } else if(this.open_order && predicted_value < .5){
+    } else if(this.open_order && percentage < 1){
+    //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
         log.info("Sold: $"+candle.close+" expected: "+predicted_value);
