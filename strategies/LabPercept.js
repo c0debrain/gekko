@@ -67,7 +67,7 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        log: 10,
+        log: 1000,
         shuffle:true,
         iterations: 100000,
         error: 0.0000000001,
@@ -206,11 +206,11 @@ method.check = function(candle) {
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
-        //this.price = candle.close;
+        this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 0){
+    } else if(this.open_order && (percentage < 0 || this.getCurrentProfit(candle) > 1)){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
@@ -221,6 +221,9 @@ method.check = function(candle) {
     return this.advice();
 }
 
+method.getCurrentProfit = function(candle) {
+    return ((candle.close - this.price)/this.price)*100;
+}
 
 method.getLookbackInput = function(lookbackData) {
     var lookbackInput = [];
