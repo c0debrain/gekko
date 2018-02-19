@@ -32,7 +32,10 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/lookbackPercept-ethxrp.json";
+    this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
+    //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
+    //this.weightFileName = "weights/lookbackPercept-ethtrx-3-2400-2-10-10p.json";
+    //this.weightFileName = "weights/lookbackPercept-ethxrp.json";
     //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
     //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
@@ -50,11 +53,11 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    this.weights = this.readFromFile(this.weightFileName);
+    //this.weights = this.readFromFile(this.weightFileName);
 
 
     //use to train
-    this.lookbackIndex = 1;
+    this.lookbackIndex = 3;
     this.lookbackData = [];
 
     this.trainingData = [];
@@ -67,10 +70,10 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        //log: 1000,
+        log: 1000,
         shuffle:true,
-        iterations: 100000,
-        error: 0.0000000001,
+        iterations: 10000,
+        error: 0.00000000001,
         rate: 0.03,
     };
 
@@ -80,7 +83,7 @@ method.init = function() {
         popsize: 100,
         elitism: 10,
         log: 1,
-        error: 0.0000000000000001,
+        error: 0.000000000000001,
         iterations: 10000,
         mutationRate: 0.5
     };
@@ -94,7 +97,7 @@ method.init = function() {
       log.info("*** Training network from scratch ****");
 
         this.network = new neataptic.architect.Perceptron(
-          4*this.lookbackIndex, 3, 1
+          4*this.lookbackIndex, 1, 1
         );
 
 
@@ -201,11 +204,12 @@ method.check = function(candle) {
 
     //log.info("Value: "+ predicted_value);
 
-    if(percentage > 1 && !this.open_order)
+    if(percentage > 1.5 && !this.open_order)
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
+        //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
