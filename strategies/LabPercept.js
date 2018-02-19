@@ -210,7 +210,7 @@ method.check = function(candle) {
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && (percentage < 0 || this.getCurrentProfit(candle) > 1)){
+    } else if(this.open_order && (percentage < 0 || this.getCurrentProfit(candle) > 1.15)){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
