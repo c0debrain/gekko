@@ -59,7 +59,7 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    //this.weights = this.readFromFile(this.weightFileName);
+    this.weights = this.readFromFile(this.weightFileName);
 
 
     //use to train
