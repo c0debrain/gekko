@@ -219,7 +219,8 @@ method.check = function(candle) {
     //log.info("Value: "+ predicted_value);
     var currentProfit = this.getCurrentProfit(candle);
 
-    if( !this.open_order && this.previousPercent > 2 && percentage < this.previousPercent)
+    if( !this.open_order && this.previousPercent > 1 &&
+        percentage < this.previousPercent && !this.isDownTrend(this.lookbackCheckData))
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -234,7 +235,7 @@ method.check = function(candle) {
 
         return this.advice('long');
 
-    } else if(this.open_order && (currentProfit < this.previousProfit && currentProfit > 1.2)){
+    } else if(this.open_order && ((currentProfit < this.previousProfit && currentProfit > 1.2))){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         this.price = 0;
@@ -248,6 +249,15 @@ method.check = function(candle) {
 
     //log.info("Percentage: "+percentage+" Current profit: "+this.getCurrentProfit(candle)+" average percent: "+averagePercent);
     return this.advice();
+}
+
+
+
+
+
+
+method.isDownTrend = function(lookbackData) {
+    return lookbackData[0].close >= lookbackData[lookbackData.length-1].close;
 }
 
 method.getCurrentProfit = function(candle) {
