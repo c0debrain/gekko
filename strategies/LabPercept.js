@@ -72,6 +72,9 @@ method.init = function() {
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
 
+    //history
+    this.pastProfitPercent = 0;
+
 
     this.perceptOptions = {
         //dropout: 0.5,
@@ -196,10 +199,10 @@ method.check = function(candle) {
 
     //no normalizer
     //var predicted_value = this.network.activate([candle.open,candle.close,candle.high,candle.low]);
-    var predicted_value = this.network.activate(this.lookbackCheckInput);
+    var predictValue = this.network.activate(this.lookbackCheckInput);
 
     // % change in current close and predicted close
-    var percentage = ((predicted_value-candle.close)/candle.close)*100;
+    var predictPercent = ((predictValue-candle.close)/candle.close)*100;
 
     //log.info("=========================================");
     //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
@@ -212,23 +215,27 @@ method.check = function(candle) {
 
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    if(percentage > 1.5 && !this.open_order)
+    if(predictPercent > 1.5 && !this.open_order)
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
+        log.info("Buy: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && (percentage < 0 || profitPercent > 1.15)){
+    } else if(this.open_order && (predictPercent < 0 ||
+        //actual profit is dropping
+        (profitPercent < this.pastProfitPercent && profitPercent > 1.2))){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
-        log.info("Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage+" profit%: "+profitPercent);
+        log.info("Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
     }
+
+    this.pastProfitPercent = profitPercent;
 
     return this.advice();
 }
