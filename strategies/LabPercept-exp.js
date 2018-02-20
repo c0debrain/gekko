@@ -41,7 +41,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
-    log.debug(this.settings.my_custom_setting);
+    log.debug(this.settings.weight_file);
 
     this.weights = null;
 
@@ -57,6 +57,13 @@ method.init = function() {
     //NOTE: comment out to train and save
     this.weights = this.readFromFile(this.weightFileName);
 
+    this.previousPercent = 0;
+    this.counter = 0;
+    this.percentSum = 0;
+    this.previousProfit = 0;
+
+    this.buyCounter=0;
+    this.sellCounter=0;
 
     //use to train
     this.lookbackIndex = 3;
@@ -197,6 +204,11 @@ method.check = function(candle) {
     // % change in current close and predicted close
     var percentage = ((predicted_value-candle.close)/candle.close)*100;
 
+    this.counter++;
+    this.percentSum+=percentage;
+
+    var averagePercent = this.percentSum/this.counter;
+
     //log.info("=========================================");
     //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
     //log.info("Predicted value: "+predicted_value);
@@ -205,25 +217,36 @@ method.check = function(candle) {
     //log.info("Value: "+predicted_value+" percent: "+percentage);
 
     //log.info("Value: "+ predicted_value);
+    var currentProfit = this.getCurrentProfit(candle);
 
-    if(percentage > 1.5 && !this.open_order)
+    if( !this.open_order && this.previousPercent > 2 && percentage < this.previousPercent)
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
+        log.info("**** "+this.buyCounter++ +" Buy: $"+candle.close+
+            " expected: "+predicted_value+" percent: "+percentage+" avg: "+averagePercent);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.open_order = true;
+
+        this.percentSum = 0;
+        this.counter = 0;
+
         return this.advice('long');
 
-    } else if(this.open_order && (percentage < 0 || this.getCurrentProfit(candle) > 1.15)){
+    } else if(this.open_order && (currentProfit < this.previousProfit && currentProfit > 1.2)){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
+        this.price = 0;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
-        log.info("Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
+        log.info("**** "+this.sellCounter++ +" Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
         return this.advice('short');
     }
 
+    this.previousPercent = percentage;
+    this.previousProfit = currentProfit;
+
+    //log.info("Percentage: "+percentage+" Current profit: "+this.getCurrentProfit(candle)+" average percent: "+averagePercent);
     return this.advice();
 }
 
