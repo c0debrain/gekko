@@ -32,8 +32,8 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
-    //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
+    //this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
+    this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
     //this.weightFileName = "weights/lookbackPercept-ethtrx-3-2400-2-10-10p.json";
     //this.weightFileName = "weights/lookbackPercept-ethxrp.json";
     //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
@@ -227,7 +227,7 @@ method.check = function(candle) {
 
     } else if(this.open_order && (predictPercent < 0 ||
         //actual profit is dropping
-        (profitPercent < this.pastProfitPercent && profitPercent > 1.2))){
+        (profitPercent < this.pastProfitPercent && profitPercent > 1.5))){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
