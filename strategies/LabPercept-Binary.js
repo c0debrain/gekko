@@ -83,7 +83,7 @@ method.init = function() {
         shuffle:true,
         iterations: 25000,
         error: 0.00000000001,
-        rate: 0.03,
+        rate: 0.0000000003,
     };
 
     this.evolveOptions = {
@@ -106,7 +106,7 @@ method.init = function() {
       log.info("*** Training network from scratch ****");
 
         this.network = new neataptic.architect.Perceptron(
-          4*this.lookbackIndex,1,3, 1
+          4*this.lookbackIndex,2,1
         );
 
 
@@ -139,7 +139,7 @@ method.update = function(candle) {
 
     var myObj = {};
     myObj['input'] = this.getLookbackInput(this.lookbackData);
-    var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close >= 0 ? 0.9 : 0.1;
+    var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close >= 0 ? 1 : 0.1;
     myObj['output'] = [out];
 
     //myObj['output'] = [candle.close];
