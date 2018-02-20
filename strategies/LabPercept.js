@@ -5,6 +5,7 @@ const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
 const fs = require('fs');
+const cs = require('../modules/candlestick.js');
 
 /* Candle information
  { id: 103956,
@@ -215,7 +216,7 @@ method.check = function(candle) {
 
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    if(predictPercent > 1.5 && !this.open_order)
+    if(predictPercent > 1.5 && !this.open_order && this.shouldBuy(this.lookbackCheckData))
     //if(predicted_value > .8 && !this.open_order)
     {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -256,6 +257,16 @@ method.getLookbackInput = function(lookbackData) {
     //log.info(lookbackInput);
     return lookbackInput;
 }
+
+method.shouldBuy = function(candles) {
+    for(var i=0;i<candles.length;i++) {
+        if (!cs.isBullish(candles[i])) {
+            return false;
+        }
+    }
+    return candles[candles.length-1].close > candles[0].close;
+}
+
 
 
 
