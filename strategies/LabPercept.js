@@ -32,8 +32,8 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    //this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
-    this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
+    this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
+    //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
     //this.weightFileName = "weights/lookbackPercept-ethtrx-3-2400-2-10-10p.json";
     //this.weightFileName = "weights/lookbackPercept-ethxrp.json";
     //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
@@ -41,7 +41,11 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
-    log.debug(this.settings.my_custom_setting);
+    //log.debug(this.settings.weight_file);
+    this.lookbackIndex = this.settings.lookback_period;
+    //log.debug(this.tradingAdvisor);
+    //log.debug(config);
+
 
     this.weights = null;
 
@@ -55,11 +59,11 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    this.weights = this.readFromFile(this.weightFileName);
+    //this.weights = this.readFromFile(this.weightFileName);
 
 
     //use to train
-    this.lookbackIndex = 3;
+
     this.lookbackData = [];
 
     this.trainingData = [];
@@ -206,6 +210,8 @@ method.check = function(candle) {
 
     //log.info("Value: "+ predicted_value);
 
+    var profitPercent = this.getCurrentProfitPercent(candle);
+
     if(percentage > 1.5 && !this.open_order)
     //if(predicted_value > .8 && !this.open_order)
     {
@@ -216,18 +222,18 @@ method.check = function(candle) {
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && (percentage < 0 || this.getCurrentProfit(candle) > 1.15)){
+    } else if(this.open_order && (percentage < 0 || profitPercent > 1.15)){
     //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
-        log.info("Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage);
+        log.info("Sold: $"+candle.close+" expected: "+predicted_value+" percent: "+percentage+" profit%: "+profitPercent);
         return this.advice('short');
     }
 
     return this.advice();
 }
 
-method.getCurrentProfit = function(candle) {
+method.getCurrentProfitPercent = function(candle) {
     return ((candle.close - this.price)/this.price)*100;
 }
 

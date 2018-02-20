@@ -1,1 +1,2 @@
-weight_file = "weights/lookbackPercept-ethtrx-lab.json"
+weight_file = "weights/lookbackPercept"
+lookback_period = 3
