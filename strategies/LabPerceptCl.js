@@ -209,28 +209,12 @@ method.check = function(candle) {
         this.lookbackCheckData.shift();
     }
 
-    //log.info("lookbackchack size: "+this.lookbackCheckData.length);
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    //log.info(this.lookbackCheckInput);
 
-    //let's predict the next close price on the current close price;
-    //var predicted_value = this.network.activate(candle.close/this.normalizer)*this.normalizer;
-
-    //no normalizer
-    //var predicted_value = this.network.activate([candle.open,candle.close,candle.high,candle.low]);
     var predictValue = this.network.activate(this.lookbackCheckInput)
 
     // % change in current close and predicted close
     var predictPercent = ((predictValue-candle.close)/candle.close)*100;
-
-    //log.info("=========================================");
-    //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
-
-    //log.info("Percent: "+percentage);
-
-    //log.info("Value: "+predicted_value+" percent: "+percentage);
-
-    //log.info("Value: "+ predicted_value);
 
     var profitPercent = this.getCurrentProfitPercent(candle);
 
@@ -266,6 +250,10 @@ method.check = function(candle) {
 
     return this.advice();
 }
+
+
+
+
 
 method.getCurrentProfitPercent = function(candle) {
     return ((candle.close - this.price)/this.price)*100;
