@@ -251,7 +251,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < 0 && this.pastProfitPercent > profitPercent))
+        (this.buyHoursDiff(candle) > 6 && profitPercent < 0 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         this.locked = true;
