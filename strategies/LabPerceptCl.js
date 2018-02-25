@@ -183,7 +183,7 @@ method.update = function(candle) {
 
         //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
         this.network = new neataptic.architect.Perceptron(
-            4*this.lookbackIndex, 2, 1
+            4*this.lookbackIndex, 3, 1
         );
         //log.info(this.trainingData);
 
