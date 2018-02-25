@@ -207,7 +207,6 @@ method.update = function(candle) {
 
 }
 
-
 // check is executed after the minimum history input
 method.check = function(candle) {
 
@@ -255,7 +254,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < -1))
+        (this.buyHoursDiff(candle) > 6 && profitPercent < 0))
     {
         this.open_order = false;
         this.locked = true;
@@ -278,8 +277,6 @@ method.buyHoursDiff = function(candle) {
     var b = moment(this.buyDate);
     return a.diff(b,'hours');
 }
-
-
 
 
 method.getCurrentProfitPercent = function(candle) {
@@ -328,9 +325,6 @@ method.isValidCandle = function(candle) {
            candle.close == candle.high &&
            candle.high == candle.low);
 }
-
-
-
 
 method.writeToFile = function() {
     const exported = this.network.toJSON();
