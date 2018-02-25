@@ -258,6 +258,7 @@ method.check = function(candle) {
         this.price=0;
         return this.advice('short');
 
+    //sell and lock account
     } else if(this.open_order  &&
         (this.buyHoursDiff(candle) > 6 && profitPercent < -1))
     {
@@ -266,6 +267,10 @@ method.check = function(candle) {
         log.info("Lock Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
         //log.info(" CProfit%: "+profitPercent+" Total profit%: "+this.totalProfit+" predict%: "+predictPercent);
+
+    //unlock
+    } else if(this.locked && (predictPercent < 0)) {
+        this.locked = false;
     }
 
     this.pastProfitPercent = profitPercent;
