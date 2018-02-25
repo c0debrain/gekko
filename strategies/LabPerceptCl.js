@@ -165,8 +165,8 @@ method.update = function(candle) {
     if(this.trainingData.length > this.requiredHistory) {
         this.trainingData.shift();
     }
-    //log.info("Pushing train data "+this.trainCounter++);
 
+    //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
     if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
