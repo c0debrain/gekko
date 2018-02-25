@@ -98,12 +98,12 @@ method.init = function() {
     this.evolveOptions = {
         mutation: neataptic.methods.mutation.FFW,
         equal: true,
-        popsize: 100,
-        elitism: 10,
-        log: 1,
-        error: 0.000000000000001,
+        popsize: 1000,
+        elitism: 100,
+        log: 1000,
+        error: 0.0000000000001,
         iterations: 10000,
-        mutationRate: 0.5
+        mutationRate: 0.001
     };
 
     log.info("**************************************");
@@ -183,13 +183,18 @@ method.update = function(candle) {
 
         //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
         this.network = new neataptic.architect.Perceptron(
-            4*this.lookbackIndex, 3, 1
+            4*this.lookbackIndex,4, 1
         );
+
+        //evolve
+        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
+
         //log.info(this.trainingData);
 
         //perceptron
         this.network.train(this.trainingData, this.perceptOptions);
         this.trainGap = 0;
+
         //evolve
         //(async ()=>{
           //  await this.network.evolve(this.trainingData, this.evolveOptions);
