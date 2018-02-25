@@ -61,6 +61,8 @@ method.init = function() {
 
     this.price = 0;
     this.pricePredictPercent = 0;
+    //history
+    this.pastProfitPercent = 0;
 
     this.open_order = false;
     this.locked = false;
@@ -70,17 +72,12 @@ method.init = function() {
     //this.weights = this.readFromFile(this.weightFileName);
 
     //use to train
-
     this.lookbackData = [];
-
     this.trainingData = [];
 
     //use to activate
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
-
-    //history
-    this.pastProfitPercent = 0;
 
     this.totalProfit=0;
 
@@ -254,7 +251,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < 0))
+        (this.buyHoursDiff(candle) > 6 && profitPercent < 0 && this.pastProfitPercent > profitPercent))
     {
         this.open_order = false;
         this.locked = true;
