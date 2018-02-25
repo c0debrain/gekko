@@ -230,7 +230,6 @@ method.check = function(candle) {
     var predictPercent = ((predictValue-candle.close)/candle.close)*100;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    //if(predictPercent > 4.5 && !this.open_order && this.isBullish(this.lookbackCheckData))
     if(
         !this.open_order  && !this.locked && predictPercent > 1.3
     ) {
@@ -243,30 +242,25 @@ method.check = function(candle) {
         this.buyDate = candle.start;
         return this.advice('long');
 
-    } else if(
-            this.open_order  && (
-                (predictPercent < 0 || profitPercent > 1.5)
-            )
+    } else if( this.open_order
+                && ((predictPercent < 0 || profitPercent > 1.5))
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
-        //} else if(this.open_order && predicted_value < .5){
         this.open_order = false;
-        //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
         log.info("Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
 
     //sell and lock account
-    } else if(this.open_order  &&
+    } else if (this.open_order  &&
         (this.buyHoursDiff(candle) > 6 && profitPercent < -1))
     {
         this.open_order = false;
         this.locked = true;
         log.info("Lock Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
-        //log.info(" CProfit%: "+profitPercent+" Total profit%: "+this.totalProfit+" predict%: "+predictPercent);
 
     //unlock
     } else if(this.locked && (predictPercent < 0)) {
