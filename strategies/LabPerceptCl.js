@@ -6,6 +6,7 @@ const async = require ('async');
 const log = require('../core/log.js');
 const fs = require('fs');
 const cs = require('../modules/candlestick.js');
+const moment = require('moment');
 
 /* Candle information
  { id: 103956,
@@ -43,7 +44,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 5;//this.settings.lookback_period;
+    this.lookbackIndex = 7;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -82,15 +83,16 @@ method.init = function() {
 
     this.totalProfit=0;
 
+    this.trainCount = 0;
 
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
         log: 1000,
         shuffle:true,
-        iterations: 2000,
-        error: 0.00000000001,
-        rate: 0.03,
+        iterations: 3000,
+        error: 0.0000000001,
+        rate: 0.01,
     };
 
     this.evolveOptions = {
@@ -144,7 +146,6 @@ method.update = function(candle) {
         this.lookbackData.shift();
     }
 
-
     var myObj = {};
     myObj['input'] = this.getLookbackInput(this.lookbackData);
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
@@ -170,13 +171,19 @@ method.update = function(candle) {
 
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1.5) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
-        log.info("Staring to train: "+this.trainingData.length);
+        log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
+        log.info("Train end: "+moment.utc(candle.start).toDate());
+
+        //var errorRange = this.computeTrainingErrorRage(this.trainingData);
+        //log.info("Training error range: "+errorRange);
+
+        //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
         this.network = new neataptic.architect.Perceptron(
-            4*this.lookbackIndex, 1, 1
+            4*this.lookbackIndex, 2, 1
         );
         //log.info(this.trainingData);
 
@@ -215,23 +222,25 @@ method.check = function(candle) {
 
     // % change in current close and predicted close
     var predictPercent = ((predictValue-candle.close)/candle.close)*100;
-
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     //if(predictPercent > 4.5 && !this.open_order && this.isBullish(this.lookbackCheckData))
     if(
-        predictPercent > 1 && !this.open_order
+        !this.open_order  && predictPercent > 1.3
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent);
+        log.info("Buy: $"+candle.close+" expected: "+predictValue+" expect%: "+predictPercent);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
         this.open_order = true;
         return this.advice('long');
 
-    } else if( this.open_order  && ((predictPercent < 0 || profitPercent > 1.5))
-        //actual profit is dropping
+    } else if(
+            this.open_order  && (
+                (predictPercent < 0 || profitPercent > 1.5)
+            )
+            //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
         //} else if(this.open_order && predicted_value < .5){
@@ -239,11 +248,12 @@ method.check = function(candle) {
         //log.info("Sold: $"+candle.close+" expected percent: "+percentage);
         log.info("Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
         this.totalProfit+=profitPercent;
+        this.price=0;
         return this.advice('short');
 
-    } else if (this.open_order) {
+    } else  {
 
-        log.info("Profit%: "+profitPercent+" Total profit%: "+this.totalProfit);
+        //log.info(" CProfit%: "+profitPercent+" Total profit%: "+this.totalProfit+" predict%: "+predictPercent);
     }
 
     this.pastProfitPercent = profitPercent;
@@ -256,6 +266,8 @@ method.check = function(candle) {
 
 
 method.getCurrentProfitPercent = function(candle) {
+    if(this.price == 0)
+        return 0;
     return ((candle.close - this.price)/this.price)*100;
 }
 
@@ -267,10 +279,18 @@ method.getLookbackInput = function(lookbackData) {
         lookbackInput.push(lookbackData[i].high);
         lookbackInput.push(lookbackData[i].low);
     }
-    //log.info("Returing lookback input data");
-    //log.info(lookbackInput);
     return lookbackInput;
 }
+
+
+method.computeTrainingErrorRage= function(trainingData) {
+    var trainingErrorRange = 0;
+    for(var i=0;i<trainingData.length;i++) {
+        trainingErrorRange += trainingData[i]['output'][0];
+    }
+    return (trainingErrorRange/trainingData.length)/100;
+}
+
 
 method.isBullish = function(candles) {
     for(var i=0;i<candles.length;i++) {
@@ -281,11 +301,15 @@ method.isBullish = function(candles) {
     return candles[candles.length-1].close > candles[0].close;
 }
 
+
+method.isUptrend = function(candles) {
+    return candles[0].close < candles[candles.length-1].close;
+}
+
 method.isValidCandle = function(candle) {
     return !(candle.open == candle.close &&
            candle.close == candle.high &&
            candle.high == candle.low);
-
 }
 
 
