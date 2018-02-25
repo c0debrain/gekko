@@ -51,7 +51,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 10;
+    this.normalizer = 1000;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -149,7 +149,7 @@ method.update = function(candle) {
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
     //myObj['output'] = [out];
 
-    myObj['output'] = [candle.close];
+    myObj['output'] = [candle.close * this.normalizer];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -169,7 +169,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/2) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
@@ -220,7 +220,7 @@ method.check = function(candle) {
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
 
-    var predictValue = this.network.activate(this.lookbackCheckInput)
+    var predictValue = this.network.activate(this.lookbackCheckInput)/this.normalizer;
 
     // % change in current close and predicted close
     var predictPercent = ((predictValue-candle.close)/candle.close)*100;
@@ -286,10 +286,10 @@ method.getCurrentProfitPercent = function(candle) {
 method.getLookbackInput = function(lookbackData) {
     var lookbackInput = [];
     for(var i=0;i<lookbackData.length;i++) {
-        lookbackInput.push(lookbackData[i].open);
-        lookbackInput.push(lookbackData[i].close);
-        lookbackInput.push(lookbackData[i].high);
-        lookbackInput.push(lookbackData[i].low);
+        lookbackInput.push(lookbackData[i].open * this.normalizer);
+        lookbackInput.push(lookbackData[i].close * this.normalizer);
+        lookbackInput.push(lookbackData[i].high * this.normalizer);
+        lookbackInput.push(lookbackData[i].low * this.normalizer);
     }
     return lookbackInput;
 }
