@@ -263,6 +263,7 @@ method.check = function(candle) {
 
     //unlock
     } else if(this.locked && (predictPercent < 0)) {
+        log.info("Unlock: "+candle.close+" expected: "+predictValue+" expect%: "+predictPercent);
         this.locked = false;
     }
 
