@@ -63,6 +63,7 @@ method.init = function() {
     this.pricePredictPercent = 0;
 
     this.open_order = false;
+    this.locked = false;
 
     this.network=null;
     //NOTE: comment out to train and save
@@ -231,7 +232,7 @@ method.check = function(candle) {
 
     //if(predictPercent > 4.5 && !this.open_order && this.isBullish(this.lookbackCheckData))
     if(
-        !this.open_order  && predictPercent > 1.3
+        !this.open_order  && !this.locked && predictPercent > 1.3
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" expected: "+predictValue+" expect%: "+predictPercent);
@@ -239,6 +240,7 @@ method.check = function(candle) {
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
         this.open_order = true;
+        this.buyDate = candle.start;
         return this.advice('long');
 
     } else if(
@@ -256,8 +258,13 @@ method.check = function(candle) {
         this.price=0;
         return this.advice('short');
 
-    } else  {
-
+    } else if(this.open_order  &&
+        (this.buyHoursDiff(candle) > 6 && profitPercent < -1))
+    {
+        this.open_order = false;
+        this.locked = true;
+        log.info("Lock Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
+        return this.advice('short');
         //log.info(" CProfit%: "+profitPercent+" Total profit%: "+this.totalProfit+" predict%: "+predictPercent);
     }
 
@@ -266,6 +273,12 @@ method.check = function(candle) {
     return this.advice();
 }
 
+
+method.buyHoursDiff = function(candle) {
+    var a = moment(candle.start);
+    var b = moment(this.buyDate);
+    return a.diff(b,'hours');
+}
 
 
 
