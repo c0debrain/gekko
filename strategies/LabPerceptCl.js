@@ -44,14 +44,14 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 7;//this.settings.lookback_period;
+    this.lookbackIndex = 3;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
 
     this.weights = null;
 
-    this.normalizer = 1000;
+    this.normalizer = 100;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -148,6 +148,12 @@ method.update = function(candle) {
     myObj['input'] = this.getLookbackInput(this.lookbackData);
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
     //myObj['output'] = [out];
+
+    //log.info("lookback candles");
+    //log.info(this.lookbackData);
+
+    //log.info("lookback input");
+    //log.info(myObj['input']);
 
     myObj['output'] = [candle.close * this.normalizer];
 
@@ -287,9 +293,9 @@ method.getLookbackInput = function(lookbackData) {
     var lookbackInput = [];
     for(var i=0;i<lookbackData.length;i++) {
         lookbackInput.push(lookbackData[i].open * this.normalizer);
-        lookbackInput.push(lookbackData[i].close * this.normalizer);
         lookbackInput.push(lookbackData[i].high * this.normalizer);
         lookbackInput.push(lookbackData[i].low * this.normalizer);
+        lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
 }
