@@ -236,7 +236,7 @@ method.check = function(candle) {
         !this.open_order  && !this.locked && predictPercent > 0
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" predict: "+predictValue+" expect%: "+predictPercent);
+        log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
