@@ -233,10 +233,10 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.3
+        !this.open_order  && !this.locked && predictPercent > 0
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" expected: "+predictValue+" expect%: "+predictPercent);
+        log.info("Buy: $"+candle.close+" predict: "+predictValue+" expect%: "+predictPercent);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -250,7 +250,7 @@ method.check = function(candle) {
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
         this.open_order = false;
-        log.info("Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
+        log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
@@ -261,12 +261,12 @@ method.check = function(candle) {
     {
         this.open_order = false;
         this.locked = true;
-        log.info("Lock Sold: $"+candle.close+" expected: "+predictValue+" percent: "+predictPercent+" profit%: "+profitPercent);
+        log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
     //unlock
     } else if(this.locked && (predictPercent < 0)) {
-        log.info("Unlock: "+candle.close+" expected: "+predictValue+" expect%: "+predictPercent);
+        log.info("Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         this.locked = false;
     }
 
