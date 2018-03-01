@@ -44,14 +44,14 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 3;//this.settings.lookback_period;
+    this.lookbackIndex = 6;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
 
     this.weights = null;
 
-    this.normalizer = 100;
+    this.normalizer = 10000;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -86,10 +86,10 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        log: 1000,
+        log: 3000,
         shuffle:true,
-        iterations: 3000,
-        error: 0.0000000000001,
+        iterations: 10000,
+        error: 0.0001,
         rate: 0.01,
     };
 
@@ -99,7 +99,7 @@ method.init = function() {
         popsize: 1000,
         elitism: 100,
         log: 1000,
-        error: 0.0000000000001,
+        error: 0.00001,
         iterations: 10000,
         mutationRate: 0.001
     };
@@ -179,6 +179,9 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
+        //log.info("*************** Training DATA ***************")
+        //log.info(this.trainingData);
+
         log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         log.info("Train end: "+moment.utc(candle.start).toDate());
 
@@ -187,7 +190,7 @@ method.update = function(candle) {
 
         //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
         this.network = new neataptic.architect.Perceptron(
-            4*this.lookbackIndex,4, 1
+            1*this.lookbackIndex,8, 1
         );
 
         //evolve
@@ -210,6 +213,7 @@ method.update = function(candle) {
 
 }
 
+
 // check is executed after the minimum history input
 method.check = function(candle) {
 
@@ -227,13 +231,15 @@ method.check = function(candle) {
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
 
     var predictValue = this.network.activate(this.lookbackCheckInput)/this.normalizer;
-
+    //log.info("predict value: "+predictValue);
     // % change in current close and predicted close
     var predictPercent = ((predictValue-candle.close)/candle.close)*100;
+    //var predictPercent = predictValue;
+
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 0
+        !this.open_order  && !this.locked && predictPercent > 1.5
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -245,7 +251,7 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && ((predictPercent < 0 || profitPercent > 1.5))
+                && ((predictPercent < 0 || profitPercent > 1.6))
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
@@ -257,10 +263,10 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < 0 && profitPercent < this.pastProfitPercent))
+        (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        this.locked = true;
+        //this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
@@ -292,10 +298,10 @@ method.getCurrentProfitPercent = function(candle) {
 method.getLookbackInput = function(lookbackData) {
     var lookbackInput = [];
     for(var i=0;i<lookbackData.length;i++) {
-        lookbackInput.push(lookbackData[i].open * this.normalizer);
-        lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(lookbackData[i].low * this.normalizer);
-        lookbackInput.push(lookbackData[i].close * this.normalizer);
+        //lookbackInput.push(lookbackData[i].open * this.normalizer);
+        //lookbackInput.push(lookbackData[i].high * this.normalizer);
+        lookbackInput.push(round(lookbackData[i].low * this.normalizer,6));
+        //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
 }
@@ -343,6 +349,10 @@ method.writeToFile = function() {
 method.readFromFile = function(filePath) {
     var data = fs.readFileSync(filePath,'utf8');
     return JSON.parse(data);
+}
+
+function round(value, decimals) {
+    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
 
