@@ -48,6 +48,7 @@ method.init = function() {
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
+    this.roundPoint = 6;
 
     this.weights = null;
 
@@ -155,7 +156,7 @@ method.update = function(candle) {
     //log.info("lookback input");
     //log.info(myObj['input']);
 
-    myObj['output'] = [candle.close * this.normalizer];
+    myObj['output'] = [this.getOutput(candle)];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -179,7 +180,7 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
-        //log.info("*************** Training DATA ***************")
+        log.info("*************** Training DATA ***************")
         //log.info(this.trainingData);
 
         log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
@@ -300,7 +301,7 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(round(lookbackData[i].low * this.normalizer,6));
+        lookbackInput.push(round(lookbackData[i].low * this.normalizer,this.roundPoint));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
@@ -339,7 +340,6 @@ method.isValidCandle = function(candle) {
 method.writeToFile = function() {
     const exported = this.network.toJSON();
     const content = JSON.stringify(exported);
-
     fs.writeFile(this.weightFileName, content, function(err, data){
         if (err) console.log(err);
         console.log("Successfully Written to File.");
@@ -351,13 +351,15 @@ method.readFromFile = function(filePath) {
     return JSON.parse(data);
 }
 
+method.getOutput = function(candle) {
+    return round(candle.close * this.normalizer, this.roundPoint);
+}
+
 function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
 }
 
-
 method.log = function() {
-
 }
 
 module.exports = method;
