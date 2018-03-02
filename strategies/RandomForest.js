@@ -7,6 +7,7 @@ const log = require('../core/log.js');
 const fs = require('fs');
 const cs = require('../modules/candlestick.js');
 const moment = require('moment');
+const rf = require('ml-random-forest');
 
 /* Candle information
  { id: 103956,
@@ -44,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 16;//this.settings.lookback_period;
+    this.lookbackIndex = 3;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -80,9 +81,20 @@ method.init = function() {
     this.lookbackCheckData = [];
     this.lookbackCheckInput = [];
 
+    this.trainInput = [];
+    this.trainOutput = [];
+    this.regression = null;
+
     this.totalProfit=0;
 
     this.trainCount = 0;
+
+    this.rfOptions = {
+        seed: 3,
+        maxFeatures: 2,
+        replacement: false,
+        nEstimators: 200
+    };
 
     this.perceptOptions = {
         //dropout: 0.5,
@@ -145,8 +157,8 @@ method.update = function(candle) {
         this.lookbackData.shift();
     }
 
-    var myObj = {};
-    myObj['input'] = this.getLookbackInput(this.lookbackData);
+   // var myObj = {};
+   // myObj['input'] = this.getLookbackInput(this.lookbackData);
     //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
     //myObj['output'] = [out];
 
@@ -156,7 +168,10 @@ method.update = function(candle) {
     //log.info("lookback input");
     //log.info(myObj['input']);
 
-    myObj['output'] = [this.getOutput(candle)];
+   // myObj['output'] = [this.getOutput(candle)];
+
+    this.trainInput.push(this.getLookbackInput(this.lookbackData));
+    this.trainOutput.push(this.getOutput(candle));
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -165,50 +180,33 @@ method.update = function(candle) {
     //log.info("pushing training data:");
     //log.info(this.obj);
 
-    this.trainingData.push(myObj);
+    //this.trainingData.push(myObj);
 
     this.trainGap++;
 
-    if(this.trainingData.length > this.requiredHistory) {
-        this.trainingData.shift();
+    if(this.trainInput.length > this.requiredHistory) {
+        this.trainInput.shift();
+        this.trainOutput.shift();
     }
 
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
+    if(this.trainInput.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
-        log.info("*************** Training DATA ***************");
-        log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
-        //log.info(this.trainingData);
+        log.info("*************** Training DATA ***************")
+        log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
+        log.info("Train out: "+this.trainOutput.length);
+        log.info(this.trainInput);
+        log.info(this.trainOutput);
         log.info("Train end: "+moment.utc(candle.start).toDate());
 
-        //var errorRange = this.computeTrainingErrorRage(this.trainingData);
-        //log.info("Training error range: "+errorRange);
+        this.regression = new rf.RandomForestRegression(this.rfOptions);
+        this.regression.train(this.trainInput, this.trainOutput);
 
-        //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
-        this.network = new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,8, 1
-        );
-
-        //evolve
-        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
-
-        //log.info(this.trainingData);
-
-        //perceptron
-        this.network.train(this.trainingData, this.perceptOptions);
         this.trainGap = 0;
-
-        //evolve
-        //(async ()=>{
-          //  await this.network.evolve(this.trainingData, this.evolveOptions);
-        //})();
-
-        //log.info("Done training .. writing weights to file:");
-        //this.writeToFile();
     }
 
 }
@@ -217,10 +215,10 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    log.info("Trying to check");
+    log.info("tring to check:");
     this.lookbackCheckData.push(candle);
 
-    if (this.trainingData.length < this.requiredHistory && this.weights==null) {
+    if (this.trainInput.length < this.requiredHistory && this.weights==null) {
         return;
     }
 
@@ -230,12 +228,17 @@ method.check = function(candle) {
         this.lookbackCheckData.shift();
     }
 
-    this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
+    this.lookbackCheckInput = [];
+    this.lookbackCheckInput.push(this.getLookbackInput(this.lookbackCheckData));
     log.info("Checking for:");
     log.info(this.lookbackCheckInput);
 
-    var predictValue = this.network.activate(this.lookbackCheckInput);
+    //var predictValue = this.network.activate(this.lookbackCheckInput);
+
+    var predictValue = this.regression.predict(this.lookbackCheckInput);
+
     log.info("predict value: "+predictValue);
+
     // % change in current close and predicted close
     var normalizedClose = candle.close * this.normalizer;
     var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
