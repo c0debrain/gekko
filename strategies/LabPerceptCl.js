@@ -44,15 +44,15 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 6;//this.settings.lookback_period;
+    this.lookbackIndex = 16;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.roundPoint = 6;
+    this.roundPoint = 7;
 
     this.weights = null;
 
-    this.normalizer = 10000;
+    this.normalizer = 100;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -89,8 +89,8 @@ method.init = function() {
         //clear: true,
         log: 3000,
         shuffle:true,
-        iterations: 10000,
-        error: 0.0001,
+        iterations: 20000,
+        error: 0.000000001,
         rate: 0.01,
     };
 
@@ -181,9 +181,8 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         log.info("*************** Training DATA ***************")
-        //log.info(this.trainingData);
-
         log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
+        //log.info(this.trainingData);
         log.info("Train end: "+moment.utc(candle.start).toDate());
 
         //var errorRange = this.computeTrainingErrorRage(this.trainingData);
@@ -230,11 +229,15 @@ method.check = function(candle) {
     }
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
+    //log.info("Checking for:");
+    //log.info(this.lookbackCheckInput);
 
-    var predictValue = this.network.activate(this.lookbackCheckInput)/this.normalizer;
+    var predictValue = this.network.activate(this.lookbackCheckInput);
     //log.info("predict value: "+predictValue);
     // % change in current close and predicted close
-    var predictPercent = ((predictValue-candle.close)/candle.close)*100;
+    var normalizedClose = candle.close * this.normalizer;
+    var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
+    //log.info("Predict%: "+predictPercent);
     //var predictPercent = predictValue;
 
     var profitPercent = this.getCurrentProfitPercent(candle);
