@@ -45,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 5;//this.settings.lookback_period;
+    this.lookbackIndex = 8;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -92,10 +92,10 @@ method.init = function() {
     this.trainCount = 0;
 
     this.rfOptions = {
-        seed: 4,
-        maxFeatures: 5,
+        seed: 5,
+        maxFeatures: 7,
         replacement: true,
-        nEstimators: 200
+        nEstimators: 300
     };
 
     log.info("**************************************");
@@ -224,6 +224,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1.3
+            && this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex - 3,this.lookbackIndex))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
