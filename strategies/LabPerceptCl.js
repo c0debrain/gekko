@@ -279,7 +279,7 @@ method.check = function(candle) {
         (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        //this.locked = true;
+        this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
