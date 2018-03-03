@@ -187,7 +187,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
@@ -273,7 +273,9 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && ((predictPercent < 0 || profitPercent > 1.6))
+                && ((predictPercent < 0 || profitPercent > 1.6)
+                    //|| ( (predictPercent > this.pricePredictPercent * 1.5) && this.pastProfitPercent >.1)
+                )
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
@@ -286,7 +288,9 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
+        (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent)
+
+        )
     {
         this.open_order = false;
         this.locked = true;
