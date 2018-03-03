@@ -138,14 +138,6 @@ method.init = function() {
 // what happens on every new candle?
 method.update = function(candle) {
 
-    //have weights no need to train
-    //if(this.weights!=null || this.trainingData.length >= this.requiredHistory) {
-    //if(this.trainingData.length >= this.requiredHistory) {
-      //  return;
-    //}
-
-    //prepare input for training
-
     if(!this.isValidCandle(candle)) {
         return;
     }
@@ -157,30 +149,12 @@ method.update = function(candle) {
         this.lookbackData.shift();
     }
 
-   // var myObj = {};
-   // myObj['input'] = this.getLookbackInput(this.lookbackData);
-    //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
-    //myObj['output'] = [out];
-
-    //log.info("lookback candles");
-    //log.info(this.lookbackData);
-
-    //log.info("lookback input");
-    //log.info(myObj['input']);
-
-   // myObj['output'] = [this.getOutput(candle)];
 
     this.trainInput.push(this.getLookbackInput(this.lookbackData));
     this.trainOutput.push(this.getOutput(candle));
 
     //remember this candel for next time
     this.lookbackData.push(candle);
-
-    // train the neural network
-    //log.info("pushing training data:");
-    //log.info(this.obj);
-
-    //this.trainingData.push(myObj);
 
     this.trainGap++;
 
