@@ -382,7 +382,7 @@ function round(value, decimals) {
 }
 
 function getDate(candle) {
-    return moment.utc(candle.start).toDate();
+    return moment.utc(candle.start).format();
 }
 
 method.log = function() {
