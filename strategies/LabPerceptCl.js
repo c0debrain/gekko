@@ -194,7 +194,7 @@ method.update = function(candle) {
         log.info("*************** Training DATA ***************");
         log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         //log.info(this.trainingData);
-        log.info("Train end: "+candle.start);
+        log.info("Train end: "+getDate(candle));
 
         //var errorRange = this.computeTrainingErrorRage(this.trainingData);
         //log.info("Training error range: "+errorRange);
@@ -264,7 +264,7 @@ method.check = function(candle) {
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
-        log.info("Candle date: "+candle.start);
+        log.info("Candle date: "+getDate(candle));
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -279,7 +279,7 @@ method.check = function(candle) {
     ){
         this.open_order = false;
         log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
-        log.info("Candle date: "+candle.start);
+        log.info("Candle date: "+getDate(candle));
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
@@ -379,6 +379,10 @@ method.getOutput = function(candle) {
 
 function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+}
+
+function getDate(candle) {
+    return moment.utc(candle.start).toDate();
 }
 
 method.log = function() {
