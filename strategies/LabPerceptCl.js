@@ -342,16 +342,6 @@ method.getLookbackInput = function(lookbackData) {
     return lookbackInput;
 }
 
-
-method.computeTrainingErrorRage= function(trainingData) {
-    var trainingErrorRange = 0;
-    for(var i=0;i<trainingData.length;i++) {
-        trainingErrorRange += trainingData[i]['output'][0];
-    }
-    return (trainingErrorRange/trainingData.length)/100;
-}
-
-
 method.isBullish = function(candles) {
     for(var i=0;i<candles.length;i++) {
         if (!cs.isBullish(candles[i])) {
