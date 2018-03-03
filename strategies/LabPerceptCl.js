@@ -56,6 +56,7 @@ method.init = function() {
 
     this.normalizer = 10;
     this.name = '007';
+    this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
     log.info("minimum history: "+this.requiredHistory);
@@ -187,7 +188,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/2) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
@@ -228,21 +229,27 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    //log.info("Trying to check");
     this.lookbackCheckData.push(candle);
 
-    if (this.trainingData.length < this.requiredHistory && this.weights==null) {
+    if (this.trainingData.length < this.requiredHistory  && this.weights==null) {
+        //log.info("Checking with traing data len: "+this.trainingData.length);
+        //log.info("Look back len: "+this.lookbackCheckData.length);
+
+        if(this.lookbackCheckData.length > this.lookbackIndex) {
+            this.lookbackCheckData.shift();
+        }
+
         return this.advice();
     }
 
-    if(this.lookbackCheckData.length < this.lookbackIndex ) {
+    if(this.lookbackCheckData.length < this.lookbackIndex) {
         return this.advice();
-    } else if(this.lookbackCheckData.length > this.lookbackIndex ) {
+    } else if(this.lookbackCheckData.length > this.lookbackIndex) {
         this.lookbackCheckData.shift();
     }
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    //log.info("Checking for:");
+    log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
     //log.info(this.lookbackCheckInput);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
@@ -260,7 +267,8 @@ method.check = function(candle) {
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.6
+        !this.open_order  && !this.locked && predictPercent > 1.6 &&
+            this.isBullish(this.lookbackCheckData.slice(13,18))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -274,7 +282,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ((predictPercent < 0 || profitPercent > 1.6)
-                    //|| ( (predictPercent > this.pricePredictPercent * 1.5) && this.pastProfitPercent >.1)
+                    //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
+                    //|| (predictPercent > profitPercent && profitPercent < -1)
                 )
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
@@ -288,7 +297,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent)
+        (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent)
 
         )
     {
