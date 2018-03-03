@@ -151,17 +151,15 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
-        log.info("*************** Training DATA ***************")
-        log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
-        log.info("Train out: "+this.trainOutput.length);
+        //log.info("*************** Training DATA ***************")
+        //log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
+        //log.info("Train out: "+this.trainOutput.length);
         //log.info(this.trainInput);
         //log.info(this.trainOutput);
-        log.info("Train end: "+getDate(candle));
+        //log.info("Train end: "+getDate(candle));
 
         this.regression = new rf.RandomForestRegression(this.rfOptions);
         this.regression.train(this.trainInput, this.trainOutput);
-        log.info("done training");
-
         this.trainGap = 0;
     }
 
@@ -171,7 +169,7 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    log.info("tring to check:");
+    //log.info("tring to check:");
     this.lookbackCheckData.push(candle);
 
     if (this.trainInput.length < this.requiredHistory && this.weights==null) {
@@ -190,15 +188,15 @@ method.check = function(candle) {
     this.lookbackCheckInput = [];
     this.lookbackCheckInput.push(this.getLookbackInput(this.lookbackCheckData));
 
-    log.info("Checking for:");
-    log.info(this.lookbackCheckInput);
+    //log.info("Checking for:");
+    //log.info(this.lookbackCheckInput);
 
     //var predictValue = this.network.activate(this.lookbackCheckInput);
 
     var predictValue = this.regression.predict(this.lookbackCheckInput);
     predictValue = round(predictValue,this.roundPoint);
 
-    log.info("predict value: "+predictValue);
+    //log.info("predict value: "+predictValue);
 
     // % change in current close and predicted close
     var normalizedClose = candle.close * this.normalizer;
@@ -209,10 +207,11 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.3
+        !this.open_order  && !this.locked && predictPercent > 1
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
+        log.info(">> Candle date: "+getDate(candle));
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -227,6 +226,7 @@ method.check = function(candle) {
     ){
         this.open_order = false;
         log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        log.info("<< Candle date: "+getDate(candle));
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
