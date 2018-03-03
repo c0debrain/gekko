@@ -45,9 +45,11 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 3;//this.settings.lookback_period;
+    this.lookbackIndex = 5;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
+
+    this.lockSell = false;
 
     this.roundPoint = 10;
 
@@ -91,30 +93,9 @@ method.init = function() {
 
     this.rfOptions = {
         seed: 4,
-        maxFeatures: 3,
+        maxFeatures: 4,
         replacement: true,
         nEstimators: 200
-    };
-
-    this.perceptOptions = {
-        //dropout: 0.5,
-        //clear: true,
-        log: 3000,
-        shuffle:true,
-        iterations: 20000,
-        error: 0.000000001,
-        rate: 0.01,
-    };
-
-    this.evolveOptions = {
-        mutation: neataptic.methods.mutation.FFW,
-        equal: true,
-        popsize: 1000,
-        elitism: 100,
-        log: 1000,
-        error: 0.00001,
-        iterations: 10000,
-        mutationRate: 0.001
     };
 
     log.info("**************************************");
@@ -251,11 +232,11 @@ method.check = function(candle) {
         return this.advice('short');
 
     //sell and lock account
-    } else if (this.open_order  &&
-        (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
+    } else if (this.open_order  && this.lockSell
+        && (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        //this.locked = true;
+        this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
