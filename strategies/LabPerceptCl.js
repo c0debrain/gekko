@@ -59,6 +59,7 @@ method.init = function() {
     log.info("minimum history: "+this.requiredHistory);
 
     this.trainGap=0;
+    this.trained = false;
 
     this.price = 0;
     this.pricePredictPercent = 0;
@@ -199,7 +200,9 @@ method.update = function(candle) {
         //log.info(this.trainingData);
 
         //perceptron
-        this.network.train(this.trainingData, this.perceptOptions);
+        var result = this.network.train(this.trainingData, this.perceptOptions);
+        log.info("Training done with iteration: "+result.iterations);
+        this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
 
         //evolve
@@ -243,6 +246,10 @@ method.check = function(candle) {
     //var predictPercent = predictValue;
 
     var profitPercent = this.getCurrentProfitPercent(candle);
+
+    if(!this.trained){
+        return;
+    }
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1.5
