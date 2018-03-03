@@ -187,14 +187,14 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         log.info("*************** Training DATA ***************");
         log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         //log.info(this.trainingData);
-        log.info("Train end: "+moment.utc(candle.start).toDate());
+        log.info("Train end: "+candle.start);
 
         //var errorRange = this.computeTrainingErrorRage(this.trainingData);
         //log.info("Training error range: "+errorRange);
@@ -232,11 +232,11 @@ method.check = function(candle) {
     this.lookbackCheckData.push(candle);
 
     if (this.trainingData.length < this.requiredHistory && this.weights==null) {
-        return;
+        return this.advice();
     }
 
     if(this.lookbackCheckData.length < this.lookbackIndex ) {
-        return;
+        return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex ) {
         this.lookbackCheckData.shift();
     }
@@ -256,7 +256,7 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(!this.trained){
-        return;
+        return this.advice();
     }
 
     if(
@@ -264,6 +264,7 @@ method.check = function(candle) {
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
+        log.info("Candle date: "+candle.start);
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -278,6 +279,7 @@ method.check = function(candle) {
     ){
         this.open_order = false;
         log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        log.info("Candle date: "+candle.start);
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
