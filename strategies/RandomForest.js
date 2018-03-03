@@ -93,7 +93,7 @@ method.init = function() {
 
     this.rfOptions = {
         seed: 4,
-        maxFeatures: 4,
+        maxFeatures: 5,
         replacement: true,
         nEstimators: 200
     };
@@ -139,9 +139,9 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainInput.length > this.requiredHistory) {
-        //this.trainInput.shift();
-        //this.trainOutput.shift();
+    if(this.trainInput.length > 60) {
+        this.trainInput.shift();
+        this.trainOutput.shift();
     }
 
     //log.info("Pushing train data "+this.trainCounter++);
@@ -152,14 +152,20 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         //log.info("*************** Training DATA ***************")
-        //log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
+        log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
         //log.info("Train out: "+this.trainOutput.length);
         //log.info(this.trainInput);
         //log.info(this.trainOutput);
         //log.info("Train end: "+getDate(candle));
 
-        this.regression = new rf.RandomForestRegression(this.rfOptions);
-        this.regression.train(this.trainInput, this.trainOutput);
+        try {
+            this.regression = new rf.RandomForestRegression(this.rfOptions);
+            this.regression.train(this.trainInput, this.trainOutput);
+        } catch (err) {
+            log.info("error processing");
+            return;
+        }
+
         this.trainGap = 0;
     }
 
@@ -193,7 +199,14 @@ method.check = function(candle) {
 
     //var predictValue = this.network.activate(this.lookbackCheckInput);
 
-    var predictValue = this.regression.predict(this.lookbackCheckInput);
+    var predictValue = null;
+    try {
+        predictValue = this.regression.predict(this.lookbackCheckInput);
+    } catch(err) {
+        log.info("error processing ");
+        return;
+    }
+
     predictValue = round(predictValue,this.roundPoint);
 
     //log.info("predict value: "+predictValue);
@@ -207,7 +220,7 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1
+        !this.open_order  && !this.locked && predictPercent > 1.3
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
