@@ -139,7 +139,7 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainInput.length > 60) {
+    if(this.trainInput.length > 50) {
         this.trainInput.shift();
         this.trainOutput.shift();
     }
@@ -151,8 +151,11 @@ method.update = function(candle) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
-        //log.info("*************** Training DATA ***************")
-        log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
+        //log.info("*************** Training DATA ***************");
+        this.trainCount++;
+        if(this.trainCount % 50 == 0) {
+            log.info("Staring to train: " + this.trainInput.length + " count: " +this.trainCount);
+        }
         //log.info("Train out: "+this.trainOutput.length);
         //log.info(this.trainInput);
         //log.info(this.trainOutput);
