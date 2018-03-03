@@ -45,11 +45,11 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 5;//this.settings.lookback_period;
+    this.lookbackIndex = 3;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.roundPoint = 7;
+    this.roundPoint = 10;
 
     this.weights = null;
 
@@ -90,8 +90,8 @@ method.init = function() {
     this.trainCount = 0;
 
     this.rfOptions = {
-        seed: 3,
-        maxFeatures: 2,
+        seed: 4,
+        maxFeatures: 3,
         replacement: true,
         nEstimators: 200
     };
@@ -184,7 +184,7 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainInput.length > this.requiredHistory-1) {
+    if(this.trainInput.length > this.requiredHistory) {
         //this.trainInput.shift();
         //this.trainOutput.shift();
     }
@@ -204,9 +204,9 @@ method.update = function(candle) {
         log.info("Train end: "+getDate(candle));
 
         this.regression = new rf.RandomForestRegression(this.rfOptions);
-
         this.regression.train(this.trainInput, this.trainOutput);
         log.info("done training");
+
         this.trainGap = 0;
     }
 
@@ -234,6 +234,7 @@ method.check = function(candle) {
 
     this.lookbackCheckInput = [];
     this.lookbackCheckInput.push(this.getLookbackInput(this.lookbackCheckData));
+
     log.info("Checking for:");
     log.info(this.lookbackCheckInput);
 
