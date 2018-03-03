@@ -88,7 +88,7 @@ method.init = function() {
     this.perceptOptions = {
         //dropout: 0.5,
         //clear: true,
-        log: 3000,
+        log: 0,
         shuffle:true,
         iterations: 20000,
         error: 0.000000001,
