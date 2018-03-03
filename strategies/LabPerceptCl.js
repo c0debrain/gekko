@@ -93,7 +93,7 @@ method.init = function() {
         log: 0,
         shuffle:true,
         iterations: 20000,
-        error: 0.0000000001,
+        error: 0.0000000005,
         rate: 0.01,
     };
 
@@ -187,7 +187,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/2) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
