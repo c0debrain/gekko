@@ -217,7 +217,7 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    log.info("Trying to check");
+    //log.info("Trying to check");
     this.lookbackCheckData.push(candle);
 
     if (this.trainingData.length < this.requiredHistory && this.weights==null) {
@@ -231,11 +231,11 @@ method.check = function(candle) {
     }
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    log.info("Checking for:");
-    log.info(this.lookbackCheckInput);
+    //log.info("Checking for:");
+    //log.info(this.lookbackCheckInput);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
-    log.info("predict value: "+predictValue);
+    //log.info("predict value: "+predictValue);
     // % change in current close and predicted close
     var normalizedClose = candle.close * this.normalizer;
     var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
