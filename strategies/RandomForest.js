@@ -184,7 +184,7 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainInput.length > this.requiredHistory) {
+    if(this.trainInput.length > this.requiredHistory-1) {
         //this.trainInput.shift();
         //this.trainOutput.shift();
     }
@@ -253,7 +253,7 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.5
+        !this.open_order  && !this.locked && predictPercent > 1.3
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
