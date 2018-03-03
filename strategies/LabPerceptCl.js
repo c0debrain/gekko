@@ -54,7 +54,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 100;
+    this.normalizer = 10;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
