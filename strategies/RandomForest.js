@@ -92,7 +92,7 @@ method.init = function() {
     this.rfOptions = {
         seed: 3,
         maxFeatures: 2,
-        replacement: false,
+        replacement: true,
         nEstimators: 200
     };
 
@@ -185,27 +185,28 @@ method.update = function(candle) {
     this.trainGap++;
 
     if(this.trainInput.length > this.requiredHistory) {
-        this.trainInput.shift();
-        this.trainOutput.shift();
+        //this.trainInput.shift();
+        //this.trainOutput.shift();
     }
 
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainInput.length >= this.requiredHistory && this.trainGap >= this.requiredHistory) {
+    if(this.trainInput.length >= this.requiredHistory ) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         log.info("*************** Training DATA ***************")
         log.info("Staring to train: "+this.trainInput.length+" count: "+ ++this.trainCount);
         log.info("Train out: "+this.trainOutput.length);
-        log.info(this.trainInput);
-        log.info(this.trainOutput);
-        log.info("Train end: "+moment.utc(candle.start).toDate());
+        //log.info(this.trainInput);
+        //log.info(this.trainOutput);
+        log.info("Train end: "+getDate(candle));
 
         this.regression = new rf.RandomForestRegression(this.rfOptions);
-        this.regression.train(this.trainInput, this.trainOutput);
 
+        this.regression.train(this.trainInput, this.trainOutput);
+        log.info("done training");
         this.trainGap = 0;
     }
 
@@ -219,6 +220,9 @@ method.check = function(candle) {
     this.lookbackCheckData.push(candle);
 
     if (this.trainInput.length < this.requiredHistory && this.weights==null) {
+        if(this.lookbackCheckData.length > this.lookbackIndex) {
+            this.lookbackCheckData.shift();
+        }
         return;
     }
 
@@ -236,6 +240,7 @@ method.check = function(candle) {
     //var predictValue = this.network.activate(this.lookbackCheckInput);
 
     var predictValue = this.regression.predict(this.lookbackCheckInput);
+    predictValue = round(predictValue,this.roundPoint);
 
     log.info("predict value: "+predictValue);
 
@@ -309,7 +314,7 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(round(lookbackData[i].low * this.normalizer,this.roundPoint));
+        lookbackInput.push(round(lookbackData[i].close * this.normalizer,this.roundPoint));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
@@ -365,6 +370,10 @@ method.getOutput = function(candle) {
 
 function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+}
+
+function getDate(candle) {
+    return moment.utc(candle.start).format();
 }
 
 method.log = function() {
