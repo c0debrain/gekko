@@ -260,7 +260,7 @@ method.check = function(candle) {
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.5
+        !this.open_order  && !this.locked && predictPercent > 1.6
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
