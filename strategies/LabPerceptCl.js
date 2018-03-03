@@ -249,7 +249,7 @@ method.check = function(candle) {
     }
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
+    //log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
     //log.info(this.lookbackCheckInput);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
@@ -268,11 +268,11 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1.6 &&
-            this.isBullish(this.lookbackCheckData.slice(13,18))
+            this.isBullish(this.lookbackCheckData.slice(13,16))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
-        log.info("Candle date: "+getDate(candle));
+        log.info(">> Candle date: "+getDate(candle));
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -290,7 +290,7 @@ method.check = function(candle) {
     ){
         this.open_order = false;
         log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
-        log.info("Candle date: "+getDate(candle));
+        log.info("<< Candle date: "+getDate(candle));
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
