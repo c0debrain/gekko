@@ -97,6 +97,12 @@ method.init = function() {
         rate: 0.01,
     };
 
+    this.getPerceptron = function() {
+        return new neataptic.architect.Perceptron(
+            1*this.lookbackIndex,8, 1
+        );
+    };
+
     this.evolveOptions = {
         mutation: neataptic.methods.mutation.FFW,
         equal: true,
@@ -124,6 +130,8 @@ method.init = function() {
     }
     log.info("**************************************");
 }
+
+
 
 
 // what happens on every new candle?
@@ -192,9 +200,7 @@ method.update = function(candle) {
         //log.info("Training error range: "+errorRange);
 
         //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
-        this.network = new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,8, 1
-        );
+        this.network = this.getPerceptron();
 
         //evolve
         // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
