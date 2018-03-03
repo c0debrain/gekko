@@ -188,7 +188,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/2) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
@@ -267,7 +267,7 @@ method.check = function(candle) {
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.6 &&
+        !this.open_order  && !this.locked && predictPercent > 1 && predictPercent < 3 &&
             this.isBullish(this.lookbackCheckData.slice(13,16))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -281,7 +281,7 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && ((predictPercent < 0 || profitPercent > 1.6)
+                && ((predictPercent < 0 || profitPercent > 1.3)
                     //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
                     //|| (predictPercent > profitPercent && profitPercent < -1)
                 )
@@ -297,7 +297,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell &&
-        (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent)
+        (this.buyHoursDiff(candle) > 8 && profitPercent < -1)
 
         )
     {
