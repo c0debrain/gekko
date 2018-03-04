@@ -276,10 +276,10 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-            && ((profitPercent >= this.pricePredictPercent/2 && profitPercent < this.pastProfitPercent))
+            //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
             //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
-             //&& (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+             && (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                 ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
             //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
             //|| (predictPercent > profitPercent && profitPercent < -1)
@@ -295,17 +295,17 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 0.5 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
+            && (this.buyHoursDiff(candle) > 3 && profitPercent < 0 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        this.locked = true;
+        //this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
     //unlock
     } else if(this.locked
             && ((predictPercent < 0)
-                || this.isThreeWhiteSoilder() && predictPercent > 7)
+            )
         ) {
         log.info("Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         this.locked = false;
