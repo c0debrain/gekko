@@ -277,7 +277,11 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-            && (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
+            //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+              //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
+            //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
+             && (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
             //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
             //|| (predictPercent > profitPercent && profitPercent < -1)
             //actual profit is dropping
@@ -295,7 +299,7 @@ method.check = function(candle) {
             && (this.buyHoursDiff(candle) > 1 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        this.locked = true;
+        //this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
