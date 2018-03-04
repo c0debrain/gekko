@@ -235,10 +235,11 @@ method.check = function(candle) {
         this.pricePredictPercent = predictPercent;
         this.open_order = true;
         this.buyDate = candle.start;
+        this.pastProfitPercent = profitPercent;
         return this.advice('long');
 
     } else if( this.open_order
-            && (predictPercent < -this.pricePredictPercent && this.pastProfitPercent < profitPercent)
+            && (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
             //&& ((predictPercent < 0 || profitPercent > 1.5))
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
@@ -265,7 +266,7 @@ method.check = function(candle) {
         this.locked = false;
     }
 
-    this.pastProfitPercent = profitPercent;
+
 
     return this.advice();
 }
