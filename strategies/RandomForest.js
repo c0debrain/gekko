@@ -166,10 +166,11 @@ method.update = function(candle) {
             this.regression = new rf.RandomForestRegression(this.rfOptions);
             this.regression.train(this.trainInput, this.trainOutput);
         } catch (err) {
-            log.info("error processing");
+            log.info("error training");
+            log.info("in len: "+this.trainOutput.length);
+            log.info("out len: "+this.trainOutput.length);
             return;
         }
-
         this.trainGap = 0;
     }
 
@@ -207,7 +208,8 @@ method.check = function(candle) {
     try {
         predictValue = this.regression.predict(this.lookbackCheckInput);
     } catch(err) {
-        log.info("error processing ");
+        log.info("error processing input: ");
+        //log.info(this.lookbackCheckInput);
         return;
     }
 
