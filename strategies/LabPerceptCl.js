@@ -50,11 +50,12 @@ method.init = function() {
 
     this.lockSell = false;
 
-    this.roundPoint = 7;
+    this.roundPoint = 10;
 
     this.weights = null;
 
     this.normalizer = 10;
+
     this.name = '007';
     this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
@@ -290,10 +291,8 @@ method.check = function(candle) {
         return this.advice('short');
 
     //sell and lock account
-    } else if (this.open_order  && this.lockSell &&
-        (this.buyHoursDiff(candle) > 8 && profitPercent < -1)
-
-        )
+    } else if (this.open_order  && this.lockSell
+            && (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         this.locked = true;
@@ -307,7 +306,6 @@ method.check = function(candle) {
     }
 
     this.pastProfitPercent = profitPercent;
-
     return this.advice();
 }
 
