@@ -55,7 +55,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 10;
+    this.normalizer = 1000;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -94,7 +94,7 @@ method.init = function() {
     this.rfOptions = {
         seed: 4,
         maxFeatures: 6,
-        replacement: true,
+        replacement: false,
         nEstimators: 200
     };
 
@@ -184,14 +184,11 @@ method.check = function(candle) {
     this.lookbackCheckData.push(candle);
 
     if (this.trainInput.length < this.requiredHistory && this.weights==null) {
-        if(this.lookbackCheckData.length > this.lookbackIndex) {
-            this.lookbackCheckData.shift();
-        }
-        return;
+        return this.advice();
     }
 
     if(this.lookbackCheckData.length < this.lookbackIndex ) {
-        return;
+        return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex ) {
         this.lookbackCheckData.shift();
     }
@@ -267,8 +264,6 @@ method.check = function(candle) {
         log.info("Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         this.locked = false;
     }
-
-
 
     return this.advice();
 }
