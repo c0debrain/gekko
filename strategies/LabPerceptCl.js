@@ -233,13 +233,6 @@ method.check = function(candle) {
     this.lookbackCheckData.push(candle);
 
     if (this.trainingData.length < this.requiredHistory  && this.weights==null) {
-        //log.info("Checking with traing data len: "+this.trainingData.length);
-        //log.info("Look back len: "+this.lookbackCheckData.length);
-
-        if(this.lookbackCheckData.length > this.lookbackIndex) {
-            this.lookbackCheckData.shift();
-        }
-
         return this.advice();
     }
 
@@ -337,7 +330,7 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(round(lookbackData[i].low * this.normalizer,this.roundPoint));
+        lookbackInput.push(round(lookbackData[i].close * this.normalizer,this.roundPoint));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
