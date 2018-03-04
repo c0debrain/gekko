@@ -55,7 +55,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 100;
+    this.normalizer = 10;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -92,10 +92,10 @@ method.init = function() {
     this.trainCount = 0;
 
     this.rfOptions = {
-        seed: 5,
-        maxFeatures: 7,
+        seed: 4,
+        maxFeatures: 6,
         replacement: true,
-        nEstimators: 300
+        nEstimators: 200
     };
 
     log.info("**************************************");
@@ -139,7 +139,7 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainInput.length > 50) {
+    if(this.trainInput.length > this.requiredHistory) {
         this.trainInput.shift();
         this.trainOutput.shift();
     }
