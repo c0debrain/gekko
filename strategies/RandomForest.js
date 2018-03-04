@@ -49,7 +49,7 @@ method.init = function() {
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.lockSell = false;
+    this.lockSell = true;
 
     this.roundPoint = 10;
 
@@ -251,7 +251,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell
-        && (this.buyHoursDiff(candle) > 6 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
+        && (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         this.locked = true;
