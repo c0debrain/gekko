@@ -314,6 +314,10 @@ method.check = function(candle) {
 }
 
 
+
+
+
+
 method.buyHoursDiff = function(candle) {
     var a = moment(candle.start);
     var b = moment(this.buyDate);
