@@ -48,7 +48,7 @@ method.init = function() {
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.lockSell = false;
+    this.lockSell = true;
 
     this.roundPoint = 10;
 
@@ -262,8 +262,8 @@ method.check = function(candle) {
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1 && predictPercent < 3 &&
-            this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
+        !this.open_order  && !this.locked && predictPercent > 1
+            && this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -271,15 +271,15 @@ method.check = function(candle) {
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
+        this.pastProfitPercent = profitPercent;
         this.open_order = true;
         this.buyDate = candle.start;
         return this.advice('long');
 
     } else if( this.open_order
-                && ((predictPercent < 0 || profitPercent > 1.3)
-                    //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
-                    //|| (predictPercent > profitPercent && profitPercent < -1)
-                )
+            && (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
+            //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
+            //|| (predictPercent > profitPercent && profitPercent < -1)
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
@@ -292,7 +292,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
+            && (this.buyHoursDiff(candle) > 1 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         this.locked = true;
