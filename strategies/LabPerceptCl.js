@@ -269,7 +269,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1 && predictPercent < 3 &&
-            this.isBullish(this.lookbackCheckData.slice(13,16))
+            this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
