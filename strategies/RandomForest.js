@@ -55,7 +55,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 1000;
+    this.normalizer = 10;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -223,7 +223,7 @@ method.check = function(candle) {
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1.3
+        !this.open_order  && !this.locked && predictPercent > 1
             && this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex - 3,this.lookbackIndex))
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
