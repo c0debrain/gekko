@@ -238,8 +238,9 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-            && (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
-            //&& ((predictPercent < 0 || profitPercent > 1.5))
+            && predictPercent < 0 || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+            //&& (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
+            //&& ((predictPercent < 0 || profitPercent > 1.3))
             //actual profit is dropping
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
         ){
