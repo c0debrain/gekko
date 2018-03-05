@@ -45,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 8;//this.settings.lookback_period;
+    this.lookbackIndex = 3;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -60,6 +60,7 @@ method.init = function() {
     this.requiredHistory = config.tradingAdvisor.historySize;
 
     log.info("minimum history: "+this.requiredHistory);
+    log.info("Batch size: "+config.backtest.batchSize);
 
     this.trainGap=0;
 
@@ -130,7 +131,6 @@ method.update = function(candle) {
         this.lookbackData.shift();
     }
 
-
     this.trainInput.push(this.getLookbackInput(this.lookbackData));
     this.trainOutput.push(this.getOutput(candle));
 
@@ -140,8 +140,8 @@ method.update = function(candle) {
     this.trainGap++;
 
     if(this.trainInput.length > this.requiredHistory) {
-        this.trainInput.shift();
-        this.trainOutput.shift();
+        //this.trainInput.shift();
+        //this.trainOutput.shift();
     }
 
     //log.info("Pushing train data "+this.trainCounter++);
@@ -156,11 +156,9 @@ method.update = function(candle) {
         this.trainCount++;
         if(this.trainCount % 50 == 0) {
             log.info("Staring to train: " + this.trainInput.length + " count: " +this.trainCount);
+            log.info(this.trainInput);
+            log.info(this.trainOutput);
         }
-        //log.info("Train out: "+this.trainOutput.length);
-        //log.info(this.trainInput);
-        //log.info(this.trainOutput);
-        //log.info("Train end: "+getDate(candle));
 
         try {
             this.regression = new rf.RandomForestRegression(this.rfOptions);
@@ -169,6 +167,9 @@ method.update = function(candle) {
             log.info("error training");
             log.info("in len: "+this.trainOutput.length);
             log.info("out len: "+this.trainOutput.length);
+            //log.info(this.trainInput);
+            //log.info(this.trainOutput);
+            //log.info("Train end: "+getDate(candle));
             return;
         }
         this.trainGap = 0;
