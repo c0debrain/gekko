@@ -276,10 +276,12 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
+                && (predictPercent < 0
+                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent))
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
             //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
-             && (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+             //&& (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                 ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
             //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
             //|| (predictPercent > profitPercent && profitPercent < -1)
