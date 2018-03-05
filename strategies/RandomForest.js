@@ -224,7 +224,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex - 3,this.lookbackIndex))
+            && this.isThreeWhiteSoilder()
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -238,7 +238,7 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && (predictPercent < 0
+                && ( (predictPercent < 0 && cs.isBearish(candle))
                     || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent))
             //&& (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
             //&& ((predictPercent < 0 || profitPercent > 1.3))
@@ -270,6 +270,9 @@ method.check = function(candle) {
     return this.advice();
 }
 
+method.isThreeWhiteSoilder = function() {
+    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
+}
 
 method.buyHoursDiff = function(candle) {
     var a = moment(candle.start);
