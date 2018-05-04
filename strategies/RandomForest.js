@@ -55,7 +55,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 10;
+    this.normalizer = 100;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -125,9 +125,11 @@ method.update = function(candle) {
     }
 
     if(this.lookbackData.length < this.lookbackIndex) {
+        log.info("pushing: "+this.getOutput(candle));
         this.lookbackData.push(candle);
         return;
     } else if (this.lookbackData.length > this.lookbackIndex ) {
+        log.info("doing shift");
         this.lookbackData.shift();
     }
 
@@ -135,13 +137,14 @@ method.update = function(candle) {
     this.trainOutput.push(this.getOutput(candle));
 
     //remember this candel for next time
+    log.info("pushing remember: "+this.getOutput(candle));
     this.lookbackData.push(candle);
 
     this.trainGap++;
 
     if(this.trainInput.length > this.requiredHistory) {
-        //this.trainInput.shift();
-        //this.trainOutput.shift();
+        this.trainInput.shift();
+        this.trainOutput.shift();
     }
 
     //log.info("Pushing train data "+this.trainCounter++);
@@ -154,7 +157,7 @@ method.update = function(candle) {
 
         //log.info("*************** Training DATA ***************");
         this.trainCount++;
-        if(this.trainCount % 50 == 0) {
+        if(this.trainCount % 1 == 0) {
             log.info("Staring to train: " + this.trainInput.length + " count: " +this.trainCount);
             log.info(this.trainInput);
             log.info(this.trainOutput);
@@ -165,8 +168,8 @@ method.update = function(candle) {
             this.regression.train(this.trainInput, this.trainOutput);
         } catch (err) {
             log.info("error training");
-            log.info("in len: "+this.trainOutput.length);
-            log.info("out len: "+this.trainOutput.length);
+            //log.info("in len: "+this.trainOutput.length);
+            //log.info("out len: "+this.trainOutput.length);
             //log.info(this.trainInput);
             //log.info(this.trainOutput);
             //log.info("Train end: "+getDate(candle));
@@ -218,14 +221,14 @@ method.check = function(candle) {
     // % change in current close and predicted close
     var normalizedClose = candle.close * this.normalizer;
     var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
-    //log.info("Predict%: "+predictPercent);
+    log.info("Predict%: "+predictPercent);
     //var predictPercent = predictValue;
 
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && this.isThreeWhiteSoilder()
+            //&& this.isThreeWhiteSoilder()
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -293,12 +296,15 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(round(lookbackData[i].close * this.normalizer,this.roundPoint));
+        lookbackInput.push(this.getOutput(lookbackData[i]));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
 }
 
+method.getOutput = function(candle) {
+    return round(candle.close * this.normalizer, this.roundPoint);
+}
 
 method.computeTrainingErrorRage= function(trainingData) {
     var trainingErrorRange = 0;
@@ -343,9 +349,7 @@ method.readFromFile = function(filePath) {
     return JSON.parse(data);
 }
 
-method.getOutput = function(candle) {
-    return round(candle.close * this.normalizer, this.roundPoint);
-}
+
 
 function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);

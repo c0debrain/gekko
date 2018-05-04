@@ -44,7 +44,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 16;//this.settings.lookback_period;
+    this.lookbackIndex = 6;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -54,7 +54,7 @@ method.init = function() {
 
     this.weights = null;
 
-    this.normalizer = 10;
+    this.normalizer = 1;
 
     this.name = '007';
     this.upCounter = 0;
@@ -101,7 +101,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,8, 1
+            1*this.lookbackIndex,4, 1
         );
     };
 
@@ -262,7 +262,7 @@ method.check = function(candle) {
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1 && this.isThreeWhiteSoilder()
+        !this.open_order  && !this.locked && predictPercent > 1 && this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -297,7 +297,7 @@ method.check = function(candle) {
 
     //sell and lock account
     } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 3 && profitPercent < 0 && profitPercent < this.pastProfitPercent))
+            && (this.buyHoursDiff(candle) > 7 && profitPercent < 0.5 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         //this.locked = true;
@@ -319,8 +319,8 @@ method.check = function(candle) {
 
 
 
-method.isThreeWhiteSoilder = function() {
-    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
+method.isWhiteSoilders = function(size) {
+    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-size,this.lookbackIndex))
 }
 
 
