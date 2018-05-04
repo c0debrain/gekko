@@ -45,13 +45,13 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 3;//this.settings.lookback_period;
+    this.lookbackIndex = 4;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
     this.lockSell = true;
 
-    this.roundPoint = 10;
+    this.roundPoint = 15;
 
     this.weights = null;
 
@@ -94,7 +94,7 @@ method.init = function() {
 
     this.rfOptions = {
         seed: 4,
-        maxFeatures: 6,
+        maxFeatures: 3,
         replacement: false,
         nEstimators: 200
     };
@@ -125,11 +125,9 @@ method.update = function(candle) {
     }
 
     if(this.lookbackData.length < this.lookbackIndex) {
-        log.info("pushing: "+this.getOutput(candle));
         this.lookbackData.push(candle);
         return;
     } else if (this.lookbackData.length > this.lookbackIndex ) {
-        log.info("doing shift");
         this.lookbackData.shift();
     }
 
@@ -137,7 +135,6 @@ method.update = function(candle) {
     this.trainOutput.push(this.getOutput(candle));
 
     //remember this candel for next time
-    log.info("pushing remember: "+this.getOutput(candle));
     this.lookbackData.push(candle);
 
     this.trainGap++;
@@ -158,9 +155,11 @@ method.update = function(candle) {
         //log.info("*************** Training DATA ***************");
         this.trainCount++;
         if(this.trainCount % 1 == 0) {
+
             log.info("Staring to train: " + this.trainInput.length + " count: " +this.trainCount);
-            log.info(this.trainInput);
-            log.info(this.trainOutput);
+            log.info("******************************************************");
+            //log.info(this.trainInput);
+            //log.info(this.trainOutput);
         }
 
         try {
