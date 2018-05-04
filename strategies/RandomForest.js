@@ -45,17 +45,17 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 4;//this.settings.lookback_period;
+    this.lookbackIndex = 32;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.lockSell = true;
+    this.lockSell = false;
 
-    this.roundPoint = 15;
+    this.roundPoint = 10;
 
     this.weights = null;
 
-    this.normalizer = 100;
+    this.normalizer = 1;
     this.name = '007';
     this.requiredHistory = config.tradingAdvisor.historySize;
 
@@ -93,10 +93,10 @@ method.init = function() {
     this.trainCount = 0;
 
     this.rfOptions = {
-        seed: 4,
-        maxFeatures: 3,
-        replacement: false,
-        nEstimators: 200
+        seed: 40,
+        maxFeatures: 30,
+        replacement: true,
+        nEstimators: 2000
     };
 
     log.info("**************************************");
@@ -225,6 +225,8 @@ method.check = function(candle) {
 
     var profitPercent = this.getCurrentProfitPercent(candle);
 
+    log.info("Profit%: "+profitPercent);
+
     if(
         !this.open_order  && !this.locked && predictPercent > 1
             //&& this.isThreeWhiteSoilder()
@@ -260,7 +262,7 @@ method.check = function(candle) {
         && (this.buyHoursDiff(candle) > 3 && profitPercent < -1 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
-        this.locked = true;
+        //this.locked = true;
         log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         return this.advice('short');
 
