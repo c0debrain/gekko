@@ -289,7 +289,9 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && (predictPercent < 0
-                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent))
+                    || !isUptreadMove && predictPercent < this.pastProfitPercent
+                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
             //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
