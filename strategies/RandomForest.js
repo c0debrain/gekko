@@ -282,6 +282,7 @@ method.check = function(candle) {
         this.locked = false;
     }
 
+    this.pastProfitPercent = profitPercent;
     return this.advice();
 }
 
