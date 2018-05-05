@@ -259,7 +259,7 @@ method.check = function(candle) {
 
     var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput);
     var isUptrendMoveAvg = this.isUptrendMoveAvg(this.lookbackCheckInput);
-    var isUptreanMoveAgg = isUptrendMove && isUptrendMoveAvg;
+    var isUptrenMoveAgg = isUptrendMove && isUptrendMoveAvg;
 
 
     log.info("input:"+this.lookbackCheckInput);
