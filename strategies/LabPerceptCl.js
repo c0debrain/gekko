@@ -257,7 +257,7 @@ method.check = function(candle) {
     //var predictPercent = predictValue;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    var isUptreadMove = this.isUptrendMove(this.lookbackCheckInput);
+    var isUptreadMove = this.isUptrendMoveAvg(this.lookbackCheckInput);
 
     log.info("input:"+this.lookbackCheckInput);
     log.info("close: "+candle.close);
@@ -268,13 +268,16 @@ method.check = function(candle) {
     log.info("predict%: "+predictPercent);
     log.info("isUptread: "+isUptreadMove);
 
+    log.info("past profit%: "+this.pastProfitPercent);
+    log.info("profit% :"+profitPercent);
+
     if(!this.trained){
         return this.advice();
     }
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptreadMove
+            && isUptreadMove && this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -289,7 +292,7 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && (predictPercent < 0
-                    || !isUptreadMove && predictPercent < this.pastProfitPercent
+                    || !isUptreadMove && profitPercent < this.pastProfitPercent && profitPercent > 0
                     || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                 )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
@@ -353,6 +356,14 @@ method.getCurrentProfitPercent = function(candle) {
 
 method.isUptrendMove = function(lookbackInput) {
     return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
+}
+
+method.isUptrendMoveAvg = function(lookbackInput) {
+    var sum=0;
+    for(var i=0;i<lookbackInput.length-1;i++) {
+        sum+=lookbackInput[i];
+    }
+    return lookbackInput[lookbackInput.length-1] > (sum/(lookbackInput.length-1))
 }
 
 method.getLookbackInput = function(lookbackData) {
