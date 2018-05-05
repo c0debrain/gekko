@@ -4,9 +4,10 @@ const _ = require('lodash');
 const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
-const fs = require('fs');
+
 const cs = require('../modules/candlestick.js');
-const moment = require('moment');
+const tu = require('../modules/tradeutil.js');
+
 
 /* Candle information
  { id: 103956,
@@ -147,7 +148,7 @@ method.update = function(candle) {
 
     //prepare input for training
 
-    if(!this.isValidCandle(candle)) {
+    if(!tu.isValidCandle(candle)) {
         return;
     }
 
@@ -159,17 +160,10 @@ method.update = function(candle) {
     }
 
     var myObj = {};
-    myObj['input'] = this.getLookbackInput(this.lookbackData);
-    //var out =  candle.close - this.lookbackData[this.lookbackData.length-1].close > 0 ? 1 : 0;
-    //myObj['output'] = [out];
+    myObj['input'] = tu.getLookbackInput(this.lookbackData);
 
-    //log.info("lookback candles");
-    //log.info(this.lookbackData);
 
-    //log.info("lookback input");
-    //log.info(myObj['input']);
-
-    myObj['output'] = [this.getOutput(candle)];
+    myObj['output'] = [tu.getOutput(candle)];
 
     //remember this candel for next time
     this.lookbackData.push(candle);
@@ -197,7 +191,7 @@ method.update = function(candle) {
         log.info("*************** Training DATA ***************");
         //log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         //log.info(this.trainingData);
-        log.info("Train end: "+getDate(candle));
+        log.info("Train end: "+tu.getDate(candle));
 
         //var errorRange = this.computeTrainingErrorRage(this.trainingData);
         //log.info("Training error range: "+errorRange);
@@ -248,17 +242,17 @@ method.check = function(candle) {
         return this.advice();
     }
 
-    this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
+    this.lookbackCheckInput = tu.getLookbackInput(this.lookbackCheckData);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
-    var predictNorm = this.getNorm(predictValue);
+    var predictNorm = tu.getNorm(predictValue);
 
-    var closeNorm = this.getNorm(candle.close);
-    var predictPercent = ((predictNorm-closeNorm)/closeNorm)*100;
+    var closeNorm = tu.getNorm(candle.close);
+    var predictPercent = tu.getPercent(predictNorm,closeNorm);//((predictNorm-closeNorm)/closeNorm)*100;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput);
-    var isUptrendMoveAvg = this.isUptrendMoveAvg(this.lookbackCheckInput);
+    var isUptrendMove = tu.isUptrendMove(this.lookbackCheckInput);
+    var isUptrendMoveAvg = tu.isUptrendMoveAvg(this.lookbackCheckInput);
     var isUptrenMoveAgg = isUptrendMove && isUptrendMoveAvg;
 
 
@@ -281,7 +275,7 @@ method.check = function(candle) {
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
-        log.info(">> Candle date: "+getDate(candle));
+        log.info(">> Candle date: "+tu.getDate(candle));
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
@@ -307,7 +301,7 @@ method.check = function(candle) {
     ){
         this.open_order = false;
         log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
-        log.info("<< Candle date: "+getDate(candle));
+        log.info("<< Candle date: "+tu.getDate(candle));
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
@@ -341,93 +335,13 @@ method.isWhiteSoilders = function(size) {
 }
 
 
-method.buyHoursDiff = function(candle) {
-    var a = moment(candle.start);
-    var b = moment(this.buyDate);
-    return a.diff(b,'hours');
-}
-
-
 method.getCurrentProfitPercent = function(candle) {
     if(this.price == 0)
         return 0;
     return ((candle.close - this.price)/this.price)*100;
 }
 
-method.isUptrendMove = function(lookbackInput) {
-    return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
-}
 
-method.isUptrendMoveAvg = function(lookbackInput) {
-    var sum=0;
-    for(var i=0;i<lookbackInput.length-1;i++) {
-        sum+=lookbackInput[i];
-    }
-    return lookbackInput[lookbackInput.length-1] > (sum/(lookbackInput.length-1))
-}
-
-method.getLookbackInput = function(lookbackData) {
-    var lookbackInput = [];
-    for(var i=0;i<lookbackData.length;i++) {
-        //lookbackInput.push(lookbackData[i].open * this.normalizer);
-        //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(this.getNorm(lookbackData[i].close));
-        //lookbackInput.push(lookbackData[i].close * this.normalizer);
-    }
-    return lookbackInput;
-}
-
-method.getOutput = function(candle) {
-    return this.getNorm(candle.close)
-}
-
-method.getNorm = function(val) {
-    return round(val * this.normalizer, this.roundPoint);
-}
-
-method.isBullish = function(candles) {
-    for(var i=0;i<candles.length;i++) {
-        if (!cs.isBullish(candles[i])) {
-            return false;
-        }
-    }
-    return candles[candles.length-1].close > candles[0].close;
-}
-
-
-method.isUptrend = function(candles) {
-    return candles[0].close < candles[candles.length-1].close;
-}
-
-method.isValidCandle = function(candle) {
-    return !(candle.open == candle.close &&
-           candle.close == candle.high &&
-           candle.high == candle.low);
-}
-
-method.writeToFile = function() {
-    const exported = this.network.toJSON();
-    const content = JSON.stringify(exported);
-    fs.writeFile(this.weightFileName, content, function(err, data){
-        if (err) console.log(err);
-        console.log("Successfully Written to File.");
-    });
-}
-
-method.readFromFile = function(filePath) {
-    var data = fs.readFileSync(filePath,'utf8');
-    return JSON.parse(data);
-}
-
-
-
-function round(value, decimals) {
-    return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
-}
-
-function getDate(candle) {
-    return moment.utc(candle.start).format();
-}
 
 method.log = function() {
 }
