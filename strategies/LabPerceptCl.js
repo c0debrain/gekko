@@ -269,7 +269,7 @@ method.check = function(candle) {
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
-    log.info("isUptreadAgg: "+isUptrendMoveAgg);
+    log.info("isUptreadAgg: "+isUptrenMoveAgg);
 
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit% :"+profitPercent);
@@ -280,7 +280,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg && this.isWhiteSoilders(2)
+            && isUptrenMoveAgg && this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
