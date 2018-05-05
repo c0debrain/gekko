@@ -263,6 +263,9 @@ method.check = function(candle) {
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
+
+    log.info("isUptrend: "+isUptrendMove);
+    log.info("isUptrendAvg: "+isUptrendMoveAvg);
     log.info("isUptreadAgg: "+isUptrenMoveAgg);
 
     log.info("past profit%: "+this.pastProfitPercent);
@@ -286,8 +289,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrenMoveAgg && profitPercent < this.pastProfitPercent //&& profitPercent > 0
-                        //|| (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent //&& profitPercent > 0
+                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
