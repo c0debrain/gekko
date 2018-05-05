@@ -246,6 +246,9 @@ method.check = function(candle) {
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
     //log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
 
+
+
+
     var predictValue = this.network.activate(this.lookbackCheckInput);
     var predictNorm = this.getNorm(predictValue);
 
@@ -272,7 +275,7 @@ method.check = function(candle) {
     log.info("isUptreadAgg: "+isUptrenMoveAgg);
 
     log.info("past profit%: "+this.pastProfitPercent);
-    log.info("profit% :"+profitPercent);
+    log.info("profit%: "+profitPercent);
 
     if(!this.trained){
         return this.advice();
@@ -295,8 +298,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0 ||
-                        (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                        !isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0
+                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)

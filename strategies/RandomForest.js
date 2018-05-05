@@ -45,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 32;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
