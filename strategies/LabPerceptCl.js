@@ -48,7 +48,7 @@ method.init = function() {
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
-    this.lockSell = true;
+    this.lockSell = false;
 
     this.roundPoint = 10;
 
@@ -257,6 +257,8 @@ method.check = function(candle) {
     //var predictPercent = predictValue;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
+    var isUptreadMove = this.isUptrendMove(this.lookbackCheckInput);
+
     log.info("input:"+this.lookbackCheckInput);
     log.info("close: "+candle.close);
     log.info("close norm: "+closeNorm);
@@ -264,17 +266,18 @@ method.check = function(candle) {
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
+    log.info("isUptread: "+isUptreadMove);
 
     if(!this.trained){
         return this.advice();
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 3
-            //&& this.isWhiteSoilders(3)
+        !this.open_order  && !this.locked && predictPercent > 1
+            && isUptreadMove
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
-        log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
+        log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         log.info(">> Candle date: "+getDate(candle));
         //log.info(this.lookbackCheckInput);
         this.price = candle.close;
@@ -298,7 +301,7 @@ method.check = function(candle) {
             //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
         this.open_order = false;
-        log.info("Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         log.info("<< Candle date: "+getDate(candle));
         this.totalProfit+=profitPercent;
         this.price=0;
@@ -310,15 +313,15 @@ method.check = function(candle) {
     {
         this.open_order = false;
         //this.locked = true;
-        log.info("Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        log.info("**<<! Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        this.locked = true;
         return this.advice('short');
-
     //unlock
     } else if(this.locked
             && ((predictPercent < 0)
             )
         ) {
-        log.info("Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
+        log.info("**!! Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         this.locked = false;
     }
 
@@ -344,6 +347,10 @@ method.getCurrentProfitPercent = function(candle) {
     if(this.price == 0)
         return 0;
     return ((candle.close - this.price)/this.price)*100;
+}
+
+method.isUptrendMove = function(lookbackInput) {
+    return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
 }
 
 method.getLookbackInput = function(lookbackData) {
