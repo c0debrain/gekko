@@ -95,8 +95,8 @@ method.init = function() {
     this.rfOptions = {
         seed: 4,
         maxFeatures: 20,
-        replacement: true,
-        nEstimators: 500
+        replacement: false,
+        nEstimators: 5000
     };
 
     log.info("**************************************");
@@ -147,8 +147,8 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    //if(this.trainInput.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/1.2) {
-    if(this.trainInput.length >= this.requiredHistory ) {
+    if(this.trainInput.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/4) {
+    //if(this.trainInput.length >= this.requiredHistory ) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
