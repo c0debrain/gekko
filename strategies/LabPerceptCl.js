@@ -269,7 +269,7 @@ method.check = function(candle) {
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
-    log.info("isUptreadAgg: "+isUptreadMoveAgg);
+    log.info("isUptreadAgg: "+isUptrendMoveAgg);
 
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit% :"+profitPercent);
