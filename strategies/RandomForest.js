@@ -218,12 +218,12 @@ method.check = function(candle) {
     var predictPercent = ((predictNorm-closeNorm)/closeNorm)*100;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput);
-    var isUptrendMoveAvg = this.isUptrendMoveAvg(this.lookbackCheckInput);
+    var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput[0]);
+    var isUptrendMoveAvg = this.isUptrendMoveAvg(this.lookbackCheckInput[0]);
     var isUptrenMoveAgg = isUptrendMove && isUptrendMoveAvg;
 
 
-    log.info("input:"+this.lookbackCheckInput);
+    log.info("input:"+this.lookbackCheckInput[0]);
     log.info("close: "+candle.close);
     log.info("close norm: "+closeNorm);
 
@@ -286,8 +286,8 @@ method.check = function(candle) {
     return this.advice();
 }
 
-method.isThreeWhiteSoilder = function() {
-    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-3,this.lookbackIndex))
+method.isWhiteSoilders = function(size) {
+    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-size,this.lookbackIndex))
 }
 
 method.buyHoursDiff = function(candle) {
