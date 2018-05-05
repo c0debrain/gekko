@@ -95,13 +95,13 @@ method.init = function() {
         log: 0,
         shuffle:true,
         iterations: 80000,
-        error: 0.0000000005,
+        error: 0.0000000003,
         rate: 0.01,
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,4, 1
+            1*this.lookbackIndex,6, 1
         );
     };
 
@@ -189,7 +189,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/2) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/3) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
