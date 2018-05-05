@@ -44,7 +44,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 12;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -257,7 +257,8 @@ method.check = function(candle) {
     //var predictPercent = predictValue;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    var isUptreadMove = this.isUptrendMoveAvg(this.lookbackCheckInput);
+    var isUptreadMove = this.isUptrendMoveAvg(this.lookbackCheckInput) &&
+        this.isUptrendMove(this.lookbackCheckInput);
 
     log.info("input:"+this.lookbackCheckInput);
     log.info("close: "+candle.close);
