@@ -44,7 +44,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 48;//this.settings.lookback_period;
+    this.lookbackIndex = 12;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -263,8 +263,7 @@ method.check = function(candle) {
 
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
-
-
+    log.info("predict%: "+predictPercent);
 
     if(!this.trained){
         return this.advice();
