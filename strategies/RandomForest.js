@@ -45,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 24;//this.settings.lookback_period;
+    this.lookbackIndex = 12;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -93,10 +93,10 @@ method.init = function() {
     this.trainCount = 0;
 
     this.rfOptions = {
-        seed: 40,
-        maxFeatures: 22,
-        replacement: true,
-        nEstimators: 2000
+        seed: 4,
+        maxFeatures: 10,
+        replacement: false,
+        nEstimators: 200
     };
 
     log.info("**************************************");
