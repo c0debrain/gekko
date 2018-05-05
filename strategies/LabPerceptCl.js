@@ -291,10 +291,10 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && (predictPercent < 0
-                    || !isUptreadMove && profitPercent < this.pastProfitPercent && profitPercent > 0
-                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
-                )
+                && ( //predictPercent < 0 ||
+                        !isUptreadMove && profitPercent < this.pastProfitPercent && profitPercent > 0 ||
+                        (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                    )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
             //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
