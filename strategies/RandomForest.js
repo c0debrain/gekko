@@ -94,7 +94,7 @@ method.init = function() {
 
     this.rfOptions = {
         seed: 40,
-        maxFeatures: 30,
+        maxFeatures: 22,
         replacement: true,
         nEstimators: 2000
     };
@@ -213,23 +213,31 @@ method.check = function(candle) {
         return;
     }
 
-    predictValue = round(predictValue,this.roundPoint);
-
-    //log.info("predict value: "+predictValue);
-
-    // % change in current close and predicted close
-    var normalizedClose = candle.close * this.normalizer;
-    var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
-    log.info("Predict%: "+predictPercent);
-    //var predictPercent = predictValue;
-
+    var predictNorm = this.getNorm(predictValue);
+    var closeNorm = this.getNorm(candle.close);
+    var predictPercent = ((predictNorm-closeNorm)/closeNorm)*100;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
-    log.info("Profit%: "+profitPercent);
+    var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput);
+    var isUptrendMoveAvg = this.isUptrendMoveAvg(this.lookbackCheckInput);
+    var isUptrenMoveAgg = isUptrendMove && isUptrendMoveAvg;
+
+
+    log.info("input:"+this.lookbackCheckInput);
+    log.info("close: "+candle.close);
+    log.info("close norm: "+closeNorm);
+
+    log.info("predict: "+predictValue);
+    log.info("predict norm: "+predictNorm);
+    log.info("predict%: "+predictPercent);
+    log.info("isUptreadAgg: "+isUptrenMoveAgg);
+
+    log.info("past profit%: "+this.pastProfitPercent);
+    log.info("profit%: "+profitPercent);
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            //&& this.isThreeWhiteSoilder()
+            && isUptrenMoveAgg && this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -243,8 +251,10 @@ method.check = function(candle) {
         return this.advice('long');
 
     } else if( this.open_order
-                && ( (predictPercent < 0)
-                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent))
+                && ( //predictPercent < 0 ||
+                    !isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0
+                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                )
             //&& (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
             //&& ((predictPercent < 0 || profitPercent > 1.3))
             //actual profit is dropping
@@ -285,11 +295,22 @@ method.buyHoursDiff = function(candle) {
     return a.diff(b,'hours');
 }
 
-
 method.getCurrentProfitPercent = function(candle) {
     if(this.price == 0)
         return 0;
     return ((candle.close - this.price)/this.price)*100;
+}
+
+method.isUptrendMove = function(lookbackInput) {
+    return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
+}
+
+method.isUptrendMoveAvg = function(lookbackInput) {
+    var sum=0;
+    for(var i=0;i<lookbackInput.length-1;i++) {
+        sum+=lookbackInput[i];
+    }
+    return lookbackInput[lookbackInput.length-1] > (sum/(lookbackInput.length-1))
 }
 
 method.getLookbackInput = function(lookbackData) {
@@ -297,14 +318,18 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(this.getOutput(lookbackData[i]));
+        lookbackInput.push(this.getNorm(lookbackData[i].close));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
 }
 
 method.getOutput = function(candle) {
-    return round(candle.close * this.normalizer, this.roundPoint);
+    return this.getNorm(candle.close)
+}
+
+method.getNorm = function(val) {
+    return round(val * this.normalizer, this.roundPoint);
 }
 
 method.computeTrainingErrorRage= function(trainingData) {

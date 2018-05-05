@@ -244,20 +244,12 @@ method.check = function(candle) {
     }
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
-    //log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
-
-
-
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
     var predictNorm = this.getNorm(predictValue);
 
-    //log.info("predict value: "+predictValue);
-    // % change in current close and predicted close
     var closeNorm = this.getNorm(candle.close);
     var predictPercent = ((predictNorm-closeNorm)/closeNorm)*100;
-    //log.info("Predict%: "+predictPercent);
-    //var predictPercent = predictValue;
     var profitPercent = this.getCurrentProfitPercent(candle);
 
     var isUptrendMove = this.isUptrendMove(this.lookbackCheckInput);
