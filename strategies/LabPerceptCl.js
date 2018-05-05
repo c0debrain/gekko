@@ -44,7 +44,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 6;//this.settings.lookback_period;
+    this.lookbackIndex = 48;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -245,24 +245,34 @@ method.check = function(candle) {
 
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
     //log.info("Checking for lookback size: "+this.lookbackCheckInput.length);
-    //log.info(this.lookbackCheckInput);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
+    var predictNorm = this.getNorm(predictValue);
+
     //log.info("predict value: "+predictValue);
     // % change in current close and predicted close
-    var normalizedClose = candle.close * this.normalizer;
-    var predictPercent = ((predictValue-normalizedClose)/normalizedClose)*100;
+    var closeNorm = this.getNorm(candle.close);
+    var predictPercent = ((predictNorm-closeNorm)/closeNorm)*100;
     //log.info("Predict%: "+predictPercent);
     //var predictPercent = predictValue;
-
     var profitPercent = this.getCurrentProfitPercent(candle);
+
+    log.info("input:"+this.lookbackCheckInput);
+    log.info("close: "+candle.close);
+    log.info("close norm: "+closeNorm);
+
+    log.info("predict: "+predictValue);
+    log.info("predict norm: "+predictNorm);
+
+
 
     if(!this.trained){
         return this.advice();
     }
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1 && this.isWhiteSoilders(2)
+        !this.open_order  && !this.locked && predictPercent > 3
+            //&& this.isWhiteSoilders(3)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -342,10 +352,18 @@ method.getLookbackInput = function(lookbackData) {
     for(var i=0;i<lookbackData.length;i++) {
         //lookbackInput.push(lookbackData[i].open * this.normalizer);
         //lookbackInput.push(lookbackData[i].high * this.normalizer);
-        lookbackInput.push(round(lookbackData[i].close * this.normalizer,this.roundPoint));
+        lookbackInput.push(this.getNorm(lookbackData[i].close));
         //lookbackInput.push(lookbackData[i].close * this.normalizer);
     }
     return lookbackInput;
+}
+
+method.getOutput = function(candle) {
+    return this.getNorm(candle.close)
+}
+
+method.getNorm = function(val) {
+    return round(val * this.normalizer, this.roundPoint);
 }
 
 method.isBullish = function(candles) {
@@ -382,9 +400,7 @@ method.readFromFile = function(filePath) {
     return JSON.parse(data);
 }
 
-method.getOutput = function(candle) {
-    return round(candle.close * this.normalizer, this.roundPoint);
-}
+
 
 function round(value, decimals) {
     return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
