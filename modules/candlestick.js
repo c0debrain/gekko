@@ -28,6 +28,10 @@ function isBullish(candlestick) {
     return candlestick.open < candlestick.close;
 }
 
+function isBullishHammerLike(candlestick) {
+    return isBullish(candlestick) && tailLen(candlestick) > wickLen(candlestick);
+}
+
 function isBearish(candlestick) {
     return candlestick.open > candlestick.close;
 }
@@ -240,9 +244,10 @@ function bearishKicker(dataArray) {
     return findPattern(dataArray, isBearishKicker);
 }
 
-module.exports.isBearish = isBearish
-module.exports.isBullish = isBullish
+module.exports.isBearish = isBearish;
+module.exports.isBullish = isBullish;
 
+module.exports.isBullishHammerLike = isBullishHammerLike;
 module.exports.isHammerLike = isHammerLike;
 module.exports.isHammerLikeFuzzy = isHammerLikeFuzzy;
 module.exports.isHammerLikeAlt = isHammerLikeAlt;

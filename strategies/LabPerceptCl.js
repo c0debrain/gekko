@@ -276,7 +276,8 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrenMoveAgg && this.isWhiteSoilders(2)
+            && isUptrenMoveAgg && cs.isBullishHammerLike(candle)
+            //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
