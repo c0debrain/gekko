@@ -13,15 +13,15 @@ tradeutil.getPercent = function(p1, p2) {
 }
 
 tradeutil.isUptrendMove = function(lookbackInput) {
-    return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
+    return lookbackInput[lookbackInput.length-2] > lookbackInput[0];
 }
 
 tradeutil.isUptrendMoveAvg = function(lookbackInput) {
     var sum=0;
-    for(var i=0;i<lookbackInput.length-1;i++) {
+    for(var i=0;i<lookbackInput.length-2;i++) {
         sum+=lookbackInput[i];
     }
-    return lookbackInput[lookbackInput.length-1] > (sum/(lookbackInput.length-1))
+    return lookbackInput[lookbackInput.length-1] > (sum/(lookbackInput.length-2))
 }
 
 tradeutil.getLookbackInput = function(lookbackData) {
