@@ -93,7 +93,7 @@ method.init = function() {
         //dropout: 0.5,
         //clear: true,
         log: 0,
-        shuffle:true,
+        shuffle:false,
         iterations: 80000,
         error: 0.0000000003,
         rate: 0.01,
