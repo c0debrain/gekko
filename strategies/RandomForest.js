@@ -45,7 +45,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 12;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -94,9 +94,9 @@ method.init = function() {
 
     this.rfOptions = {
         seed: 4,
-        maxFeatures: 10,
-        replacement: false,
-        nEstimators: 200
+        maxFeatures: 20,
+        replacement: true,
+        nEstimators: 500
     };
 
     log.info("**************************************");
@@ -237,7 +237,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrenMoveAgg && this.isWhiteSoilders(2)
+            //&& isUptrenMoveAgg //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -252,8 +252,9 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                    !isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0
-                    || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                    profitPercent > 2
+                    //!isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0
+                    //|| (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                 )
             //&& (predictPercent < -this.pricePredictPercent && profitPercent > this.pastProfitPercent)
             //&& ((predictPercent < 0 || profitPercent > 1.3))
