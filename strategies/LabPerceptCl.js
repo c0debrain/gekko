@@ -189,7 +189,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/3) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/4) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
@@ -243,6 +243,11 @@ method.check = function(candle) {
         this.lookbackCheckData.shift();
     }
 
+    //training failed return!
+    if(!this.trained){
+        return this.advice();
+    }
+
     this.lookbackCheckInput = this.getLookbackInput(this.lookbackCheckData);
 
     var predictValue = this.network.activate(this.lookbackCheckInput);
@@ -269,10 +274,6 @@ method.check = function(candle) {
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit%: "+profitPercent);
 
-    if(!this.trained){
-        return this.advice();
-    }
-
     if(
         !this.open_order  && !this.locked && predictPercent > 1
             && isUptrenMoveAgg && this.isWhiteSoilders(2)
@@ -290,8 +291,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMove && profitPercent < this.pastProfitPercent && profitPercent > 0
-                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                        !isUptrenMoveAgg && profitPercent < this.pastProfitPercent //&& profitPercent > 0
+                        //|| (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
