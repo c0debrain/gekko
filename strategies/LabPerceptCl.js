@@ -96,13 +96,13 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.000000005,
+        error: 0.00000000005,
         rate: 0.01,
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,6, 1
+            1*this.lookbackIndex,4,1
         );
     };
 
