@@ -258,6 +258,7 @@ method.check = function(candle) {
     var isUptrendMove = tu.isUptrendMove(this.lookbackCheckInput);
     var isUptrendMoveAvg = tu.isUptrendMoveAvg(this.lookbackCheckInput);
     var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
+    var isDownTrend = tu.isDownTrend(this.lookbackCheckInput);
 
     // timeseries processing
 
@@ -307,7 +308,7 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMove && profitPercent < this.pastProfitPercent
+                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
                         || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))

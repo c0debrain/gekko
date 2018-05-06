@@ -16,6 +16,10 @@ tradeutil.isUptrendMove = function(lookbackInput) {
     return lookbackInput[lookbackInput.length-2] > lookbackInput[0];
 }
 
+tradeutil.isDownTrend = function(lookbackInput) {
+    return lookbackInput[lookbackInput.length] < lookbackInput[lookbackInput.length-4];
+}
+
 tradeutil.isUptrendMoveAvg = function(lookbackInput) {
     var sum=0;
     for(var i=0;i<lookbackInput.length-2;i++) {
