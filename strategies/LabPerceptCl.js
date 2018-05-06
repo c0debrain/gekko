@@ -270,7 +270,7 @@ method.check = function(candle) {
     var stdev = t.stdev();
 
     log.info("input:"+this.lookbackCheckInput);
-    log.info("chart url: "+chart_url);
+    //log.info("chart url: "+chart_url);
 
     log.info("close: "+candle.close);
     log.info("close norm: "+closeNorm);
@@ -290,7 +290,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg && cs.isBullish(candle) && stdev > 0 && stdev < 1
+            && isUptrendMoveAgg && cs.isBullish(candle)
             //&& cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
