@@ -91,6 +91,8 @@ method.init = function() {
 
     this.trainCount = 0;
 
+    this.buySig = 0;
+
     this.perceptOptions = {
         //dropout: 0.5,
         clear: true,
@@ -103,7 +105,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,6, 1
+            1*this.lookbackIndex,4, 1
         );
     };
 
@@ -182,7 +184,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/3) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/4) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
@@ -291,8 +293,8 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg && cs.isBullish(candle)
-            //&& cs.isBullishHammerLike(candle)
+            && isUptrendMoveAgg //&& cs.isBullish(candle)
+            && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -302,9 +304,17 @@ method.check = function(candle) {
         this.price = candle.close;
         this.pricePredictPercent = predictPercent;
         this.pastProfitPercent = profitPercent;
-        this.open_order = true;
+
         this.buyDate = candle.start;
-        return this.advice('long');
+        this.buySig++;
+
+        if(this.buySig==2) {
+            this.buySig=0;
+            this.open_order = true;
+            return this.advice('long');
+        } else {
+            return this.advice();
+        }
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
