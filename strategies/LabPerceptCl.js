@@ -7,6 +7,7 @@ const log = require('../core/log.js');
 
 const cs = require('../modules/candlestick.js');
 const tu = require('../modules/tradeutil.js');
+const ts = require("timeseries-analysis");
 
 
 /* Candle information
@@ -258,14 +259,27 @@ method.check = function(candle) {
     var isUptrendMoveAvg = tu.isUptrendMoveAvg(this.lookbackCheckInput);
     var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
 
+    // timeseries processing
+
+    // Data out of MongoDB:
+    var data = this.lookbackCheckInput
+    // Load the data
+    var t = new ts.main(ts.adapter.fromArray(data));
+    var chart_url = t.ma({period: 24}).chart();
+
+    var stdev = t.stdev();
 
     log.info("input:"+this.lookbackCheckInput);
+    log.info("chart url: "+chart_url);
+
     log.info("close: "+candle.close);
     log.info("close norm: "+closeNorm);
 
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
+
+    log.info("STD: "+ stdev);
 
     log.info("isUptrend: "+isUptrendMove);
     log.info("isUptrendAvg: "+isUptrendMoveAvg);
@@ -276,7 +290,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg && cs.isBullish(candle)
+            && isUptrendMoveAgg && cs.isBullish(candle) && stdev > 0 && stdev < 1
             //&& cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
