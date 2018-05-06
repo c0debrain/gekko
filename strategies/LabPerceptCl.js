@@ -96,7 +96,7 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.000000003,
+        error: 0.000000005,
         rate: 0.01,
     };
 
@@ -253,7 +253,7 @@ method.check = function(candle) {
 
     var isUptrendMove = tu.isUptrendMove(this.lookbackCheckInput);
     var isUptrendMoveAvg = tu.isUptrendMoveAvg(this.lookbackCheckInput);
-    var isUptrenMoveAgg = isUptrendMove && isUptrendMoveAvg;
+    var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
 
 
     log.info("input:"+this.lookbackCheckInput);
@@ -266,14 +266,14 @@ method.check = function(candle) {
 
     log.info("isUptrend: "+isUptrendMove);
     log.info("isUptrendAvg: "+isUptrendMoveAvg);
-    log.info("isUptreadAgg: "+isUptrenMoveAgg);
+    log.info("isUptreadAgg: "+isUptrendMoveAgg);
 
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit%: "+profitPercent);
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrenMoveAgg && cs.isBullishHammerLike(candle)
+            && isUptrendMoveAgg && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
