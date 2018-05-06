@@ -96,13 +96,13 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.0000000005,
+        error: 0.0000000003,
         rate: 0.01,
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,4,1
+            1*this.lookbackIndex,6, 1
         );
     };
 
@@ -181,7 +181,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/4) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/3) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
@@ -293,8 +293,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
-                        //|| (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                        !isUptrendMove && profitPercent < this.pastProfitPercent
+                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
