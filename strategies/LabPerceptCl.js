@@ -161,8 +161,6 @@ method.update = function(candle) {
 
     var myObj = {};
     myObj['input'] = tu.getLookbackInput(this.lookbackData);
-
-
     myObj['output'] = [tu.getOutput(candle)];
 
     //remember this candel for next time
@@ -243,10 +241,9 @@ method.check = function(candle) {
     }
 
     this.lookbackCheckInput = tu.getLookbackInput(this.lookbackCheckData);
-
     var predictValue = this.network.activate(this.lookbackCheckInput);
-    var predictNorm = tu.getNorm(predictValue);
 
+    var predictNorm = tu.getNorm(predictValue);
     var closeNorm = tu.getNorm(candle.close);
     var predictPercent = tu.getPercent(predictNorm,closeNorm);//((predictNorm-closeNorm)/closeNorm)*100;
     var profitPercent = this.getCurrentProfitPercent(candle);
@@ -330,13 +327,6 @@ method.check = function(candle) {
     this.pastProfitPercent = profitPercent;
     return this.advice();
 }
-
-
-
-method.isWhiteSoilders = function(size) {
-    return this.isBullish(this.lookbackCheckData.slice(this.lookbackIndex-size,this.lookbackIndex))
-}
-
 
 method.getCurrentProfitPercent = function(candle) {
     if(this.price == 0)

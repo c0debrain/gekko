@@ -98,17 +98,17 @@ function findPattern(dataArray, callback) {
     const upperBound = (dataArray.length - callback.length) + 1;
     const matches = [];
 
-    for (let i = 0; i < upperBound; i++) {
+    for (var i = 0; i < upperBound; i++) {
         const args = [];
 
         // Read the leftmost j values at position i in array.
         // The j values are callback arguments.
-        for (let j = 0; j < callback.length; j++) {
+        for (var j = 0; j < callback.length; j++) {
             args.push(dataArray[i + j]);
         }
 
         // Destructure args and find matches.
-        if (callback(...args)) {
+        if (callback(args)) {
             matches.push(args[1]);
         }
     }
