@@ -318,7 +318,7 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMoveAgg && profitPercent < this.pastProfitPercent
+                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
                         || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
