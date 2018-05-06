@@ -195,7 +195,12 @@ method.update = function(candle) {
         //log.info("Training error range: "+errorRange);
 
         //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
+
         this.network = this.getPerceptron();
+
+        //this.network = new neataptic.architect.LSTM(4,16,1);
+        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
+        //this.network = new neataptic.architect.NARX(1*this.lookbackIndex,4, 1, 10, 10);
 
         //evolve
         // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
@@ -204,6 +209,7 @@ method.update = function(candle) {
 
         //perceptron
         var result = this.network.train(this.trainingData, this.perceptOptions);
+
         log.info("Training done with iteration: "+result.iterations);
         this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
@@ -270,7 +276,8 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg && cs.isBullishHammerLike(candle)
+            && isUptrendMoveAgg && cs.isBullish(candle)
+            //&& cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
@@ -286,8 +293,8 @@ method.check = function(candle) {
 
     } else if( this.open_order
                 && ( //predictPercent < 0 ||
-                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent //&& profitPercent > 0
-                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
+                        //|| (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
             //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
               //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
