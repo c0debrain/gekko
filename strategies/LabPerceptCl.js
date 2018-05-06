@@ -96,7 +96,7 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.00000000005,
+        error: 0.0000000005,
         rate: 0.01,
     };
 
