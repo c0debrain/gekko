@@ -99,7 +99,7 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.000000003,
+        error: 0.000000006,
         rate: 0.01,
     };
 
@@ -244,8 +244,19 @@ method.check = function(candle) {
         this.lookbackCheckData.shift();
     }
 
+    var profitPercent = this.getCurrentProfitPercent(candle);
+
     //training failed return!
-    if(!this.trained){
+    if(!this.trained && this.open_order && profitPercent > 1){
+        this.open_order = false;
+        log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
+        log.info("<< Candle date: "+tu.getDate(candle));
+        this.totalProfit+=profitPercent;
+        this.price=0;
+        return this.advice('short');
+    }
+
+    if(!this.trained) {
         return this.advice();
     }
 
@@ -255,7 +266,7 @@ method.check = function(candle) {
     var predictNorm = tu.getNorm(predictValue);
     var closeNorm = tu.getNorm(candle.close);
     var predictPercent = tu.getPercent(predictNorm,closeNorm);//((predictNorm-closeNorm)/closeNorm)*100;
-    var profitPercent = this.getCurrentProfitPercent(candle);
+
 
     var isUptrendMove = tu.isUptrendMove(this.lookbackCheckInput);
     var isUptrendMoveAvg = tu.isUptrendMoveAvg(this.lookbackCheckInput);
