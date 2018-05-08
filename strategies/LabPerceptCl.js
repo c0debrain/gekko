@@ -94,12 +94,12 @@ method.init = function() {
     this.buySig = 0;
 
     this.perceptOptions = {
-        //dropout: 0.5,
+        dropout: 0.5,
         clear: true,
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.000000006,
+        error: 0.0000006,
         rate: 0.01,
     };
 
@@ -319,7 +319,7 @@ method.check = function(candle) {
         this.buyDate = candle.start;
         this.buySig++;
 
-        if(this.buySig==3) {
+        if(this.buySig==4) {
             this.buySig=0;
             this.open_order = true;
             return this.advice('long');
