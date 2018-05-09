@@ -319,7 +319,7 @@ method.check = function(candle) {
         this.buyDate = candle.start;
         this.buySig++;
 
-        if(this.buySig==4) {
+        if(this.buySig==3) {
             this.buySig=0;
             this.open_order = true;
             return this.advice('long');
