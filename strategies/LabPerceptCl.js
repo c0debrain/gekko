@@ -39,6 +39,7 @@ method.init = function() {
 
     this.weightFileName = "weights/boot-perceptcl-ethtrx.json";
     this.trainDataFileName = "weights/train-boot-data-ethxrp.json";
+    this.trainDataLookbackFileName = "weights/train-lookback-boot-data-ethxrp.json";
     this.predictDataFileName = "weights/predict-boot-data-ethxrp.json";
 
     //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
@@ -64,7 +65,8 @@ method.init = function() {
 
     this.name = '007';
     this.upCounter = 0;
-    this.requiredHistory = 84;//config.tradingAdvisor.historySize;
+    this.requiredHistory = config.tradingAdvisor.historySize;
+    this.trainPeriod = 12;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -134,10 +136,10 @@ method.init = function() {
       this.network = neataptic.Network.fromJSON(this.weights);
 
       log.info("init train and predict data");
+
+      this.lookbackData = tu.readJsonFromFile(this.trainDataLookbackFileName);
       this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
       this.lookbackCheckData = tu.readJsonFromFile(this.predictDataFileName);
-
-
 
     } else {
       // preprate neural network
@@ -163,6 +165,7 @@ method.update = function(candle) {
     //}
 
     //prepare input for training
+    log.info("start update: "+tu.getDate(candle));
 
     if(!tu.isValidCandle(candle)) {
         return;
@@ -197,7 +200,7 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.requiredHistory/4) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.trainPeriod) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
@@ -242,6 +245,7 @@ method.update = function(candle) {
         this.trained = true;
     }
 
+    tu.writeJsonToFile(this.lookbackCheckInput,this.trainDataLookbackFileName);
     tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
     tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
 
@@ -251,13 +255,17 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
+    log.info("start check: "+tu.getDate(candle));
+
     this.lookbackCheckData.push(candle);
 
     if (this.trainingData.length < this.requiredHistory  && this.weights==null) {
+        log.info("return check1");
         return this.advice();
     }
 
     if(this.lookbackCheckData.length < this.lookbackIndex && this.weights==null) {
+        log.info("return check2");
         return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex) {
         this.lookbackCheckData.shift();
@@ -276,6 +284,7 @@ method.check = function(candle) {
     }
 
     if(!this.trained) {
+        log.info("return check3");
         return this.advice();
     }
 
