@@ -61,18 +61,23 @@ tradeutil.isValidCandle = function(candle) {
     candle.high == candle.low);
 }
 
-tradeutil.writeToFile = function() {
-    const exported = this.network.toJSON();
+tradeutil.writeJsonToFile = function(exported, weightFileName) {
+    //const exported = network.toJSON();
     const content = JSON.stringify(exported);
-    fs.writeFile(this.weightFileName, content, function(err, data){
+    fs.writeFile(weightFileName, content, function(err, data){
         if (err) console.log(err);
         log.info("Successfully Written to File.");
     });
 }
 
-tradeutil.readFromFile = function(filePath) {
-    var data = fs.readFileSync(filePath,'utf8');
-    return JSON.parse(data);
+tradeutil.readJsonFromFile = function(filePath) {
+    try {
+        var data = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(data);
+    } catch(err) {
+        log.warn("No file found");
+        return null;
+    }
 }
 
 module.exports = tradeutil;

@@ -36,7 +36,11 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
-    this.weightFileName = "weights/lookbackPercept-ethtrx-lab.json";
+
+    this.weightFileName = "weights/boot-perceptcl-ethtrx.json";
+    this.trainDataFileName = "weights/train-boot-data-ethxrp.json";
+    this.predictDataFileName = "weights/predict-boot-data-ethxrp.json";
+
     //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
     //this.weightFileName = "weights/lookbackPercept-ethtrx-3-2400-2-10-10p.json";
     //this.weightFileName = "weights/lookbackPercept-ethxrp.json";
@@ -60,7 +64,7 @@ method.init = function() {
 
     this.name = '007';
     this.upCounter = 0;
-    this.requiredHistory = config.tradingAdvisor.historySize;
+    this.requiredHistory = 84;//config.tradingAdvisor.historySize;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -76,8 +80,8 @@ method.init = function() {
     this.locked = false;
 
     this.network=null;
-    //NOTE: comment out to train and save
-    //this.weights = this.readFromFile(this.weightFileName);
+
+
 
     //use to train
     this.lookbackData = [];
@@ -120,11 +124,20 @@ method.init = function() {
         mutationRate: 0.001
     };
 
+    //NOTE: comment out to train and save
+    this.weights = tu.readJsonFromFile(this.weightFileName);
+
     log.info("**************************************");
     if(this.weights!=null) {
 
       log.info("***** Creating network from file *****");
       this.network = neataptic.Network.fromJSON(this.weights);
+
+      log.info("init train and predict data");
+      this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
+      this.lookbackCheckData = tu.readJsonFromFile(this.predictDataFileName);
+
+
 
     } else {
       // preprate neural network
@@ -223,8 +236,14 @@ method.update = function(candle) {
         //})();
 
         //log.info("Done training .. writing weights to file:");
-        //this.writeToFile();
+        tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
+    } else {
+        //we loaded network from file
+        this.trained = true;
     }
+
+    tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
+    tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
 
 }
 
@@ -238,7 +257,7 @@ method.check = function(candle) {
         return this.advice();
     }
 
-    if(this.lookbackCheckData.length < this.lookbackIndex) {
+    if(this.lookbackCheckData.length < this.lookbackIndex && this.weights==null) {
         return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex) {
         this.lookbackCheckData.shift();
@@ -276,7 +295,7 @@ method.check = function(candle) {
     // timeseries processing
 
     // Data out of MongoDB:
-    var data = this.lookbackCheckInput
+    var data = this.lookbackCheckInput;
     // Load the data
     var t = new ts.main(ts.adapter.fromArray(data));
     var chart_url = t.ma({period: 24}).chart();
