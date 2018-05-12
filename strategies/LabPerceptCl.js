@@ -60,6 +60,7 @@ method.init = function() {
     this.roundPoint = 10;
 
     this.weights = null;
+    this.trainSave = false;
 
     this.normalizer = 1;
 
@@ -130,7 +131,7 @@ method.init = function() {
     this.weights = tu.readJsonFromFile(this.weightFileName);
 
     log.info("**************************************");
-    if(this.weights!=null) {
+    if(this.weights!=null && this.trainSave) {
 
       log.info("***** Creating network from file *****");
       this.network = neataptic.Network.fromJSON(this.weights);
@@ -239,15 +240,19 @@ method.update = function(candle) {
         //})();
 
         //log.info("Done training .. writing weights to file:");
-        tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
+        if(this.trainSave) {
+            tu.writeJsonToFile(this.network.toJSON(), this.weightFileName);
+        }
     } else {
         //we loaded network from file
         this.trained = true;
     }
 
-    tu.writeJsonToFile(this.lookbackCheckInput,this.trainDataLookbackFileName);
-    tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
-    tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
+    if(this.trainSave) {
+        tu.writeJsonToFile(this.lookbackCheckInput, this.trainDataLookbackFileName);
+        tu.writeJsonToFile(this.trainingData, this.trainDataFileName);
+        tu.writeJsonToFile(this.lookbackCheckData, this.predictDataFileName);
+    }
 
 }
 

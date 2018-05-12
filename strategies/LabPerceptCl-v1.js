@@ -51,7 +51,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 20;//this.settings.lookback_period;
+    this.lookbackIndex = 30;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -66,7 +66,7 @@ method.init = function() {
     this.name = '007';
     this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = 12;
+    this.trainPeriod = this.requiredHistory/1;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -105,8 +105,8 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.000000006,
-        rate: 0.01,
+        error: 0.00000001,
+        rate: 0.03,
     };
 
     this.getPerceptron = function() {
@@ -350,7 +350,7 @@ method.check = function(candle) {
         this.buyDate = candle.start;
         this.buySig++;
 
-        if(this.buySig==6) {
+        if(this.buySig==3) {
             this.buySig=0;
             this.open_order = true;
             return this.advice('long');
