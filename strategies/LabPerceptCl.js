@@ -243,7 +243,7 @@ method.update = function(candle) {
         if(this.trainSave) {
             tu.writeJsonToFile(this.network.toJSON(), this.weightFileName);
         }
-    } else {
+    } else if(this.trainSave){
         //we loaded network from file
         this.trained = true;
     }
