@@ -67,7 +67,7 @@ method.init = function() {
     this.name = '007';
     this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = 12;
+    this.trainPeriod = this.requiredHistory/6;
 
     log.info("minimum history: "+this.requiredHistory);
 
