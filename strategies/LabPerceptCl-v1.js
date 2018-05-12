@@ -51,7 +51,7 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 30;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
@@ -60,13 +60,14 @@ method.init = function() {
     this.roundPoint = 10;
 
     this.weights = null;
+    this.trainSave = false;
 
     this.normalizer = 1;
 
     this.name = '007';
     this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = this.requiredHistory/1;
+    this.trainPeriod = 12;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -105,8 +106,8 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.00000001,
-        rate: 0.03,
+        error: 0.0000006,
+        rate: 0.01,
     };
 
     this.getPerceptron = function() {
@@ -127,10 +128,10 @@ method.init = function() {
     };
 
     //NOTE: comment out to train and save
-    //this.weights = tu.readJsonFromFile(this.weightFileName);
+    this.weights = tu.readJsonFromFile(this.weightFileName);
 
     log.info("**************************************");
-    if(this.weights!=null) {
+    if(this.weights!=null && this.trainSave) {
 
       log.info("***** Creating network from file *****");
       this.network = neataptic.Network.fromJSON(this.weights);
@@ -239,13 +240,15 @@ method.update = function(candle) {
         //})();
 
         //log.info("Done training .. writing weights to file:");
-        //tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
-    } else {
+        if(this.trainSave) {
+            tu.writeJsonToFile(this.network.toJSON(), this.weightFileName);
+        }
+    } else if(this.trainSave){
         //we loaded network from file
         this.trained = true;
     }
 
-    if(this.weights != null) {
+    if(this.trainSave) {
         tu.writeJsonToFile(this.lookbackCheckInput, this.trainDataLookbackFileName);
         tu.writeJsonToFile(this.trainingData, this.trainDataFileName);
         tu.writeJsonToFile(this.lookbackCheckData, this.predictDataFileName);
@@ -331,7 +334,6 @@ method.check = function(candle) {
 
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit%: "+profitPercent);
-    log.info("Total Profit%: "+this.totalProfit);
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
