@@ -70,7 +70,8 @@ method.init = function() {
         shuffle:false,
         iterations: 100000,
         error: 0.00004,
-        rate: 0.00004,
+        rate: 0.000001,
+        momentum: 0.9
     };
 
     this.getPerceptron = function() {
