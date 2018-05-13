@@ -9,29 +9,6 @@ const cs = require('../modules/candlestick.js');
 const tu = require('../modules/tradeutil.js');
 const ts = require("timeseries-analysis");
 
-
-/* Candle information
- { id: 103956,
- start: moment("2018-02-04T00:00:00.000"),
- open: 9080.49,
- high: 9218.98,
- low: 9022,
- close: 9199.96,
- vwp: 9097.252446880359,
- volume: 802.5146890000001,
- trades: 8086 }
- */
-
-//performance data
-//4,3,1
-//2017-12-16 00:51
-
-//11 min, 200, 338%
-//13 min, 200, 329%;
-
-//3min, 1000, 369%, 146trades
-
-// let's create our own method
 var method = {};
 
 // prepare everything our method needs
@@ -41,19 +18,6 @@ method.init = function() {
     this.trainDataFileName = "weights/train-boot-data-ethxrp.json";
     this.trainDataLookbackFileName = "weights/train-lookback-boot-data-ethxrp.json";
     this.predictDataFileName = "weights/predict-boot-data-ethxrp.json";
-
-    //this.weightFileName = "weights/lookbackPercept-ethtrx-1-1-3-2500-2-10-12p.json";
-    //this.weightFileName = "weights/lookbackPercept-ethtrx-3-2400-2-10-10p.json";
-    //this.weightFileName = "weights/lookbackPercept-ethxrp.json";
-    //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
-    //this.weightFileName = "weights/staticPercept.json";
-    //this.weightFileName = "weights/staticPercept-11-200-338p.json";
-    //this.weightFileName = "weights/staticPercept-3-400-392p.json";
-
-    //log.debug(this.settings.weight_file);
-
-    //log.debug(this.tradingAdvisor);
-    //log.debug(config);
 
     this.lockSell = false;
     this.trainSave = false;
