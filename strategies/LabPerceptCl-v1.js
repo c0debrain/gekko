@@ -51,25 +51,16 @@ method.init = function() {
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
 
     //log.debug(this.settings.weight_file);
-    this.lookbackIndex = 24;//this.settings.lookback_period;
+
     //log.debug(this.tradingAdvisor);
     //log.debug(config);
 
     this.lockSell = false;
-
-    this.roundPoint = 10;
-
-    this.weights = null;
     this.trainSave = false;
-
-    this.normalizer = 1;
+    this.weights = null;
 
     this.name = '007';
     this.upCounter = 0;
-    this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = this.requiredHistory/6;
-
-    log.info("minimum history: "+this.requiredHistory);
 
     this.trainGap=0;
     this.trained = false;
@@ -83,8 +74,6 @@ method.init = function() {
     this.locked = false;
 
     this.network=null;
-
-
 
     //use to train
     this.lookbackData = [];
@@ -100,19 +89,29 @@ method.init = function() {
 
     this.buySig = 0;
 
+
+    this.lookbackIndex = 24;//this.settings.lookback_period;
+    this.requiredHistory = config.tradingAdvisor.historySize;
+    this.trainPeriod = this.requiredHistory/100;
+
+    log.info("minimum history: "+this.requiredHistory);
+
+    tu.normalizer = 100;
+    tu.roundPoint = 7;
+
     this.perceptOptions = {
         dropout: 0.5,
         clear: true,
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.00000003,
+        error: 0.00004,
         rate: 0.001,
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,4, 1
+            1*this.lookbackIndex,1,1
         );
     };
 
@@ -296,7 +295,7 @@ method.check = function(candle) {
     this.lookbackCheckInput = tu.getLookbackInput(this.lookbackCheckData);
     var predictValue = this.network.activate(this.lookbackCheckInput);
 
-    var predictNorm = tu.getNorm(predictValue);
+    var predictNorm = tu.getNormRound(predictValue);
     var closeNorm = tu.getNorm(candle.close);
     var predictPercent = tu.getPercent(predictNorm,closeNorm);//((predictNorm-closeNorm)/closeNorm)*100;
 

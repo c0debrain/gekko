@@ -5,7 +5,7 @@ const log = require('../core/log.js');
 
 var tradeutil={
     normalizer:1,
-    roundPoint:10
+    roundPoint:7
 };
 
 tradeutil.getPercent = function(p1, p2) {
@@ -45,6 +45,10 @@ tradeutil.getOutput = function(candle) {
 
 tradeutil.getNorm = function(val) {
     return this.round(val * this.normalizer, this.roundPoint);
+}
+
+tradeutil.getNormRound = function(val) {
+    return this.round(val,this.roundPoint);
 }
 
 tradeutil.round = function(value, decimals) {
