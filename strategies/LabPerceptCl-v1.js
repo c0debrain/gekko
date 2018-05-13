@@ -64,14 +64,14 @@ method.init = function() {
     tu.roundPoint = 7;
 
     this.perceptOptions = {
-        dropout: 0.5,
         clear: true,
         log: 20000,
         shuffle:false,
         iterations: 100000,
-        error: 0.00004,
-        rate: 0.000001,
-        momentum: 0.9
+        error: 0.00003,
+        rate: 0.00001,
+        momentum: 0.9,
+        batchSize:  this.requiredHistory
     };
 
     this.getPerceptron = function() {
