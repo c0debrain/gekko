@@ -56,7 +56,7 @@ method.init = function() {
 
     this.lookbackIndex = 27;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = this.requiredHistory/4;
+    this.trainPeriod = this.requiredHistory/300;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -271,17 +271,14 @@ method.check = function(candle) {
     var isDownTrend = tu.isDownTrend(this.lookbackCheckInput);
 
     // timeseries processing
-
-    // Data out of MongoDB:
-    var data = this.lookbackCheckInput;
+    //var data = this.lookbackCheckInput;
     // Load the data
-    var t = new ts.main(ts.adapter.fromArray(data));
-    var chart_url = t.ma({period: 24}).chart();
-
-    var stdev = t.stdev();
+    //var t = new ts.main(ts.adapter.fromArray(data));
+    //var chart_url = t.ma({period: 24}).chart();
+    //var stdev = t.stdev();
+    //log.info("chart url: "+chart_url);
 
     log.info("input:"+this.lookbackCheckInput);
-    //log.info("chart url: "+chart_url);
 
     log.info("close: "+candle.close);
     log.info("close norm: "+closeNorm);
@@ -290,7 +287,7 @@ method.check = function(candle) {
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
 
-    log.info("STD: "+ stdev);
+    //log.info("STD: "+ stdev);
 
     log.info("isUptrend: "+isUptrendMove);
     log.info("isUptrendAvg: "+isUptrendMoveAvg);
@@ -298,6 +295,7 @@ method.check = function(candle) {
 
     log.info("past profit%: "+this.pastProfitPercent);
     log.info("profit%: "+profitPercent);
+    log.info("Total Profit%: "+this.totalProfit);
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
