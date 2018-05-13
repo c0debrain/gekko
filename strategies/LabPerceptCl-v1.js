@@ -66,11 +66,11 @@ method.init = function() {
     this.perceptOptions = {
         dropout: 0.5,
         clear: true,
-        log: 0,
+        log: 20000,
         shuffle:false,
-        iterations: 80000,
+        iterations: 100000,
         error: 0.00004,
-        rate: 0.001,
+        rate: 0.00004,
     };
 
     this.getPerceptron = function() {
