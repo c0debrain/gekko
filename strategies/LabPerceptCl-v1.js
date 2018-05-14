@@ -14,13 +14,13 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    this.weightFileName = "weights/boot-perceptcl-ethtrx.json";
-    this.trainDataFileName = "weights/train-boot-data-ethxrp.json";
-    this.trainDataLookbackFileName = "weights/train-lookback-boot-data-ethxrp.json";
-    this.predictDataFileName = "weights/predict-boot-data-ethxrp.json";
+    this.weightFileName = "weights/bp/boot-perceptcl-ethtrx.json";
+    this.trainDataFileName = "weights/bp/train-boot-data-ethxrp.json";
+    this.trainDataLookbackFileName = "weights/bp/train-lookback-boot-data-ethxrp.json";
+    this.predictDataFileName = "weights/bp/predict-boot-data-ethxrp.json";
 
     this.lockSell = false;
-    this.trainSave = false;
+    this.trainSave = true;
     this.weights = null;
 
     this.name = '007';
