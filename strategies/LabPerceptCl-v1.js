@@ -54,10 +54,10 @@ method.init = function() {
     this.buySig = 0;
 
     this.shift = true;
-    this.lookbackIndex = 27;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
     this.trainPeriod = this.requiredHistory/4;
-    this.hitCounter = 2;
+    this.hitCounter = 3;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -68,8 +68,8 @@ method.init = function() {
         clear: true,
         log: 20000,
         shuffle:false,
-        iterations: 100000,
-        error: 0.00004,
+        iterations: 500000,
+        error: 0.00005,
         rate: 0.00001,
         momentum: 0.9,
         batchSize:  this.requiredHistory
@@ -77,7 +77,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,2,1
+            1*this.lookbackIndex,3,1
         );
     };
 
