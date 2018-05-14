@@ -20,8 +20,7 @@ method.init = function() {
     this.predictDataFileName = "weights/bp/predict-boot-data-ethxrp.json";
 
     this.lockSell = false;
-    this.trainSave = true;
-    this.weights = null;
+
 
     this.name = '007';
     this.upCounter = 0;
@@ -53,10 +52,13 @@ method.init = function() {
 
     this.buySig = 0;
 
+    this.trainSave = false;
+    this.weights = null;
+
     this.shift = true;
     this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = this.requiredHistory/4;
+    this.trainPeriod = 100;
     this.hitCounter = 5;
 
     log.info("minimum history: "+this.requiredHistory);
