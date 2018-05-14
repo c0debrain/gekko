@@ -77,7 +77,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,3,1
+            1*this.lookbackIndex,2,1
         );
     };
 
