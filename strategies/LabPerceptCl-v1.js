@@ -57,7 +57,7 @@ method.init = function() {
     this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
     this.trainPeriod = this.requiredHistory/4;
-    this.hitCounter = 3;
+    this.hitCounter = 5;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -70,7 +70,7 @@ method.init = function() {
         shuffle:false,
         iterations: 500000,
         error: 0.00005,
-        rate: 0.00001,
+        rate: 0.000008,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -300,7 +300,7 @@ method.check = function(candle) {
     log.info("Total Profit%: "+this.totalProfit);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 1
+        !this.open_order  && !this.locked && predictPercent > 5
             && isUptrendMoveAgg //&& cs.isBullish(candle)
             && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
