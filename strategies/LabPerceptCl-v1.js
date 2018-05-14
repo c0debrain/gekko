@@ -57,6 +57,7 @@ method.init = function() {
     this.lookbackIndex = 27;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
     this.trainPeriod = this.requiredHistory/4;
+    this.hitCounter = 2;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -68,7 +69,7 @@ method.init = function() {
         log: 20000,
         shuffle:false,
         iterations: 100000,
-        error: 0.00003,
+        error: 0.00004,
         rate: 0.00001,
         momentum: 0.9,
         batchSize:  this.requiredHistory
@@ -315,7 +316,7 @@ method.check = function(candle) {
         this.buyDate = candle.start;
         this.buySig++;
 
-        if(this.buySig==3) {
+        if(this.buySig==this.hitCounter) {
             this.buySig=0;
             this.open_order = true;
             return this.advice('long');
