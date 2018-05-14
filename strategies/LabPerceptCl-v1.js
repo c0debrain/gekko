@@ -53,10 +53,10 @@ method.init = function() {
 
     this.buySig = 0;
 
-
+    this.shift = true;
     this.lookbackIndex = 27;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = this.requiredHistory/300;
+    this.trainPeriod = this.requiredHistory/4;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -158,7 +158,7 @@ method.update = function(candle) {
 
     this.trainGap++;
 
-    if(this.trainingData.length > this.requiredHistory) {
+    if(this.trainingData.length > this.requiredHistory && this.shift) {
         this.trainingData.shift();
     }
 
@@ -172,7 +172,7 @@ method.update = function(candle) {
 
         log.info("*************** Training DATA ***************");
         //log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
-        //log.info(this.trainingData);
+        log.info("Train data size: "+this.trainingData.length);
         log.info("Train end: "+tu.getDate(candle));
 
         //var errorRange = this.computeTrainingErrorRage(this.trainingData);
@@ -192,6 +192,7 @@ method.update = function(candle) {
         //log.info(this.trainingData);
 
         //perceptron
+        this.perceptOptions.batchSize = this.trainingData.length;
         var result = this.network.train(this.trainingData, this.perceptOptions);
 
         log.info("Training done with iteration: "+result.iterations);
