@@ -300,7 +300,7 @@ method.check = function(candle) {
     log.info("Total Profit%: "+this.totalProfit);
 
     if(
-        !this.open_order  && !this.locked && predictPercent > 5
+        !this.open_order  && !this.locked && predictPercent > 1
             && isUptrendMoveAgg //&& cs.isBullish(candle)
             && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
