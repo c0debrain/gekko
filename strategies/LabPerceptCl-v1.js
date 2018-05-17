@@ -14,10 +14,10 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    this.weightFileName = "weights/bp/boot-perceptcl-ethtrx.json";
-    this.trainDataFileName = "weights/bp/train-boot-data-ethxrp.json";
-    this.trainDataLookbackFileName = "weights/bp/train-lookback-boot-data-ethxrp.json";
-    this.predictDataFileName = "weights/bp/predict-boot-data-ethxrp.json";
+    this.weightFileName = "weights/bp/boot-perceptcl-weight-ethtrx.json";
+    this.lookbackDataFileName = "weights/bp/boot-lookback-data-ethxrp.json";
+    this.trainDataFileName = "weights/bp/boot-train-data-ethxrp.json";
+    this.lookbackCheckDataFileName = "weights/bp/boot-lookback-check-data-ethxrp.json";
 
     this.lockSell = false;
 
@@ -58,11 +58,7 @@ method.init = function() {
 
     this.shift = true;
     this.lookbackIndex = 24;//this.settings.lookback_period;
-    this.requiredHistory = config.tradingAdvisor.historySize;
-    //set the soft requred history
-    if(this.requiredHistory < 3) {
-        this.requiredHistory = 300;
-    }
+    this.requiredHistory = 300;//config.tradingAdvisor.historySize;
 
     this.trainPeriod = 100;
 
@@ -111,9 +107,9 @@ method.init = function() {
 
       log.info("init train and predict data");
 
-      this.lookbackData = tu.readJsonFromFile(this.trainDataLookbackFileName);
+      this.lookbackData = tu.readJsonFromFile(this.lookbackDataFileName);
       this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
-      this.lookbackCheckData = tu.readJsonFromFile(this.predictDataFileName);
+      this.lookbackCheckData = tu.readJsonFromFile(this.lookbackCheckDataFileName);
 
     } else {
       // preprate neural network
@@ -174,14 +170,12 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory &&
-            (this.trainGap >= this.trainPeriod || this.weights != null)) {
+    if(this.trainingData.length >= this.requiredHistory &&  this.trainGap >= this.trainPeriod) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         log.info("*************** Training DATA ***************");
-        this.weights = null;
         //log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         log.info("Train data size: "+this.trainingData.length);
         log.info("Train end: "+tu.getDate(candle));
@@ -225,9 +219,9 @@ method.update = function(candle) {
     }
 
     if(this.trainSave) {
-        tu.writeJsonToFile(this.lookbackCheckInput, this.trainDataLookbackFileName);
+        tu.writeJsonToFile(this.lookbackData, this.lookbackDataFileName);
         tu.writeJsonToFile(this.trainingData, this.trainDataFileName);
-        tu.writeJsonToFile(this.lookbackCheckData, this.predictDataFileName);
+        tu.writeJsonToFile(this.lookbackCheckData, this.lookbackCheckDataFileName);
     }
 
 }
