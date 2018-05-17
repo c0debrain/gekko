@@ -115,9 +115,6 @@ method.init = function() {
       // preprate neural network
       log.info("*** Training network from scratch ****");
 
-        //this.network = new neataptic.architect.LSTM(4,16,1);
-        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
-        //this.network = new neataptic.architect.NARX(4*this.lookbackIndex, [10,20,10], 1, 10, 10);
     }
     log.info("**************************************");
 }
@@ -127,12 +124,6 @@ method.init = function() {
 
 // what happens on every new candle?
 method.update = function(candle) {
-
-    //have weights no need to train
-    //if(this.weights!=null || this.trainingData.length >= this.requiredHistory) {
-    //if(this.trainingData.length >= this.requiredHistory) {
-      //  return;
-    //}
 
     //prepare input for training
     log.info("start update: "+tu.getDate(candle));
@@ -155,10 +146,6 @@ method.update = function(candle) {
     //remember this candel for next time
     this.lookbackData.push(candle);
 
-    // train the neural network
-    //log.info("pushing training data:");
-    //log.info(this.obj);
-
     this.trainingData.push(myObj);
 
     this.trainGap++;
@@ -167,34 +154,16 @@ method.update = function(candle) {
         this.trainingData.shift();
     }
 
-    //log.info("Pushing train data "+this.trainCounter++);
-    //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory &&  this.trainGap >= this.trainPeriod) {
-    //if(this.trainingData.length >= this.requiredHistory) {
-        //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
-        //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
-
+    if(this.trainingData.length >= this.requiredHistory &&  (
+        this.trainGap >= this.trainPeriod || this.weights != null)) {
+        this.weights = null;
         log.info("*************** Training DATA ***************");
-        //log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         log.info("Train data size: "+this.trainingData.length);
         log.info("Train end: "+tu.getDate(candle));
-
-        //var errorRange = this.computeTrainingErrorRage(this.trainingData);
-        //log.info("Training error range: "+errorRange);
-
-        //log.info("Start: "+this.trainingData[0].start+"End: "+this.trainingData[this.requiredHistory-1].start);
+        log.info("Train Gap: "+this.trainGap);
 
         this.network = this.getPerceptron();
-
-        //this.network = new neataptic.architect.LSTM(4,16,1);
-        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
-        //this.network = new neataptic.architect.NARX(1*this.lookbackIndex,4, 1, 10, 10);
-
-        //evolve
-        // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
-
-        //log.info(this.trainingData);
 
         //perceptron
         this.perceptOptions.batchSize = this.trainingData.length;
@@ -203,13 +172,9 @@ method.update = function(candle) {
         log.info("Training done with iteration: "+result.iterations);
         this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
+        log.info("Trained: "+this.trained);
+        log.info("*************** Training DATA END ***************");
 
-        //evolve
-        //(async ()=>{
-          //  await this.network.evolve(this.trainingData, this.evolveOptions);
-        //})();
-
-        //log.info("Done training .. writing weights to file:");
         if(this.trainSave) {
             tu.writeJsonToFile(this.network.toJSON(), this.weightFileName);
         }
@@ -276,14 +241,6 @@ method.check = function(candle) {
     var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
     var isDownTrend = tu.isDownTrend(this.lookbackCheckInput);
 
-    // timeseries processing
-    //var data = this.lookbackCheckInput;
-    // Load the data
-    //var t = new ts.main(ts.adapter.fromArray(data));
-    //var chart_url = t.ma({period: 24}).chart();
-    //var stdev = t.stdev();
-    //log.info("chart url: "+chart_url);
-
     log.info("input:"+this.lookbackCheckInput);
 
     log.info("close: "+candle.close);
@@ -292,8 +249,6 @@ method.check = function(candle) {
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
     log.info("predict%: "+predictPercent);
-
-    //log.info("STD: "+ stdev);
 
     log.info("isUptrend: "+isUptrendMove);
     log.info("isUptrendAvg: "+isUptrendMoveAvg);
@@ -333,15 +288,6 @@ method.check = function(candle) {
                         !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
                         || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
                     )
-            //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
-              //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
-            //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
-             //&& (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
-                ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
-            //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
-            //|| (predictPercent > profitPercent && profitPercent < -1)
-            //actual profit is dropping
-            //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
         this.open_order = false;
         log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
