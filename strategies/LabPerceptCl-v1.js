@@ -55,10 +55,10 @@ method.init = function() {
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 24;//this.settings.lookback_period;
+    this.lookbackIndex = 21;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = this.requiredHistory/3;
+    this.trainPeriod = 100;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -154,11 +154,15 @@ method.update = function(candle) {
 
     if(this.trainingData.length >= this.requiredHistory &&  (
         this.trainGap >= this.trainPeriod || this.weights != null)) {
+
+        //set the weight to null
         this.weights = null;
+
         log.info("*************** Training DATA ***************");
         log.info("Train data size: "+this.trainingData.length);
         log.info("Train end: "+tu.getDate(candle));
         log.info("Train Gap: "+this.trainGap);
+        //log.info(this.trainingData);
 
         this.network = this.getPerceptron();
 
