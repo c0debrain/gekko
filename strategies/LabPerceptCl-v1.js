@@ -58,7 +58,7 @@ method.init = function() {
 
     this.shift = true;
     this.lookbackIndex = 24;//this.settings.lookback_period;
-    this.requiredHistory = 300;//config.tradingAdvisor.historySize;
+    this.requiredHistory = config.tradingAdvisor.historySize;
 
     this.trainPeriod = 100;
 
