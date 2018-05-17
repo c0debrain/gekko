@@ -48,8 +48,6 @@ method.init = function() {
 
     this.totalProfit=0;
 
-    this.trainCount = 0;
-
     this.buySig = 0;
     this.hitCounter = 5;
 
@@ -60,7 +58,7 @@ method.init = function() {
     this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 100;
+    this.trainPeriod = this.requiredHistory/3;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -73,7 +71,7 @@ method.init = function() {
         shuffle:false,
         iterations: 500000,
         error: 0.00005,
-        rate: 0.000008,
+        rate: 0.000005,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
