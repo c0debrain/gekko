@@ -53,7 +53,7 @@ method.init = function() {
     this.buySig = 0;
     this.hitCounter = 5;
 
-    this.trainSave = true;
+    this.trainSave = false;
     this.weights = null;
 
     this.shift = true;
@@ -61,7 +61,6 @@ method.init = function() {
     this.requiredHistory = config.tradingAdvisor.historySize;
 
     this.trainPeriod = 100;
-
 
     log.info("minimum history: "+this.requiredHistory);
 
