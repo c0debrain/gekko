@@ -53,12 +53,17 @@ method.init = function() {
     this.buySig = 0;
     this.hitCounter = 5;
 
-    this.trainSave = false;
+    this.trainSave = true;
     this.weights = null;
 
     this.shift = true;
     this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
+    //set the soft requred history
+    if(this.requiredHistory < 3) {
+        this.requiredHistory = 300;
+    }
+
     this.trainPeriod = 100;
 
 
@@ -169,12 +174,14 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.trainPeriod) {
+    if(this.trainingData.length >= this.requiredHistory &&
+            (this.trainGap >= this.trainPeriod || this.weights != null)) {
     //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
         log.info("*************** Training DATA ***************");
+        this.weights = null;
         //log.info("Staring to train: "+this.trainingData.length+" count: "+ ++this.trainCount);
         log.info("Train data size: "+this.trainingData.length);
         log.info("Train end: "+tu.getDate(candle));
