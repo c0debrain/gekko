@@ -19,8 +19,8 @@ method.init = function() {
     this.lookbackData = [];
 
     // preprate neural network
-    //this.network = new neataptic.architect.LSTM(1,9,1);
-    this.network = new neataptic.architect.NARX(1, 5, 1, 50, 50);
+    this.network = new neataptic.architect.LSTM(1,9,1);
+    //this.network = new neataptic.architect.NARX(1, 5, 1, 50, 50);
     this.trainingData = [];
     this.obj = {};
     this.previous = null;
@@ -30,20 +30,28 @@ method.init = function() {
 
 // what happens on every new candle?
 method.update = function(candle) {
-
-    this.obj['output'] = [candle.close];
-
     if(this.previous==null){
         this.previous = candle.close;
         return;
     }
-    this.obj['input'] = [this.previous];
+
+    var myObj = {};
+    myObj['input'] = [this.previous];
+    myObj['output'] = [candle.close];
 
     // train the neural network
-    this.trainingData.push(this.obj);
+    this.trainingData.push(myObj);
+    this.previous = candle.close;
+
+    if(this.trainingData.length > 10) {
+        this.trainingData.shift();
+    }
 
     if(this.trainingData.length >= this.requiredHistory) {
+
         log.info("starting to train: "+this.trainingData.length);
+        log.info(this.trainingData);
+
         this.trainResult = this.network.train(this.trainingData, {
             log: 1000,
             iterations: 3000,
@@ -93,7 +101,7 @@ method.check = function(candle) {
     log.info("predict: "+predicted_value);
     log.info("percentage: "+percentage);
     log.info("profit: "+currentProfitPercent);
-    log.info("previous prfit: "+this.previousProfitPercent);
+    log.info("previous profit: "+this.previousProfitPercent);
 
 
     if(percentage > 0 && !this.open_order) {
