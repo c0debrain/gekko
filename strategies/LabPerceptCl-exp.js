@@ -49,36 +49,35 @@ method.init = function() {
     this.totalProfit=0;
 
     this.buySig = 0;
-    this.hitCounter = 5;
+    this.hitCounter = 3;
 
     this.trainSave = false;
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 21;//this.settings.lookback_period;
+    this.lookbackIndex = 24;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
     this.trainPeriod = 50;
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 100;
-    tu.roundPoint = 7;
+    tu.normalizer = 1;
+    tu.roundPoint = 10;
 
     this.perceptOptions = {
+        dropout: 0.5,
         clear: true,
-        log: 20000,
+        log: 0,
         shuffle:false,
-        iterations: 500000,
-        error: 0.00005,
-        rate: 0.000005,
-        momentum: 0.9,
-        batchSize:  this.requiredHistory
+        iterations: 80000,
+        error: 0.0000006,
+        rate: 0.01,
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,2,1
+            1*this.lookbackIndex,4,1
         );
     };
 
@@ -167,7 +166,7 @@ method.update = function(candle) {
         this.network = this.getPerceptron();
 
         //perceptron
-        this.perceptOptions.batchSize = this.trainingData.length;
+        //this.perceptOptions.batchSize = this.trainingData.length;
         var result = this.network.train(this.trainingData, this.perceptOptions);
 
         log.info("Training done with iteration: "+result.iterations);
