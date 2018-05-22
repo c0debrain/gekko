@@ -55,7 +55,7 @@ method.init = function() {
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 24;//this.settings.lookback_period;
+    this.lookbackIndex = 21;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
     this.trainPeriod = 50;
@@ -66,18 +66,19 @@ method.init = function() {
     tu.roundPoint = 10;
 
     this.perceptOptions = {
-        dropout: 0.5,
         clear: true,
         log: 0,
         shuffle:false,
         iterations: 80000,
         error: 0.0000006,
-        rate: 0.01,
+        rate: 0.0001,
+        momentum: 0.9,
+        batchSize:  this.requiredHistory
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,4,1
+            1*this.lookbackIndex,2,1
         );
     };
 
@@ -166,7 +167,7 @@ method.update = function(candle) {
         this.network = this.getPerceptron();
 
         //perceptron
-        //this.perceptOptions.batchSize = this.trainingData.length;
+        this.perceptOptions.batchSize = this.trainingData.length;
         var result = this.network.train(this.trainingData, this.perceptOptions);
 
         log.info("Training done with iteration: "+result.iterations);
