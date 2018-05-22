@@ -60,7 +60,6 @@ method.init = function() {
     this.roundPoint = 10;
 
     this.weights = null;
-    this.trainSave = false;
 
     this.normalizer = 1;
 
@@ -131,20 +130,20 @@ method.init = function() {
     this.weights = tu.readJsonFromFile(this.weightFileName);
 
     log.info("**************************************");
-    if(this.weights!=null && this.trainSave) {
+    if(this.weights!=null) {
 
-      log.info("***** Creating network from file *****");
-      this.network = neataptic.Network.fromJSON(this.weights);
+        log.info("***** Creating network from file *****");
+        this.network = neataptic.Network.fromJSON(this.weights);
 
-      log.info("init train and predict data");
+        log.info("init train and predict data");
 
-      this.lookbackData = tu.readJsonFromFile(this.trainDataLookbackFileName);
-      this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
-      this.lookbackCheckData = tu.readJsonFromFile(this.predictDataFileName);
+        this.lookbackData = tu.readJsonFromFile(this.trainDataLookbackFileName);
+        this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
+        this.lookbackCheckData = tu.readJsonFromFile(this.predictDataFileName);
 
     } else {
-      // preprate neural network
-      log.info("*** Training network from scratch ****");
+        // preprate neural network
+        log.info("*** Training network from scratch ****");
 
         //this.network = new neataptic.architect.LSTM(4,16,1);
         // this.network = new neataptic.Network(4*this.lookbackIndex, 1);
@@ -162,7 +161,7 @@ method.update = function(candle) {
     //have weights no need to train
     //if(this.weights!=null || this.trainingData.length >= this.requiredHistory) {
     //if(this.trainingData.length >= this.requiredHistory) {
-      //  return;
+    //  return;
     //}
 
     //prepare input for training
@@ -202,7 +201,7 @@ method.update = function(candle) {
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
     if(this.trainingData.length >= this.requiredHistory && this.trainGap >= this.trainPeriod) {
-    //if(this.trainingData.length >= this.requiredHistory) {
+        //if(this.trainingData.length >= this.requiredHistory) {
         //if(this.trainingData.length >= this.requiredHistory && !this.weights != null) {
         //if(this.trainingData.length >= this.requiredHistory && !this.open_order) {
 
@@ -236,23 +235,19 @@ method.update = function(candle) {
 
         //evolve
         //(async ()=>{
-          //  await this.network.evolve(this.trainingData, this.evolveOptions);
+        //  await this.network.evolve(this.trainingData, this.evolveOptions);
         //})();
 
         //log.info("Done training .. writing weights to file:");
-        if(this.trainSave) {
-            tu.writeJsonToFile(this.network.toJSON(), this.weightFileName);
-        }
-    } else if(this.trainSave){
+        tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
+    } else {
         //we loaded network from file
         this.trained = true;
     }
 
-    if(this.trainSave) {
-        tu.writeJsonToFile(this.lookbackCheckInput, this.trainDataLookbackFileName);
-        tu.writeJsonToFile(this.trainingData, this.trainDataFileName);
-        tu.writeJsonToFile(this.lookbackCheckData, this.predictDataFileName);
-    }
+    tu.writeJsonToFile(this.lookbackCheckInput,this.trainDataLookbackFileName);
+    tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
+    tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
 
 }
 
@@ -337,9 +332,9 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg //&& cs.isBullish(candle)
-            && cs.isBullishHammerLike(candle)
-            //&& this.isWhiteSoilders(2)
+        && isUptrendMoveAgg //&& cs.isBullish(candle)
+        && cs.isBullishHammerLike(candle)
+    //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -361,19 +356,19 @@ method.check = function(candle) {
         }
 
     } else if( this.open_order
-                && ( //predictPercent < 0 ||
-                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
-                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
-                    )
-            //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
-              //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
-            //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
-             //&& (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
-                ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
-            //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
-            //|| (predictPercent > profitPercent && profitPercent < -1)
-            //actual profit is dropping
-            //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
+        && ( //predictPercent < 0 ||
+            !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
+            || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+        )
+    //&& ((profitPercent >= this.pricePredictPercent && profitPercent < this.pastProfitPercent))
+    //  || profitPercent > 0 && profitPercent < this.pastProfitPercent)
+    //&& (predictPercent < 0 || (profitPercent > 1.3 && profitPercent < this.pastProfitPercent))
+    //&& (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+    ///(profitPercent > 1 && profitPercent < this.pastProfitPercent)
+    //|| (profitPercent < 0 && profitPercent > this.pastProfitPercent * 2)
+    //|| (predictPercent > profitPercent && profitPercent < -1)
+    //actual profit is dropping
+    //(profitPercent < this.pastProfitPercent && profitPercent > 1.5))
     ){
         this.open_order = false;
         log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
@@ -382,20 +377,20 @@ method.check = function(candle) {
         this.price=0;
         return this.advice('short');
 
-    //sell and lock account
+        //sell and lock account
     } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 7 && profitPercent < 0.5 && profitPercent < this.pastProfitPercent))
+        && (this.buyHoursDiff(candle) > 7 && profitPercent < 0.5 && profitPercent < this.pastProfitPercent))
     {
         this.open_order = false;
         //this.locked = true;
         log.info("**<<! Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
         this.locked = true;
         return this.advice('short');
-    //unlock
+        //unlock
     } else if(this.locked
-            && ((predictPercent < 0)
-            )
-        ) {
+        && ((predictPercent < 0)
+        )
+    ) {
         log.info("**!! Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
         this.locked = false;
     }

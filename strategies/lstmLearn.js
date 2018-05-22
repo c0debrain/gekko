@@ -12,7 +12,7 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    tu.normalizer = 100;
+    tu.normalizer = 1000;
     tu.roundPoint = 7;
 
     this.name = '007';
