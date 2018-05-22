@@ -49,7 +49,7 @@ method.init = function() {
     this.totalProfit=0;
 
     this.buySig = 0;
-    this.hitCounter = 3;
+    this.hitCounter = 4;
 
     this.trainSave = false;
     this.weights = null;
@@ -261,7 +261,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg //&& cs.isBullish(candle)
+            && isUptrendMove //&& cs.isBullish(candle)
             && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
