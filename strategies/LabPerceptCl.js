@@ -57,16 +57,15 @@ method.init = function() {
 
     this.lockSell = false;
 
-    this.roundPoint = 10;
 
     this.weights = null;
 
-    this.normalizer = 1;
+
 
     this.name = '007';
     this.upCounter = 0;
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.trainPeriod = 12;
+
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -98,6 +97,11 @@ method.init = function() {
     this.trainCount = 0;
 
     this.buySig = 0;
+
+    this.trainPeriod = 12;
+
+    tu.roundPoint = 10;
+    tu.normalizer = 1;
 
     this.perceptOptions = {
         dropout: 0.5,
