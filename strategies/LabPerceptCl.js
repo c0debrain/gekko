@@ -127,7 +127,7 @@ method.init = function() {
     };
 
     //NOTE: comment out to train and save
-    this.weights = tu.readJsonFromFile(this.weightFileName);
+    //this.weights = tu.readJsonFromFile(this.weightFileName);
 
     log.info("**************************************");
     if(this.weights!=null) {
@@ -239,15 +239,15 @@ method.update = function(candle) {
         //})();
 
         //log.info("Done training .. writing weights to file:");
-        tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
+        //tu.writeJsonToFile(this.network.toJSON(),this.weightFileName);
     } else {
         //we loaded network from file
         this.trained = true;
     }
 
-    tu.writeJsonToFile(this.lookbackCheckInput,this.trainDataLookbackFileName);
-    tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
-    tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
+    //tu.writeJsonToFile(this.lookbackCheckInput,this.trainDataLookbackFileName);
+    //tu.writeJsonToFile(this.trainingData,this.trainDataFileName);
+    //tu.writeJsonToFile(this.lookbackCheckData,this.predictDataFileName);
 
 }
 
