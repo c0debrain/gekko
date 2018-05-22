@@ -100,8 +100,8 @@ method.init = function() {
 
     this.trainPeriod = 12;
 
-    tu.roundPoint = 10;
     tu.normalizer = 1;
+    tu.roundPoint = 10;
 
     this.perceptOptions = {
         dropout: 0.5,
