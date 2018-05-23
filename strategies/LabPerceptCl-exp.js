@@ -58,21 +58,20 @@ method.init = function() {
     this.lookbackIndex = 21;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 50;
+    this.trainPeriod = 21;
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 1;
-    tu.roundPoint = 10;
+    tu.normalizer = 10;
+    tu.roundPoint = 7;
 
     this.perceptOptions = {
-        dropout: 0.5,
         clear: true,
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.0000006,
-        rate: 0.01,
+        error: 0.0000003,
+        rate: 0.003,
         //momentum: 0.9,
         batchSize:  this.requiredHistory
     };
