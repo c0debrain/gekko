@@ -70,7 +70,7 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.0000001,
+        error: 0.00000001,
         rate: 0.0001,
         momentum: 0.9,
         batchSize:  this.requiredHistory
