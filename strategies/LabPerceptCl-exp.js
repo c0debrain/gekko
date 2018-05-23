@@ -66,19 +66,20 @@ method.init = function() {
     tu.roundPoint = 10;
 
     this.perceptOptions = {
+        dropout: 0.5,
         clear: true,
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.00000001,
-        rate: 0.0001,
-        momentum: 0.9,
+        error: 0.0000006,
+        rate: 0.01,
+        //momentum: 0.9,
         batchSize:  this.requiredHistory
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,2,1
+            1*this.lookbackIndex,4,1
         );
     };
 
