@@ -70,7 +70,7 @@ method.init = function() {
         log: 0,
         shuffle:false,
         iterations: 80000,
-        error: 0.0000003,
+        error: 0.0000006,
         rate: 0.003,
         //momentum: 0.9,
         batchSize:  this.requiredHistory
@@ -78,7 +78,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,4,1
+            1*this.lookbackIndex,2,1
         );
     };
 
