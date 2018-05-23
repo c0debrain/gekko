@@ -1,4 +1,7 @@
 // npm install neataptic --save
+//0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377,
+// 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393, 196418, 317811,
+
 const neataptic = require('neataptic')
 const _ = require('lodash');
 const config = require ('../core/util.js').getConfig();
@@ -49,16 +52,16 @@ method.init = function() {
     this.totalProfit=0;
 
     this.buySig = 0;
-    this.hitCounter = 4;
+    this.hitCounter = 3;
 
     this.trainSave = false;
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 21;//this.settings.lookback_period;
+    this.lookbackIndex = 13;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 50;
+    this.trainPeriod = 89;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -66,7 +69,7 @@ method.init = function() {
     tu.roundPoint = 7;
 
     this.perceptOptions = {
-        clear: true,
+        clear: false,
         log: 0,
         shuffle:false,
         iterations: 80000,
