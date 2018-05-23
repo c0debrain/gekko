@@ -57,11 +57,12 @@ method.init = function() {
 
     this.lockSell = false;
 
-    this.roundPoint = 10;
+
 
     this.weights = null;
 
-    this.normalizer = 1;
+    tu.normalizer = 1;
+    tu.roundPoint = 10;
 
     this.name = '007';
     this.upCounter = 0;
