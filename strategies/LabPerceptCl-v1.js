@@ -49,16 +49,16 @@ method.init = function() {
     this.totalProfit=0;
 
     this.buySig = 0;
-    this.hitCounter = 5;
+    this.hitCounter = 3;
 
     this.trainSave = false;
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 21;//this.settings.lookback_period;
+    this.lookbackIndex = 13;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 100;
+    this.trainPeriod = 89;
 
     log.info("minimum history: "+this.requiredHistory);
 
