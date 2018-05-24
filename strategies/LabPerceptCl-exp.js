@@ -61,7 +61,7 @@ method.init = function() {
     this.lookbackIndex = 13;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 89;
+    this.trainPeriod = 55;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -69,6 +69,7 @@ method.init = function() {
     tu.roundPoint = 7;
 
     this.perceptOptions = {
+        dropout: 0.5,
         clear: true,
         log: 20000,
         shuffle:false,
@@ -81,7 +82,7 @@ method.init = function() {
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,2,1
+            1*this.lookbackIndex,3,1
         );
     };
 
