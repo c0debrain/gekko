@@ -65,16 +65,16 @@ method.init = function() {
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 10;
+    tu.normalizer = 100;
     tu.roundPoint = 7;
 
     this.perceptOptions = {
-        clear: false,
-        log: 0,
+        clear: true,
+        log: 20000,
         shuffle:false,
-        iterations: 80000,
-        error: 0.0000006,
-        rate: 0.00009,
+        iterations: 500000,
+        error: 0.00005,
+        rate: 0.000005,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -264,7 +264,7 @@ method.check = function(candle) {
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMove //&& cs.isBullish(candle)
+            && isUptrendMoveAgg //&& cs.isBullish(candle)
             && cs.isBullishHammerLike(candle)
             //&& this.isWhiteSoilders(2)
     ) {
