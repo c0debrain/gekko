@@ -54,7 +54,7 @@ method.init = function() {
     this.buySig = 0;
     this.hitCounter = 3;
 
-    this.trainSave = true;
+    this.trainSave = false;
     this.weights = null;
 
     this.shift = true;
@@ -65,11 +65,11 @@ method.init = function() {
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 100;
+    tu.normalizer = 1;
     tu.roundPoint = 7;
 
     this.perceptOptions = {
-        //dropout: 0.5,
+        dropout: 0.5,
         clear: true,
         log: 20000,
         shuffle:false,
