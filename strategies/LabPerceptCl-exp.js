@@ -75,7 +75,7 @@ method.init = function() {
         shuffle:false,
         iterations: 500000,
         error: 0.00005,
-        rate: 0.000003,
+        rate: 0.000005,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
