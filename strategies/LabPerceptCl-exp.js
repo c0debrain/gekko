@@ -61,7 +61,7 @@ method.init = function() {
     this.lookbackIndex = 13;//this.settings.lookback_period;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 55;
+    this.trainPeriod = 89;
 
     log.info("minimum history: "+this.requiredHistory);
 
@@ -69,13 +69,13 @@ method.init = function() {
     tu.roundPoint = 7;
 
     this.perceptOptions = {
-        dropout: 0.5,
+        //dropout: 0.5,
         clear: true,
         log: 20000,
         shuffle:false,
         iterations: 500000,
         error: 0.00005,
-        rate: 0.000005,
+        rate: 0.000003,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
