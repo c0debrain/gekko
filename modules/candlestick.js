@@ -41,6 +41,10 @@ function isHammerLike(candlestick) {
            wickLen(candlestick) < bodyLen(candlestick);
 }
 
+function isHammerLikeSimple(candlestick) {
+    return tailLen(candlestick) >  wickLen(candlestick)
+}
+
 function isHammerLikeFuzzy(candlestick) {
     return tailLen(candlestick) > (bodyLen(candlestick) - bodyLen(candlestick) * .3) &&
            wickLen(candlestick) < bodyLen(candlestick);
@@ -253,6 +257,7 @@ module.exports.isHammerLikeFuzzy = isHammerLikeFuzzy;
 module.exports.isHammerLikeAlt = isHammerLikeAlt;
 module.exports.isHammer = isHammer;
 module.exports.isHammerAlt = isHammerAlt;
+module.exports.isHammerLikeSimple = isHammerLikeSimple;
 
 module.exports.isInvertedHammerLike = isInvertedHammerLike;
 module.exports.isInvertedHammerLikeFuzzy = isInvertedHammerLikeFuzzy;
