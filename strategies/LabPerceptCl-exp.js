@@ -17,10 +17,10 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    this.weightFileName = "weights/bp/boot-perceptcl-weight-ethtrx.json";
-    this.lookbackDataFileName = "weights/bp/boot-lookback-data-ethxrp.json";
-    this.trainDataFileName = "weights/bp/boot-train-data-ethxrp.json";
-    this.lookbackCheckDataFileName = "weights/bp/boot-lookback-check-data-ethxrp.json";
+    this.weightFileName = "weights/exp/boot-perceptcl-weight-ethtrx.json";
+    this.lookbackDataFileName = "weights/exp/boot-lookback-data-ethxrp.json";
+    this.trainDataFileName = "weights/exp/boot-train-data-ethxrp.json";
+    this.lookbackCheckDataFileName = "weights/exp/boot-lookback-check-data-ethxrp.json";
 
     this.lockSell = false;
 
@@ -54,7 +54,7 @@ method.init = function() {
     this.buySig = 0;
     this.hitCounter = 3;
 
-    this.trainSave = false;
+    this.trainSave = true;
     this.weights = null;
 
     this.shift = true;
