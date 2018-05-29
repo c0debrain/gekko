@@ -74,8 +74,8 @@ method.init = function() {
         log: 20000,
         shuffle:false,
         iterations: 500000,
-        error: 0.00005,
-        rate: 0.000005,
+        error: 0.00000005,
+        rate: 0.0005,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -248,8 +248,8 @@ method.check = function(candle) {
 
     log.info("input:"+this.lookbackCheckInput);
 
-    log.info("close: "+candle.close);
-    log.info("close norm: "+closeNorm);
+    //log.info("close: "+candle.close);
+    //log.info("close norm: "+closeNorm);
 
     log.info("predict: "+predictValue);
     log.info("predict norm: "+predictNorm);
