@@ -17,13 +17,14 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    this.weightFileName = "weights/bp/boot-perceptcl-weight-ethtrx.json";
-    this.lookbackDataFileName = "weights/bp/boot-lookback-data-ethxrp.json";
-    this.trainDataFileName = "weights/bp/boot-train-data-ethxrp.json";
-    this.lookbackCheckDataFileName = "weights/bp/boot-lookback-check-data-ethxrp.json";
+    this.fileDelim = "weights/"+this.settings.fileDelim;
+
+    this.weightFileName = this.fileDelim+"boot-perceptcl-weight-ethtrx.json";
+    this.lookbackDataFileName = this.fileDelim+"boot-lookback-data-ethxrp.json";
+    this.trainDataFileName = this.fileDelim+"boot-train-data-ethxrp.json";
+    this.lookbackCheckDataFileName = this.fileDelim+"boot-lookback-check-data-ethxrp.json";
 
     this.lockSell = false;
-
 
     this.name = '007';
     this.upCounter = 0;
@@ -52,21 +53,21 @@ method.init = function() {
     this.totalProfit=0;
 
     this.buySig = 0;
-    this.hitCounter = 3;
+    this.hitCounter = this.settings.hitCounter;
 
-    this.trainSave = false;
+    this.trainSave = this.settings.trainSave;
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 13;//this.settings.lookback_period;
+    this.lookbackIndex = this.settings.lookbackIndex;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 89;
+    this.trainPeriod = this.settings.trainPeriod;
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 100;
-    tu.roundPoint = 7;
+    tu.normalizer = this.settings.normalizer;
+    tu.roundPoint = this.settings.roundPoint;
 
     this.perceptOptions = {
         clear: true,

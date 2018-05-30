@@ -1,0 +1,10 @@
+fileDelim="labCL"
+
+normalizer=100
+roundPoint=8
+
+lookbackIndex=13
+trainPeriod=89
+
+hitCounter=3
+trainSave=false
