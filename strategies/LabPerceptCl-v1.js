@@ -73,9 +73,9 @@ method.init = function() {
         clear: true,
         log: 20000,
         shuffle:false,
-        iterations: 500000,
-        error: 0.00005,
-        rate: 0.000005,
+        iterations:  this.settings.iterations,
+        error:  this.settings.error,
+        rate:  this.settings.rate,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
