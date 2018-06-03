@@ -8,6 +8,7 @@ iterations=500000
 error=0.00000005
 rate=0.0005
 
+debug=true
 lookbackIndex=13
 trainPeriod=89
 hitCounter=3

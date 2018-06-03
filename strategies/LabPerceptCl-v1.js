@@ -52,6 +52,7 @@ method.init = function() {
 
     this.totalProfit=0;
 
+    this.debug = this.settings.debug;
     this.buySig = 0;
     this.hitCounter = this.settings.hitCounter;
 
@@ -127,7 +128,7 @@ method.init = function() {
 method.update = function(candle) {
 
     //prepare input for training
-    log.info("start update: "+tu.getDate(candle));
+    //log.info("start update: "+tu.getDate(candle));
 
     if(!tu.isValidCandle(candle)) {
         return;
@@ -200,7 +201,7 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    log.info("start check: "+tu.getDate(candle));
+    //log.info("start check: "+tu.getDate(candle));
 
     this.lookbackCheckData.push(candle);
 
@@ -246,22 +247,24 @@ method.check = function(candle) {
     var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
     var isDownTrend = tu.isDownTrend(this.lookbackCheckInput);
 
-    log.info("input:"+this.lookbackCheckInput);
+    if (this.debug) {
+        log.info("input:" + this.lookbackCheckInput);
 
-    log.info("close: "+candle.close);
-    log.info("close norm: "+closeNorm);
+        log.info("close: " + candle.close);
+        log.info("close norm: " + closeNorm);
 
-    log.info("predict: "+predictValue);
-    log.info("predict norm: "+predictNorm);
-    log.info("predict%: "+predictPercent);
+        log.info("predict: " + predictValue);
+        log.info("predict norm: " + predictNorm);
+        log.info("predict%: " + predictPercent);
 
-    log.info("isUptrend: "+isUptrendMove);
-    log.info("isUptrendAvg: "+isUptrendMoveAvg);
-    log.info("isUptreadAgg: "+isUptrendMoveAgg);
+        log.info("isUptrend: " + isUptrendMove);
+        log.info("isUptrendAvg: " + isUptrendMoveAvg);
+        log.info("isUptreadAgg: " + isUptrendMoveAgg);
 
-    log.info("past profit%: "+this.pastProfitPercent);
-    log.info("profit%: "+profitPercent);
-    log.info("Total Profit%: "+this.totalProfit);
+        log.info("past profit%: " + this.pastProfitPercent);
+        log.info("profit%: " + profitPercent);
+        log.info("Total Profit%: " + this.totalProfit);
+    }
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
