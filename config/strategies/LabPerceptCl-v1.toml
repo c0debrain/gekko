@@ -1,12 +1,12 @@
 trainSave=false
 fileDelim="labCL"
 
-normalizer=10
-roundPoint=8
+normalizer=1
+roundPoint=7
 
 iterations=500000
-error=0.0000003
-rate=0.00003
+error=0.00000005
+rate=0.0005
 
 lookbackIndex=13
 trainPeriod=89
