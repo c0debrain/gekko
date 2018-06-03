@@ -12,6 +12,16 @@ tradeutil.getPercent = function(p1, p2) {
     return ((p1 - p2)/p2)*100;
 }
 
+
+tradeutil.isTotalUptrend = function(lookbackInput) {
+    for(var i=lookbackInput.length/1.5;i<lookbackInput.length-2;i++) {
+        if(lookbackInput[i] > lookbackInput[i+1]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 tradeutil.isUptrendMove = function(lookbackInput) {
     return lookbackInput[lookbackInput.length-1] > lookbackInput[0];
 }
