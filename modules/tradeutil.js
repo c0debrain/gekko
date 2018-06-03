@@ -80,7 +80,6 @@ tradeutil.writeJsonToFile = function(exported, weightFileName) {
     const content = JSON.stringify(exported);
     fs.writeFile(weightFileName, content, function(err, data){
         if (err) console.log(err);
-        log.info("Successfully Written to File.");
     });
 }
 
