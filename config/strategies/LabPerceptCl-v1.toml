@@ -2,7 +2,7 @@ trainSave=false
 fileDelim="labCL"
 
 normalizer=1
-roundPoint=7
+roundPoint=8
 
 iterations=500000
 error=0.00000005
