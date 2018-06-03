@@ -24,9 +24,7 @@ method.init = function() {
     this.trainDataFileName = this.fileDelim+"boot-train-data-ethxrp.json";
     this.lookbackCheckDataFileName = this.fileDelim+"boot-lookback-check-data-ethxrp.json";
 
-    this.lockSell = false;
-
-    this.name = '007';
+    this.name = 'LabPerceptCL-v1';
     this.upCounter = 0;
 
     this.trainGap=0;
@@ -38,8 +36,6 @@ method.init = function() {
     this.pastProfitPercent = 0;
 
     this.open_order = false;
-    this.locked = false;
-
     this.network=null;
 
     //use to train
@@ -303,23 +299,6 @@ method.check = function(candle) {
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
-
-    //sell and lock account
-    } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 7 && profitPercent < 0.5 && profitPercent < this.pastProfitPercent))
-    {
-        this.open_order = false;
-        //this.locked = true;
-        log.info("**<<! Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
-        this.locked = true;
-        return this.advice('short');
-    //unlock
-    } else if(this.locked
-            && ((predictPercent < 0)
-            )
-        ) {
-        log.info("**!! Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
-        this.locked = false;
     }
 
     this.pastProfitPercent = profitPercent;
