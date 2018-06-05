@@ -27,6 +27,9 @@ method.init = function() {
     this.name = 'LabPerceptCL-v1';
     this.upCounter = 0;
 
+    this.min=10;
+    this.max=0;
+
     this.trainGap=0;
     this.trained = false;
 
@@ -123,6 +126,7 @@ method.init = function() {
 // what happens on every new candle?
 method.update = function(candle) {
 
+
     //prepare input for training
     //log.info("start update: "+tu.getDate(candle));
 
@@ -175,6 +179,7 @@ method.update = function(candle) {
         this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
         log.info("Trained: "+this.trained);
+        log.info("min max diff: "+tu.getPercent(this.max,this.min));
         log.info("*************** Training DATA END ***************");
 
         if(this.trainSave) {
@@ -211,6 +216,14 @@ method.check = function(candle) {
         return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex) {
         this.lookbackCheckData.shift();
+    }
+
+    if(candle.close < this.min) {
+        this.min = candle.close;
+    }
+
+    if(candle.close > this.max) {
+        this.max = candle.close;
     }
 
     var profitPercent = this.getCurrentProfitPercent(candle);
@@ -302,6 +315,7 @@ method.check = function(candle) {
     }
 
     this.pastProfitPercent = profitPercent;
+
     return this.advice();
 }
 
