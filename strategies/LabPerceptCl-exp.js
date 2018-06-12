@@ -17,16 +17,18 @@ var method = {};
 // prepare everything our method needs
 method.init = function() {
 
-    this.weightFileName = "weights/exp/boot-perceptcl-weight-ethtrx.json";
-    this.lookbackDataFileName = "weights/exp/boot-lookback-data-ethxrp.json";
-    this.trainDataFileName = "weights/exp/boot-train-data-ethxrp.json";
-    this.lookbackCheckDataFileName = "weights/exp/boot-lookback-check-data-ethxrp.json";
+    this.fileDelim = "weights/"+this.settings.fileDelim;
 
-    this.lockSell = false;
+    this.weightFileName = this.fileDelim+"boot-perceptcl-weight-ethtrx.json";
+    this.lookbackDataFileName = this.fileDelim+"boot-lookback-data-ethxrp.json";
+    this.trainDataFileName = this.fileDelim+"boot-train-data-ethxrp.json";
+    this.lookbackCheckDataFileName = this.fileDelim+"boot-lookback-check-data-ethxrp.json";
 
-
-    this.name = '007';
+    this.name = 'LabPerceptCL-v1';
     this.upCounter = 0;
+
+    this.min=10;
+    this.max=0;
 
     this.trainGap=0;
     this.trained = false;
@@ -37,8 +39,6 @@ method.init = function() {
     this.pastProfitPercent = 0;
 
     this.open_order = false;
-    this.locked = false;
-
     this.network=null;
 
     //use to train
@@ -51,38 +51,38 @@ method.init = function() {
 
     this.totalProfit=0;
 
+    this.debug = this.settings.debug;
     this.buySig = 0;
-    this.hitCounter = 3;
+    this.hitCounter = this.settings.hitCounter;
 
-    this.trainSave = false;
+    this.trainSave = this.settings.trainSave;
     this.weights = null;
 
     this.shift = true;
-    this.lookbackIndex = 13;//this.settings.lookback_period;
+    this.lookbackIndex = this.settings.lookbackIndex;
     this.requiredHistory = config.tradingAdvisor.historySize;
 
-    this.trainPeriod = 89;
+    this.trainPeriod = this.settings.trainPeriod;
 
     log.info("minimum history: "+this.requiredHistory);
 
-    tu.normalizer = 1;
-    tu.roundPoint = 7;
+    tu.normalizer = this.settings.normalizer;
+    tu.roundPoint = this.settings.roundPoint;
 
     this.perceptOptions = {
-        dropout: 0.5,
         clear: true,
         log: 20000,
         shuffle:false,
-        iterations: 500000,
-        error: 0.00000005,
-        rate: 0.0005,
+        iterations:  this.settings.iterations,
+        error:  this.settings.error,
+        rate:  this.settings.rate,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
 
     this.getPerceptron = function() {
         return new neataptic.architect.Perceptron(
-            1*this.lookbackIndex,3,1
+            1*this.lookbackIndex,2,1
         );
     };
 
@@ -103,18 +103,18 @@ method.init = function() {
     log.info("**************************************");
     if(this.weights!=null && this.trainSave) {
 
-      log.info("***** Creating network from file *****");
-      this.network = neataptic.Network.fromJSON(this.weights);
+        log.info("***** Creating network from file *****");
+        this.network = neataptic.Network.fromJSON(this.weights);
 
-      log.info("init train and predict data");
+        log.info("init train and predict data");
 
-      this.lookbackData = tu.readJsonFromFile(this.lookbackDataFileName);
-      this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
-      this.lookbackCheckData = tu.readJsonFromFile(this.lookbackCheckDataFileName);
+        this.lookbackData = tu.readJsonFromFile(this.lookbackDataFileName);
+        this.trainingData = tu.readJsonFromFile(this.trainDataFileName);
+        this.lookbackCheckData = tu.readJsonFromFile(this.lookbackCheckDataFileName);
 
     } else {
-      // preprate neural network
-      log.info("*** Training network from scratch ****");
+        // preprate neural network
+        log.info("*** Training network from scratch ****");
 
     }
     log.info("**************************************");
@@ -126,8 +126,9 @@ method.init = function() {
 // what happens on every new candle?
 method.update = function(candle) {
 
+
     //prepare input for training
-    log.info("start update: "+tu.getDate(candle));
+    //log.info("start update: "+tu.getDate(candle));
 
     if(!tu.isValidCandle(candle)) {
         return;
@@ -178,6 +179,7 @@ method.update = function(candle) {
         this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
         log.info("Trained: "+this.trained);
+        log.info("min max diff: "+tu.getPercent(this.max,this.min));
         log.info("*************** Training DATA END ***************");
 
         if(this.trainSave) {
@@ -200,7 +202,7 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    log.info("start check: "+tu.getDate(candle));
+    //log.info("start check: "+tu.getDate(candle));
 
     this.lookbackCheckData.push(candle);
 
@@ -214,6 +216,14 @@ method.check = function(candle) {
         return this.advice();
     } else if(this.lookbackCheckData.length > this.lookbackIndex) {
         this.lookbackCheckData.shift();
+    }
+
+    if(candle.close < this.min) {
+        this.min = candle.close;
+    }
+
+    if(candle.close > this.max) {
+        this.max = candle.close;
     }
 
     var profitPercent = this.getCurrentProfitPercent(candle);
@@ -246,28 +256,30 @@ method.check = function(candle) {
     var isUptrendMoveAgg = isUptrendMove && isUptrendMoveAvg;
     var isDownTrend = tu.isDownTrend(this.lookbackCheckInput);
 
-    log.info("input:"+this.lookbackCheckInput);
+    if (this.debug) {
+        log.info("input:" + this.lookbackCheckInput);
 
-    //log.info("close: "+candle.close);
-    //log.info("close norm: "+closeNorm);
+        log.info("close: " + candle.close);
+        log.info("close norm: " + closeNorm);
 
-    log.info("predict: "+predictValue);
-    log.info("predict norm: "+predictNorm);
-    log.info("predict%: "+predictPercent);
+        log.info("predict: " + predictValue);
+        log.info("predict norm: " + predictNorm);
+        log.info("predict%: " + predictPercent);
 
-    log.info("isUptrend: "+isUptrendMove);
-    log.info("isUptrendAvg: "+isUptrendMoveAvg);
-    log.info("isUptreadAgg: "+isUptrendMoveAgg);
+        log.info("isUptrend: " + isUptrendMove);
+        log.info("isUptrendAvg: " + isUptrendMoveAvg);
+        log.info("isUptreadAgg: " + isUptrendMoveAgg);
 
-    log.info("past profit%: "+this.pastProfitPercent);
-    log.info("profit%: "+profitPercent);
-    log.info("Total Profit%: "+this.totalProfit);
+        log.info("past profit%: " + this.pastProfitPercent);
+        log.info("profit%: " + profitPercent);
+        log.info("Total Profit%: " + this.totalProfit);
+    }
 
     if(
         !this.open_order  && !this.locked && predictPercent > 1
-            && isUptrendMoveAgg //&& cs.isBullish(candle)
-            && cs.isBullishHammerLike(candle)
-            //&& this.isWhiteSoilders(2)
+        && isUptrendMoveAgg //&& cs.isBullish(candle)
+        && cs.isBullishHammerLike(candle)
+    //&& this.isWhiteSoilders(2)
     ) {
         //log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         log.info("**>> Buy: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
@@ -289,10 +301,10 @@ method.check = function(candle) {
         }
 
     } else if( this.open_order
-                && ( //predictPercent < 0 ||
-                        !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
-                        || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
-                    )
+        && ( //predictPercent < 0 ||
+            !isUptrendMoveAvg && profitPercent < this.pastProfitPercent
+            || (predictPercent < -this.pricePredictPercent && profitPercent < this.pastProfitPercent)
+        )
     ){
         this.open_order = false;
         log.info("**<< Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
@@ -300,26 +312,10 @@ method.check = function(candle) {
         this.totalProfit+=profitPercent;
         this.price=0;
         return this.advice('short');
-
-    //sell and lock account
-    } else if (this.open_order  && this.lockSell
-            && (this.buyHoursDiff(candle) > 7 && profitPercent < 0.5 && profitPercent < this.pastProfitPercent))
-    {
-        this.open_order = false;
-        //this.locked = true;
-        log.info("**<<! Lock Sold: $"+candle.close+" predict: "+predictValue+" predict%: "+predictPercent+" profit%: "+profitPercent);
-        this.locked = true;
-        return this.advice('short');
-    //unlock
-    } else if(this.locked
-            && ((predictPercent < 0)
-            )
-        ) {
-        log.info("**!! Unlock: "+candle.close+" predict: "+predictValue+" predict%: "+predictPercent);
-        this.locked = false;
     }
 
     this.pastProfitPercent = profitPercent;
+
     return this.advice();
 }
 
