@@ -86,15 +86,18 @@ method.init = function() {
         );
     };
 
+    this.getEvolveNet = function() {
+        return new neataptic.Network(1*this.lookbackIndex, 1);
+    };
+
     this.evolveOptions = {
-        mutation: neataptic.methods.mutation.FFW,
-        equal: true,
-        popsize: 1000,
-        elitism: 100,
+        mutation: neataptic.methods.mutation.ALL,
+        mutationRate: 0.4,
+        clear: true,
+        cost: neataptic.methods.cost.MSE,
         log: 1000,
-        error: 0.00001,
-        iterations: 10000,
-        mutationRate: 0.001
+        error: this.settings.error,
+        iterations: this.settings.iterations
     };
 
     //NOTE: comment out to train and save
@@ -125,7 +128,6 @@ method.init = function() {
 
 // what happens on every new candle?
 method.update = function(candle) {
-
 
     //prepare input for training
     //log.info("start update: "+tu.getDate(candle));
@@ -169,14 +171,25 @@ method.update = function(candle) {
         log.info("Train Gap: "+this.trainGap);
         //log.info(this.trainingData);
 
-        this.network = this.getPerceptron();
-
+        //this.network = this.getPerceptron();
         //perceptron
-        this.perceptOptions.batchSize = this.trainingData.length;
-        var result = this.network.train(this.trainingData, this.perceptOptions);
+        //this.perceptOptions.batchSize = this.trainingData.length;
+        //var result = this.network.train(this.trainingData, this.perceptOptions);
+        var result;
+        this.network = this.getEvolveNet();
+        //evolve
+        //(async ()=>{
+          //await this.network.evolve(this.trainingData, this.evolveOptions);
+        //})();
 
-        log.info("Training done with iteration: "+result.iterations);
-        this.trained = result.iterations < this.perceptOptions.iterations ? true : false;
+        (async ()=> {
+            result = await this.network.evolve(this.trainingData, this.evolveOptions);
+        })();
+
+        log.info(result);
+
+        //log.info("Training done with iteration: "+result.iterations);
+        this.trained = true; //result.iterations < this.perceptOptions.iterations ? true : false;
         this.trainGap = 0;
         log.info("Trained: "+this.trained);
         log.info("min max diff: "+tu.getPercent(this.max,this.min));
