@@ -92,10 +92,11 @@ method.init = function() {
 
     this.evolveOptions = {
         mutation: neataptic.methods.mutation.ALL,
-        mutationRate: 0.4,
+        amount:5,
+        mutationRate: 0.004,
         clear: true,
         cost: neataptic.methods.cost.MSE,
-        log: 1000,
+        log: 100,
         error: this.settings.error,
         iterations: this.settings.iterations
     };
@@ -175,6 +176,9 @@ method.update = function(candle) {
         //perceptron
         //this.perceptOptions.batchSize = this.trainingData.length;
         //var result = this.network.train(this.trainingData, this.perceptOptions);
+
+
+
         var result;
         this.network = this.getEvolveNet();
         //evolve
@@ -182,11 +186,18 @@ method.update = function(candle) {
           //await this.network.evolve(this.trainingData, this.evolveOptions);
         //})();
 
+        /*
         (async ()=> {
             result = await this.network.evolve(this.trainingData, this.evolveOptions);
+            log.info(await result);
+        })();
+        */
+
+        (async ()=> {
+            await this.network.evolve(this.trainingData, this.evolveOptions);
+            log.info("trying to train");
         })();
 
-        log.info(result);
 
         //log.info("Training done with iteration: "+result.iterations);
         this.trained = true; //result.iterations < this.perceptOptions.iterations ? true : false;

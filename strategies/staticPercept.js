@@ -20,8 +20,9 @@ var method = {};
 
 // prepare everything our method needs
 method.init = function() {
+    this.weightFileName = "weights/staticPercept-ethtrx.json";
     //this.weightFileName = "weights/staticPercept-ethxrp.json";
-    this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
+    //this.weightFileName = "weights/staticPercept-ethxrp-13-400-2018-02-13-07-35-3p.json";
     //this.weightFileName = "weights/staticPercept.json";
     //this.weightFileName = "weights/staticPercept-11-200-338p.json";
     //this.weightFileName = "weights/staticPercept-3-400-392p.json";
@@ -38,7 +39,7 @@ method.init = function() {
 
     this.network=null;
     //NOTE: comment out to train and save
-    this.weights = this.readFromFile(this.weightFileName);
+    //this.weights = this.readFromFile(this.weightFileName);
 
     log.info("**************************************");
     if(this.weights!=null) {
@@ -81,7 +82,7 @@ method.update = function(candle) {
 
     if(this.trainingData.length > this.requiredHistory) {
         //log.info("trainDataSize size: "+this.trainingData.length);
-        //this.trainingData.shift();
+        this.trainingData.shift();
         return;
     }
 
@@ -94,18 +95,18 @@ method.update = function(candle) {
 
     //log.info("update called: trainDataSize: "+this.trainingData.length);
 
-    if(this.trainingData.length == this.requiredHistory+1 && !this.weights != null) {
+    if(this.trainingData.length >= this.requiredHistory+1 && !this.weights != null) {
       log.info("Staring to train: "+this.trainingData.length);
 
       //perceptron
       this.network.train(this.trainingData, {
           //dropout: 0.5,
           //clear: true,
-          log: 10,
+          log: 10000,
           shuffle:true,
           iterations: 100000,
-          error: 0.0000000001,
-          rate: 0.03,
+          error: 0.000000000001,
+          rate: 0.0003,
       });
       log.info("Done training .. writing weights to file:");
       this.writeToFile();
