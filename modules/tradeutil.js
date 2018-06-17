@@ -5,7 +5,7 @@ const log = require('../core/log.js');
 
 var tradeutil={
     normalizer:1,
-    roundPoint:7
+    roundPoint:9
 };
 
 tradeutil.getPercent = function(p1, p2) {

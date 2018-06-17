@@ -19,7 +19,7 @@ strat.init = function() {
     this.candleHistory=[];
     this.trainingData=[];
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.lookbackIndex=1;
+    this.lookbackIndex=4;
 
     this.perceptron = new neataptic.architect.Perceptron(4,3,1);
     this.perceptronOptions =  {
@@ -28,8 +28,8 @@ strat.init = function() {
         log: 90000,
         shuffle:false,
         iterations: 90000,
-        error: 0.00000000001,
-        rate: 0.03,
+        error: 0.000000000001,
+        rate: 0.003,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -46,8 +46,8 @@ strat.update = function(candle) {
 
     if(this.candleHistory.length > this.lookbackIndex) {
         var myObj = {};
-        var inputCandle = this.candleHistory.slice(-2)[0];
-        myObj['input'] = [inputCandle.open,inputCandle.close,inputCandle.high,inputCandle.low];
+        var inputCandle = this.candleHistory.slice(-(this.lookbackIndex+1),-1);
+        myObj['input'] = tu.getLookbackInput(inputCandle);
         myObj['output'] = [candle.close];
         this.trainingData.push(myObj);
     }
@@ -58,7 +58,7 @@ strat.update = function(candle) {
 
     if(this.trainingData.length >= this.requiredHistory) {
         log.info("*** training start ***");
-        //console.log(this.trainingData);
+        console.log(this.trainingData);
         this.perceptron.train(this.trainingData,this.perceptronOptions);
     }
 }
@@ -80,7 +80,7 @@ strat.check = function(candle) {
     log.info("input: "+candle.close);
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
-    if(!this.open_order && predictPercent > 0) {
+    if(!this.open_order && predictPercent > 7) {
         log.info("************* Buy *************");
         this.open_order = true;
         return this.advice('long');
