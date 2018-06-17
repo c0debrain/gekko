@@ -14,23 +14,42 @@ var strat = {};
 strat.init = function() {
     // your code!
     log.info("**** Init ****");
+    config.debug = false;
     this.open_order = false;
     this.candleHistory=[];
-    //this.requiredHistory = 5;
+    this.requiredHistory = config.tradingAdvisor.historySize;
+    this.lookbackIndex=1;
+
+    this.perceptron = new neataptic.architect.Perceptron(4,3,1);
+    this.perceptronOptions = {
+        //dropout: 0.5,
+        //clear: true,
+        log: 90000,
+        shuffle:true,
+        iterations: 100000,
+        error: 0.000000000001,
+        rate: 0.0003,
+    };
 }
 
 
 strat.update = function(candle) {
     log.info("*** update ***");
     this.candleHistory.push(candle);
-    this.printStat();
+    log.info("candle date: "+tu.getDate(candle));
+
+    if(this.candleHistory.length > this.lookbackIndex) {
+
+    }
 }
 
 
 strat.check = function(candle) {
     log.info("*** check ***");
     log.info("candle history: "+this.candleHistory.length);
+    log.info("candle date: "+tu.getDate(candle));
 }
+
 
 
 strat.end = function() {

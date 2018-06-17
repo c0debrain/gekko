@@ -5,6 +5,7 @@ const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
 const fs = require('fs');
+const cs = require('../modules/candlestick.js');
 
 //performance data
 //4,3,1
@@ -101,12 +102,12 @@ method.update = function(candle) {
       //perceptron
       this.network.train(this.trainingData, {
           //dropout: 0.5,
-          //clear: true,
-          log: 10000,
+          clear: true,
+          log: 90000,
           shuffle:true,
-          iterations: 100000,
+          iterations: 900000,
           error: 0.000000000001,
-          rate: 0.0003,
+          rate: 0.003,
       });
       log.info("Done training .. writing weights to file:");
       this.writeToFile();
@@ -188,19 +189,19 @@ method.check = function(candle) {
     // % change in current close and predicted close
     var percentage = ((predicted_value-candle.close)/candle.close)*100;
 
-    //log.info("=========================================");
+    log.info("=========================================");
     //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
     //log.info("Predicted value: "+predicted_value);
-    //log.info("Percent: "+percentage);
+    log.info("Percent: "+percentage);
 
-    if(percentage > 1 && !this.open_order)
+    if(percentage > .1 && !this.open_order && cs.isBullishHammerLike(candle))
     {
         log.info("Buy: $"+candle.close+" expected percent: "+percentage);
         //this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 0){
+    } else if(this.open_order && percentage < .1){
         this.open_order = false;
         log.info("Sold: $"+candle.close+" expected percent: "+percentage);
         return this.advice('short');
