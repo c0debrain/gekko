@@ -72,8 +72,13 @@ strat.check = function(candle) {
 
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
-    if(predictPercent > 1) {
+    if(!this.open_order && predictPercent > 1) {
+        this.open_order = false;
         return this.advice('long');
+
+    } else if(this.open_order && predictPercent < 0) {
+        this.open_order = false;
+        return this.advice('short');
     }
 }
 
