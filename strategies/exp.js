@@ -31,7 +31,7 @@ strat.init = function() {
         log: 90000,
         shuffle:false,
         iterations: 90000,
-        error: 0.00000000001,
+        error: 0.0000000001,
         rate: 0.03,
         momentum: 0.9,
         batchSize:  this.requiredHistory
