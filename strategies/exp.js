@@ -41,10 +41,10 @@ strat.init = function() {
 
 strat.update = function(candle) {
     this.candleHistory.push(candle);
-    log.info("*** update ***");
-    log.info("candle history: "+this.candleHistory.length);
-    log.info("candle date: "+tu.getDate(candle));
-    log.info("candle data: "+[candle.open,candle.close]);
+    //log.info("*** update ***");
+    //log.info("candle history: "+this.candleHistory.length);
+    //log.info("candle date: "+tu.getDate(candle));
+    //log.info("candle data: "+[candle.open,candle.close]);
 
 
     if(this.candleHistory.length > this.lookbackIndex) {
@@ -74,8 +74,8 @@ strat.check = function(candle) {
     }
 
     log.info("*** check ***");
-    log.info("candle history: "+this.candleHistory.length);
-    log.info("candle date: "+tu.getDate(candle));
+    //log.info("candle history: "+this.candleHistory.length);
+    //log.info("candle date: "+tu.getDate(candle));
 
     var inputCandle = tu.getLookbackInput(this.candleHistory.slice(-this.lookbackIndex));
     var predictValue = this.perceptron.activate(inputCandle);
