@@ -83,7 +83,6 @@ strat.check = function(candle) {
 
     log.info("input: "+tu.getOutput(candle));
     log.info("input list: "+inputCandle);
-
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
     if(!this.open_order && predictPercent > 2) {
