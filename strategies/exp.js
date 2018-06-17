@@ -46,7 +46,7 @@ strat.update = function(candle) {
 
     if(this.candleHistory.length > this.lookbackIndex) {
         var myObj = {};
-        var inputCandle = this.candleHistory.slice(-(this.lookbackIndex+1),-1);
+        var inputCandle = this.candleHistory.slice(-this.lookbackIndex-1,-1);
         myObj['input'] = tu.getLookbackInput(inputCandle);
         myObj['output'] = [candle.close];
         this.trainingData.push(myObj);
@@ -58,7 +58,7 @@ strat.update = function(candle) {
 
     if(this.trainingData.length >= this.requiredHistory) {
         log.info("*** training start ***");
-        console.log(this.trainingData);
+        //console.log(this.trainingData);
         this.perceptron.train(this.trainingData,this.perceptronOptions);
     }
 }
@@ -74,10 +74,13 @@ strat.check = function(candle) {
     log.info("candle history: "+this.candleHistory.length);
     log.info("candle date: "+tu.getDate(candle));
 
-    var predictValue = this.perceptron.activate([candle.open,candle.close,candle.high,candle.low]);
+    var inputCandle = tu.getLookbackInput(this.candleHistory.slice(-this.lookbackIndex));
+    var predictValue = this.perceptron.activate(inputCandle);
     var predictPercent = tu.getPercent(predictValue, candle.close);
 
     log.info("input: "+candle.close);
+    log.info("input list: "+inputCandle);
+
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
     if(!this.open_order && predictPercent > 7) {
