@@ -77,7 +77,7 @@ strat.check = function(candle) {
         return this.advice('long');
 
     } else if(this.open_order && predictPercent < 0) {
-        this.open_order = false;
+        this.open_order = true;
         return this.advice('short');
     }
 }
