@@ -80,11 +80,10 @@ method.update = function(candle) {
     this.previousCandle = candle;
 
 
-
     if(this.trainingData.length > this.requiredHistory) {
         //log.info("trainDataSize size: "+this.trainingData.length);
         this.trainingData.shift();
-        return;
+        //return;
     }
 
     // train the neural network
@@ -98,6 +97,7 @@ method.update = function(candle) {
 
     if(this.trainingData.length >= this.requiredHistory+1 && !this.weights != null) {
       log.info("Staring to train: "+this.trainingData.length);
+      log.info(this.trainingData);
 
       //perceptron
       this.network.train(this.trainingData, {

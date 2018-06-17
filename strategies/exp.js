@@ -28,9 +28,8 @@ strat.init = function() {
         log: 90000,
         shuffle:false,
         iterations: 900000,
-        error: 0.0000000001,
+        error: 0.000000000001,
         rate: 0.003,
-        momentum: 0.9
     };
 }
 
@@ -76,6 +75,7 @@ strat.check = function(candle) {
     var predictValue = this.perceptron.activate([candle.open,candle.close,candle.high,candle.low]);
     var predictPercent = tu.getPercent(predictValue, candle.close);
 
+    log.info("input: "+candle.close);
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
     if(!this.open_order && predictPercent > 0) {
