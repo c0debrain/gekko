@@ -25,18 +25,20 @@ strat.init = function() {
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
-        log: 800000,
-        //shuffle:true,
+        log: 90000,
+        shuffle:false,
         iterations: 900000,
-        error: 0.000000000001,
+        error: 0.0000000001,
         rate: 0.003,
+        momentum: 0.9
     };
 }
 
 
 strat.update = function(candle) {
-    log.info("*** update ***");
     this.candleHistory.push(candle);
+    log.info("*** update ***");
+    log.info("candle history: "+this.candleHistory.length);
     log.info("candle date: "+tu.getDate(candle));
     log.info("candle data: "+[candle.open,candle.close]);
 
@@ -54,14 +56,18 @@ strat.update = function(candle) {
     }
 
     if(this.trainingData.length >= this.requiredHistory) {
-        console.log("about to train");
-        console.log(this.trainingData);
+        log.info("*** training start ***");
+        //console.log(this.trainingData);
         this.perceptron.train(this.trainingData,this.perceptronOptions);
     }
 }
 
 
 strat.check = function(candle) {
+
+    if(this.trainingData.length < this.requiredHistory) {
+        return;
+    }
 
     log.info("*** check ***");
     log.info("candle history: "+this.candleHistory.length);
@@ -72,11 +78,13 @@ strat.check = function(candle) {
 
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
-    if(!this.open_order && predictPercent > 1) {
+    if(!this.open_order && predictPercent > 0) {
+        log.info("************* Buy *************");
         this.open_order = true;
         return this.advice('long');
 
     } else if(this.open_order && predictPercent < 0) {
+        log.info("************* Sell *************");
         this.open_order = false;
         return this.advice('short');
     }
