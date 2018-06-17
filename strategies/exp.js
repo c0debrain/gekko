@@ -30,6 +30,8 @@ strat.init = function() {
         iterations: 900000,
         error: 0.000000000001,
         rate: 0.003,
+        momentum: 0.9,
+        batchSize:  this.requiredHistory
     };
 }
 
