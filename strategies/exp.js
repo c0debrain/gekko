@@ -74,7 +74,7 @@ strat.check = function(candle) {
     log.info("candle date: "+tu.getDate(candle));
 
     var predictValue = this.perceptron.activate([candle.open,candle.close,candle.high,candle.low]);
-    var predictPercent = tu.getPercent(candle.close,predictValue);
+    var predictPercent = tu.getPercent(predictValue, candle.close);
 
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
