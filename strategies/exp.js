@@ -27,9 +27,9 @@ strat.init = function() {
         clear: true,
         log: 90000,
         shuffle:false,
-        iterations: 900000,
-        error: 0.000000000001,
-        rate: 0.003,
+        iterations: 90000,
+        error: 0.00000000001,
+        rate: 0.03,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
