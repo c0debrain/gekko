@@ -20,6 +20,8 @@ strat.init = function() {
     this.trainingData=[];
     this.requiredHistory = config.tradingAdvisor.historySize;
     this.lookbackIndex=4;
+    this.price=0;
+    this.previousProfitPercent=0;
 
     tu.normalizer=100;
     tu.roundPoint=6;
@@ -80,21 +82,26 @@ strat.check = function(candle) {
     var inputCandle = tu.getLookbackInput(this.candleHistory.slice(-this.lookbackIndex));
     var predictValue = this.perceptron.activate(inputCandle);
     var predictPercent = tu.getPercent(predictValue, tu.getOutput(candle));
+    var currentPrice = tu.getOutput(candle);
+    var currentProfitPercent = tu.getPercent(currentPrice,this.price);
 
-    log.info("input: "+tu.getOutput(candle));
-    log.info("input list: "+inputCandle);
+    log.info("input: "+currentPrice);
+    //log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
     if(!this.open_order && predictPercent > 2) {
         log.info("************* Buy *************");
         this.open_order = true;
+        this.price = currentPrice;
         return this.advice('long');
 
     } else if(this.open_order && predictPercent < 0) {
         log.info("************* Sell *************");
+        log.info("price: "+this.price+" sell: "+currentPrice+" profit%: "+currentProfitPercent);
         this.open_order = false;
         return this.advice('short');
     }
+    this.previousProfitPercent = currentProfitPercent;
 }
 
 
