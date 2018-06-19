@@ -24,14 +24,14 @@ strat.init = function() {
     tu.normalizer=100;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(4,3,1);
+    this.perceptron = new neataptic.architect.Perceptron(4,2,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
         log: 90000,
         shuffle:false,
-        iterations: 90000,
-        error: 0.0000000001,
+        iterations: 10000,
+        error: 0.000000001,
         rate: 0.03,
         momentum: 0.9,
         batchSize:  this.requiredHistory
