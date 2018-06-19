@@ -89,19 +89,32 @@ strat.check = function(candle) {
     //log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
-    if(!this.open_order && predictPercent > 2) {
+    if(shouldBuy()) {
         log.info("************* Buy *************");
         this.open_order = true;
         this.price = currentPrice;
         return this.advice('long');
 
-    } else if(this.open_order && predictPercent < 0) {
+    } else if(shouldSell()) {
         log.info("************* Sell *************");
         log.info("price: "+this.price+" sell: "+currentPrice+" profit%: "+currentProfitPercent);
         this.open_order = false;
         return this.advice('short');
     }
     this.previousProfitPercent = currentProfitPercent;
+
+
+
+
+    function shouldBuy(){
+        return !this.open_order && predictPercent > 2;
+    }
+
+    function  shouldSell(){
+        return this.open_order && predictPercent < 0;
+    }
+
+
 }
 
 
