@@ -84,6 +84,7 @@ strat.check = function(candle) {
     var predictPercent = tu.getPercent(predictValue, tu.getOutput(candle));
     var currentPrice = tu.getOutput(candle);
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
+    var openOrder = this.open_order;
 
     log.info("input: "+currentPrice);
     //log.info("input list: "+inputCandle);
@@ -104,16 +105,14 @@ strat.check = function(candle) {
     this.previousProfitPercent = currentProfitPercent;
 
 
-
-
     function shouldBuy(){
-        return !this.open_order && predictPercent > 2;
+        return !openOrder && predictPercent > 2;
     }
 
-    function  shouldSell(){
-        return this.open_order && predictPercent < 0;
+    function shouldSell(){
+        log.info("calling should sell");
+        return openOrder && predictPercent < 0;
     }
-
 
 }
 
