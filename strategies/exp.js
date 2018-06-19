@@ -110,7 +110,6 @@ strat.check = function(candle) {
     }
 
     function shouldSell(){
-        log.info("calling should sell");
         return openOrder && predictPercent < 0;
     }
 
