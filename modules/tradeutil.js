@@ -14,7 +14,7 @@ tradeutil.getPercent = function(p1, p2) {
 
 
 tradeutil.isTotalUptrend = function(lookbackInput) {
-    for(var i=lookbackInput.length/1.5;i<lookbackInput.length-2;i++) {
+    for(var i=0;i<lookbackInput.length-2;i++) {
         if(lookbackInput[i] > lookbackInput[i+1]) {
             return false;
         }

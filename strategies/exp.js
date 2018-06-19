@@ -87,7 +87,7 @@ strat.check = function(candle) {
     var openOrder = this.open_order;
 
     log.info("input: "+currentPrice);
-    //log.info("input list: "+inputCandle);
+    log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
 
     if(shouldBuy()) {
@@ -102,15 +102,17 @@ strat.check = function(candle) {
         this.open_order = false;
         return this.advice('short');
     }
+
+    var previousProfitPercent = this.previousProfitPercent;
     this.previousProfitPercent = currentProfitPercent;
 
 
     function shouldBuy(){
-        return !openOrder && predictPercent > 2;
+        return !openOrder && predictPercent > 2.1;
     }
 
     function shouldSell(){
-        return openOrder && predictPercent < 0;
+        return openOrder && predictPercent < 0 && currentProfitPercent < previousProfitPercent;
     }
 
 }
