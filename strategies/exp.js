@@ -106,11 +106,11 @@ strat.check = function(candle) {
     this.previousProfitPercent = currentProfitPercent;
 
     function shouldBuy(){
-        return !self.open_order && predictPercent > 2.1;
+        return !self.open_order && predictPercent > 1.5;
     }
 
     function shouldSell(){
-        return self.open_order && predictPercent < 0;
+        return self.open_order && predictPercent < -0.5;
     }
 
 }
