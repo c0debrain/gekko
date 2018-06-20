@@ -26,7 +26,7 @@ strat.init = function() {
     tu.normalizer=100;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(4,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
@@ -37,6 +37,18 @@ strat.init = function() {
         rate: 0.03,
         momentum: 0.9,
         batchSize:  this.requiredHistory
+    };
+
+    this.evolveNet = new neataptic.Network(this.lookbackIndex, 1);
+    this.evolveOptions = {
+        mutation: neataptic.methods.mutation.ALL,
+        amount:5,
+        mutationRate: 0.004,
+        clear: true,
+        cost: neataptic.methods.cost.MSE,
+        log: 90000,
+        error: 0.000000001,
+        iterations: this.settings.iterations
     };
 }
 
@@ -65,6 +77,13 @@ strat.update = function(candle) {
         log.info("*** training start ***");
         //console.log(this.trainingData);
         this.perceptron.train(this.trainingData,this.perceptronOptions);
+
+        /*
+        (async ()=> {
+            await this.evolveNet.evolve(this.trainingData, this.evolveOptions);
+            log.info("trying to train");
+        })();
+        */
     }
 }
 
@@ -80,7 +99,10 @@ strat.check = function(candle) {
     //log.info("candle date: "+tu.getDate(candle));
 
     var inputCandle = tu.getLookbackInput(this.candleHistory.slice(-this.lookbackIndex));
+
     var predictValue = this.perceptron.activate(inputCandle);
+    //var predictValueEvolve = this.evolveNet.activate(inputCandle);
+
     var predictPercent = tu.getPercent(predictValue, tu.getOutput(candle));
     var currentPrice = tu.getOutput(candle);
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
@@ -89,6 +111,7 @@ strat.check = function(candle) {
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
+    //log.info("predictEvolve: "+predictValueEvolve);
 
     if(shouldBuy()) {
         log.info("************* Buy *************");
