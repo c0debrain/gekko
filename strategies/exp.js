@@ -57,11 +57,6 @@ strat.init = function() {
 
 strat.update = function(candle) {
     this.candleHistory.push(candle);
-    //log.info("*** update ***");
-    //log.info("candle history: "+this.candleHistory.length);
-    //log.info("candle date: "+tu.getDate(candle));
-    //log.info("candle data: "+[candle.open,candle.close]);
-
 
     if(this.candleHistory.length > this.lookbackIndex) {
         var myObj = {};
@@ -133,6 +128,9 @@ strat.check = function(candle) {
     }
 
     this.previousProfitPercent = currentProfitPercent;
+
+
+
 
     function shouldBuy(){
         return !self.open_order && predictPercent > 1.8;
