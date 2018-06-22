@@ -24,6 +24,7 @@ strat.init = function() {
     this.previousProfitPercent=0;
     this.trainCounter=0;
     this.trainGap=0;
+    this.totalProfitPercen=0;
 
     tu.normalizer=100;
     tu.roundPoint=6;
@@ -73,9 +74,12 @@ strat.update = function(candle) {
     this.trainCounter++;
 
     if(this.trainingData.length >= this.requiredHistory && this.trainCounter >= this.trainGap) {
+
         this.trainCounter=0;
-        log.info("*** training start ***");
+        log.info("************  training start ************");
         log.info("Date: "+tu.getDate(candle));
+        log.info("Total profit: "+this.totalProfitPercen);
+
         //console.log(this.trainingData);
         this.perceptron.train(this.trainingData,this.perceptronOptions);
 
@@ -123,6 +127,7 @@ strat.check = function(candle) {
     } else if(shouldSell()) {
         log.info("************* Sell *************");
         log.info("price: "+this.price+" sell: "+currentPrice+" profit%: "+currentProfitPercent);
+        this.totalProfitPercen += currentProfitPercent;
         this.open_order = false;
         return this.advice('short');
     }
