@@ -19,25 +19,25 @@ strat.init = function() {
     this.candleHistory=[];
     this.trainingData=[];
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.lookbackIndex=6;
+    this.lookbackIndex=7;
     this.price=0;
     this.previousProfitPercent=0;
     this.trainCounter=0;
     this.trainGap=0;
     this.totalProfitPercen=0;
 
-    tu.normalizer=100;
+    tu.normalizer=1000;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,6,6,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,100,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
         log: 10000,
         shuffle:false,
-        //iterations: 50000,
-        error: 0.0000001,
-        rate: 0.003,
+        iterations: 5000,
+        error: 0.0001,
+        rate: 0.03,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -108,6 +108,7 @@ strat.check = function(candle) {
     var predictValue = this.perceptron.activate(inputCandle);
     //var predictValueEvolve = this.evolveNet.activate(inputCandle);
 
+    var isTotalUptrend = tu.isTotalUptrend(inputCandle);
     var predictPercent = tu.getPercent(predictValue, tu.getOutput(candle));
     var currentPrice = tu.getOutput(candle);
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
@@ -116,6 +117,10 @@ strat.check = function(candle) {
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
+    log.info("price: "+this.price);
+    log.info("currentProfit% :"+currentProfitPercent);
+    log.info("previousProfit%: "+this.previousProfitPercent);
+
     //log.info("predictEvolve: "+predictValueEvolve);
 
     if(shouldBuy()) {
@@ -138,11 +143,14 @@ strat.check = function(candle) {
 
 
     function shouldBuy(){
-        return !self.open_order && predictPercent > 1.8 && predictPercent < 3;
+        return !self.open_order &&
+            (predictPercent > 1 && predictPercent < 3);
     }
 
     function shouldSell(){
-        return self.open_order && predictPercent < -0.5;
+        return self.open_order &&
+            (predictPercent < -0.5) &&
+            (currentProfitPercent < self.previousProfitPercent);
     }
 
 }
