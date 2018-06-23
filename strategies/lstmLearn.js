@@ -21,7 +21,14 @@ method.init = function() {
     this.open_order = false;
 
     // preprate neural network
-    this.network = new neataptic.architect.LSTM(1,6,1);
+    this.network = new neataptic.architect.LSTM(1,9,1);
+    this.networkOptions =  {
+        log: 1000,
+        iterations: 10000,
+        error: 0.003,
+        rate: 0.005,
+        clear: true
+    };
     //this.network = new neataptic.architect.NARX(1, 5, 1, 50, 50);
     this.trainingData = [];
     this.previous = null;
@@ -53,14 +60,7 @@ method.update = function(candle) {
         log.info("starting to train: "+this.trainingData.length);
         //log.info(this.trainingData);
 
-        this.trainResult = this.network.train(this.trainingData, {
-            clear: true,
-            log: 10000,
-            iterations: 300000,
-            error: 0.00005,
-            rate: 0.000005,
-            momentum: 0.9
-        });
+        this.trainResult = this.network.train(this.trainingData,this.networkOptions);
         //console.log(this.trainResult);
     }
 
@@ -91,7 +91,7 @@ method.check = function(candle) {
     log.info("previous profit: "+this.previousProfitPercent);
 
 
-    if(percentage > 1 && !this.open_order) {
+    if(!this.open_order && percentage > 1.5) {
         log.info("**** Buy: $"+candle.close);
         this.price = tu.getNorm(candle.close);
         this.open_order = true;
