@@ -29,7 +29,7 @@ strat.init = function() {
     tu.normalizer=1000;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,100,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,30,3,2,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
@@ -144,13 +144,12 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-            (predictPercent > 1 && predictPercent < 3);
+            (predictPercent > 1.7);
     }
 
     function shouldSell(){
         return self.open_order &&
-            (predictPercent < -0.5) &&
-            (currentProfitPercent < self.previousProfitPercent);
+            (predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
     }
 
 }
