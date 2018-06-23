@@ -19,7 +19,7 @@ strat.init = function() {
     this.candleHistory=[];
     this.trainingData=[];
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.lookbackIndex=4;
+    this.lookbackIndex=6;
     this.price=0;
     this.previousProfitPercent=0;
     this.trainCounter=0;
@@ -29,15 +29,15 @@ strat.init = function() {
     tu.normalizer=100;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,6,6,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
-        log: 90000,
+        log: 10000,
         shuffle:false,
-        iterations: 10000,
-        error: 0.000000001,
-        rate: 0.03,
+        //iterations: 50000,
+        error: 0.0000001,
+        rate: 0.003,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -138,7 +138,7 @@ strat.check = function(candle) {
 
 
     function shouldBuy(){
-        return !self.open_order && predictPercent > 1.8;
+        return !self.open_order && predictPercent > 1.8 && predictPercent < 3;
     }
 
     function shouldSell(){
