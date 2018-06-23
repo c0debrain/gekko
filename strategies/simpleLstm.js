@@ -16,7 +16,7 @@ method.init = function() {
     this.open_order = false;
 
     // preprate neural network
-    this.network = new neataptic.architect.LSTM(1,9,1);
+    this.network = new neataptic.architect.LSTM(1,6,6,1);
     this.trainingData = [];
     this.obj = {};
 }
@@ -29,11 +29,12 @@ method.update = function(candle) {
 
     // train the neural network
     this.trainingData.push(this.obj);
+    log.info("training");
     this.network.train(this.trainingData, {
-        log: 1000,
+        log: 9000,
         iterations: 10000,
-        error: 0.003,
-        rate: 0.005,
+        error: 0.000001,
+        rate: 0.003,
         clear: true
     });
 
