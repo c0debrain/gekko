@@ -69,18 +69,16 @@ method.check = function(candle) {
     log.info("currentPrice: "+currentPrice);
     log.info("Predict: "+predicted_value+" %: "+percentage);
 
-    if(!this.open_order && percentage > 2)
-    {
+    if(!this.open_order && percentage > 2) {
         log.info("Buy: $"+candle.close);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    }else if(this.open_order && percentage < 0.5){
+    } else if(this.open_order && percentage < 0.5) {
         this.open_order = false;
         log.info("Sold: $"+candle.close);
         return this.advice('short');
-
     }
 
     return this.advice();
