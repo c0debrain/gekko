@@ -16,7 +16,15 @@ method.init = function() {
     this.open_order = false;
 
     // preprate neural network
-    this.network = new neataptic.architect.LSTM(1,6,6,1);
+    this.network = new neataptic.architect.LSTM(1,6,6,6,6,1);
+    this.networkOptions = {
+        log: 9000,
+        iterations: 10000,
+        error: 0.000001,
+        rate: 0.0003,
+        clear: true,
+        momentum: 0.9,
+    };
     this.trainingData = [];
     this.obj = {};
 }
@@ -30,13 +38,7 @@ method.update = function(candle) {
     // train the neural network
     this.trainingData.push(this.obj);
     log.info("training");
-    this.network.train(this.trainingData, {
-        log: 9000,
-        iterations: 10000,
-        error: 0.000001,
-        rate: 0.003,
-        clear: true
-    });
+    this.network.train(this.trainingData, this.networkOptions);
 
 }
 
