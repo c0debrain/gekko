@@ -144,7 +144,7 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-            (predictPercent > 1.7);
+            (predictPercent > 1.5);
     }
 
     function shouldSell(){
