@@ -64,7 +64,7 @@ strat.init = function() {
 
     var customMOMSettings = {
         optInTimePeriod:35
-    }
+    };
 
     // add the indicator to the strategy
     this.addTalibIndicator('mymom', 'mom', customMOMSettings);
