@@ -14,6 +14,13 @@ var strat = {};
 strat.init = function() {
     // your code!
     log.info("**** Init ****");
+
+    this.fileDelim = "weights/"+this.settings.fileDelim;
+    this.weightFileName = this.fileDelim+"exp-weights.json";
+    this.candleHistoryFileName = this.fileDelim+"exp-candleHistory.json";
+    this.trainingDataFileName = this.fileDelim+"exp-trainingData.json";
+
+
     config.debug = false;
     this.open_order = false;
     this.candleHistory=[];
@@ -29,7 +36,7 @@ strat.init = function() {
     tu.normalizer=1000;
     tu.roundPoint=6;
 
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,30,3,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
@@ -172,10 +179,11 @@ strat.check = function(candle) {
 
 
 
-
-
 strat.end = function() {
     log.info("**** End ****");
+    tu.writeJsonToFile(this.perceptron.toJSON(), this.weightFileName);
+    tu.writeJsonToFile(this.candleHistory, this.candleHistoryFileName);
+    tu.writeJsonToFile(this.trainingData, this.trainingDataFileName);
 }
 
 
