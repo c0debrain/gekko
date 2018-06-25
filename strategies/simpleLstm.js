@@ -16,7 +16,7 @@ method.init = function() {
     this.open_order = false;
 
     // preprate neural network
-    this.network = new neataptic.architect.LSTM(1,6,6,6,6,1);
+    this.network = new neataptic.architect.LSTM(1,6,6,1);
     this.networkOptions = {
         log: 9000,
         iterations: 10000,
@@ -32,7 +32,7 @@ method.init = function() {
 // what happens on every new candle?
 method.update = function(candle) {
 
-    this.obj['input'] = [candle.open * 1000]; // divide with 20k, normalizing our input and output
+    this.obj['input'] = [candle.open * 1000];
     this.obj['output'] = [candle.close * 1000];
 
     // train the neural network
@@ -50,18 +50,6 @@ method.log = function() {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
-    /* Candle information
-     { id: 103956,
-     start: moment("2018-02-04T00:00:00.000"),
-     open: 9080.49,
-     high: 9218.98,
-     low: 9022,
-     close: 9199.96,
-     vwp: 9097.252446880359,
-     volume: 802.5146890000001,
-     trades: 8086 }
-     */
-
     var currentPrice = candle.close * 1000;
     //let's predict the next close price on the current close price;
     var predicted_value = this.network.activate(currentPrice);
@@ -72,13 +60,13 @@ method.check = function(candle) {
     log.info("currentPrice: "+currentPrice);
     log.info("Predict: "+predicted_value+" %: "+percentage);
 
-    if(!this.open_order && percentage > 2) {
+    if(!this.open_order && percentage > 1) {
         log.info("Buy: $"+candle.close);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 0.5) {
+    } else if(this.open_order && percentage < 0.1) {
         this.open_order = false;
         log.info("Sold: $"+candle.close);
         return this.advice('short');
