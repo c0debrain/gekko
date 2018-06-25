@@ -42,11 +42,6 @@ method.update = function(candle) {
 
 }
 
-
-method.log = function() {
-
-}
-
 // check is executed after the minimum history input
 method.check = function(candle) {
 
@@ -73,6 +68,14 @@ method.check = function(candle) {
     }
 
     return this.advice();
+}
+
+module.end = function() {
+    log.info("**** End ****");
+}
+
+method.log = function() {
+
 }
 
 module.exports = method;
