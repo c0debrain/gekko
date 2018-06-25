@@ -20,8 +20,8 @@ method.init = function() {
     this.networkOptions = {
         log: 9000,
         iterations: 10000,
-        error: 0.000001,
-        rate: 0.0003,
+        error: 0.0000001,
+        rate: 0.00001,
         clear: true,
         momentum: 0.9,
     };
@@ -70,7 +70,7 @@ method.check = function(candle) {
     return this.advice();
 }
 
-module.end = function() {
+method.end = function() {
     log.info("**** End ****");
 }
 
