@@ -53,6 +53,14 @@ strat.init = function() {
         error: 0.000000001,
         iterations: this.settings.iterations
     };
+
+
+    var customMOMSettings = {
+        optInTimePeriod:12
+    }
+
+    // add the indicator to the strategy
+    this.addTalibIndicator('mymom', 'mom', customMOMSettings);
 }
 
 
@@ -114,6 +122,11 @@ strat.check = function(candle) {
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
     var self = this;
 
+    var result = this.talibIndicators.mymom.result;
+
+    log.info("result: ");
+    console.log(result);
+
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
     log.info("predict: "+predictValue+" %: "+predictPercent);
@@ -144,12 +157,14 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-            (predictPercent > 1.5);
+                result['outReal'] > 0 &&
+            (predictPercent > 0.5);
     }
 
     function shouldSell(){
         return self.open_order &&
-            (predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
+            result['outReal'] < 0.0001;
+            //(predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
     }
 
 }
