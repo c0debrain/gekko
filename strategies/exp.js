@@ -56,7 +56,7 @@ strat.init = function() {
 
 
     var customMOMSettings = {
-        optInTimePeriod:12
+        optInTimePeriod:35
     }
 
     // add the indicator to the strategy
@@ -157,14 +157,14 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-                result['outReal'] > 0 &&
-            (predictPercent > 0.5);
+                //result['outReal'] > 0 &&
+            (predictPercent > 1.7);
     }
 
     function shouldSell(){
         return self.open_order &&
-            result['outReal'] < 0.0001;
-            //(predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
+            //result['outReal'] < 0.0001;
+            (predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
     }
 
 }
