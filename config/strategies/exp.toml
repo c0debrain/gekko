@@ -9,6 +9,8 @@ error=0.00000001
 rate=0.0001
 
 debug=true
-lookbackIndex=13
-trainPeriod=89
+lookbackIndex=6
+trainPeriod=13
 hitCounter=3
+
+mom=23

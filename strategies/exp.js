@@ -39,7 +39,7 @@ strat.init = function() {
     tu.roundPoint = this.settings.roundPoint;
 
     this.weights ;//= tu.readJsonFromFile(this.weightFileName);
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,100,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,30,1);
 
     if(this.weights!=null) {
         log.info("creating network from file");
@@ -74,7 +74,7 @@ strat.init = function() {
 
 
     var customMOMSettings = {
-        optInTimePeriod:48
+        optInTimePeriod:this.settings.mom
     };
 
     // add the indicator to the strategy
@@ -177,8 +177,9 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-                result['outReal'] > 0 &&
-            (predictPercent > 2);
+                cs.isBullishHammerLike(candle) &&
+                result['outReal'] > 0 //&&
+            //(predictPercent > 2);
     }
 
     function shouldSell(){
