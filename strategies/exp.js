@@ -33,6 +33,8 @@ strat.init = function() {
     this.trainPeriod = this.settings.trainPeriod;
     this.totalProfitPercen=0;
 
+    this.actionCounter = 0;
+
     tu.normalizer = this.settings.normalizer;
     tu.roundPoint = this.settings.roundPoint;
 
@@ -145,21 +147,23 @@ strat.check = function(candle) {
 
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
-    log.info("predict: "+predictValue+" %: "+predictPercent);
     log.info("price: "+this.price);
     log.info("currentProfit% :"+currentProfitPercent);
     log.info("previousProfit%: "+this.previousProfitPercent);
+    log.info("predict: "+predictValue+" %: "+predictPercent);
+    log.info("MOM: "+result['outReal']);
 
     //log.info("predictEvolve: "+predictValueEvolve);
 
     if(shouldBuy()) {
-        log.info("************* Buy *************");
+        this.actionCounter ++;
+        log.info("************* Buy "+this.actionCounter+"*************");
         this.open_order = true;
         this.price = currentPrice;
         return this.advice('long');
 
     } else if(shouldSell()) {
-        log.info("************* Sell *************");
+        log.info("************* Sell "+this.actionCounter+"*************");
         log.info("price: "+this.price+" sell: "+currentPrice+" profit%: "+currentProfitPercent);
         this.totalProfitPercen += currentProfitPercent;
         this.open_order = false;
