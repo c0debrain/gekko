@@ -15,7 +15,7 @@ strat.init = function() {
     // your code!
     log.info("**** Init ****");
 
-    this.fileDelim = "weights/"+this.settings.fileDelim;
+    this.fileDelim = "weights/";//+this.settings.fileDelim;
     this.weightFileName = this.fileDelim+"exp-weights.json";
     this.candleHistoryFileName = this.fileDelim+"exp-candleHistory.json";
     this.trainingDataFileName = this.fileDelim+"exp-trainingData.json";
@@ -26,25 +26,32 @@ strat.init = function() {
     this.candleHistory=[];
     this.trainingData=[];
     this.requiredHistory = config.tradingAdvisor.historySize;
-    this.lookbackIndex=7;
+    this.lookbackIndex = this.settings.lookbackIndex;
     this.price=0;
     this.previousProfitPercent=0;
     this.trainCounter=0;
-    this.trainGap=0;
+    this.trainPeriod = this.settings.trainPeriod;
     this.totalProfitPercen=0;
 
-    tu.normalizer=1000;
-    tu.roundPoint=6;
+    tu.normalizer = this.settings.normalizer;
+    tu.roundPoint = this.settings.roundPoint;
 
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
+    this.weights ;//= tu.readJsonFromFile(this.weightFileName);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,100,1);
+
+    if(this.weights!=null) {
+        log.info("creating network from file");
+        this.perceptron = neataptic.Network.fromJSON(this.weights);
+    }
+
     this.perceptronOptions =  {
         //dropout: 0.5,
         clear: true,
-        log: 10000,
+        log: 20000,
         shuffle:false,
-        iterations: 5000,
-        error: 0.0001,
-        rate: 0.03,
+        iterations:  this.settings.iterations,
+        error:  this.settings.error,
+        rate:  this.settings.rate,
         momentum: 0.9,
         batchSize:  this.requiredHistory
     };
@@ -62,8 +69,10 @@ strat.init = function() {
     };
 
 
+
+
     var customMOMSettings = {
-        optInTimePeriod:35
+        optInTimePeriod:48
     };
 
     // add the indicator to the strategy
@@ -88,7 +97,7 @@ strat.update = function(candle) {
 
     this.trainCounter++;
 
-    if(this.trainingData.length >= this.requiredHistory && this.trainCounter >= this.trainGap) {
+    if(this.trainingData.length >= this.requiredHistory && this.trainCounter >= this.trainPeriod) {
 
         this.trainCounter=0;
         log.info("************  training start ************");
@@ -164,14 +173,15 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order &&
-                //result['outReal'] > 0 &&
-            (predictPercent > 1.7);
+                result['outReal'] > 0 &&
+            (predictPercent > 2);
     }
 
     function shouldSell(){
         return self.open_order &&
-            //result['outReal'] < 0.0001;
-            (predictPercent < 1 && (currentProfitPercent < self.previousProfitPercent));
+            (result['outReal'] < 0 ||
+                (predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
+            );
     }
 
 }
@@ -181,9 +191,11 @@ strat.check = function(candle) {
 
 strat.end = function() {
     log.info("**** End ****");
-    tu.writeJsonToFile(this.perceptron.toJSON(), this.weightFileName);
-    tu.writeJsonToFile(this.candleHistory, this.candleHistoryFileName);
-    tu.writeJsonToFile(this.trainingData, this.trainingDataFileName);
+    if(this.weights != null) {
+        //tu.writeJsonToFile(this.perceptron.toJSON(), this.weightFileName);
+    }
+    //tu.writeJsonToFile(this.candleHistory, this.candleHistoryFileName);
+    //tu.writeJsonToFile(this.trainingData, this.trainingDataFileName);
 }
 
 
