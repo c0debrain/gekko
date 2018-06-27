@@ -39,7 +39,7 @@ strat.init = function() {
     tu.roundPoint = this.settings.roundPoint;
 
     this.weights ;//= tu.readJsonFromFile(this.weightFileName);
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,30,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
 
     if(this.weights!=null) {
         log.info("creating network from file");
