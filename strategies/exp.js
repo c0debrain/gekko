@@ -39,7 +39,7 @@ strat.init = function() {
     tu.roundPoint = this.settings.roundPoint;
 
     this.weights ;//= tu.readJsonFromFile(this.weightFileName);
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,10,2,1);
 
     if(this.weights!=null) {
         log.info("creating network from file");
@@ -70,15 +70,17 @@ strat.init = function() {
         iterations: this.settings.iterations
     };
 
-
-
-
-    var customMOMSettings = {
+    var buyMOMSettings = {
         optInTimePeriod:this.settings.mom
     };
-
     // add the indicator to the strategy
-    this.addTalibIndicator('mymom', 'mom', customMOMSettings);
+    this.addTalibIndicator('buyMom', 'mom', buyMOMSettings);
+
+    var sellMOMSettings = {
+        optInTimePeriod:this.settings.mom
+    };
+    // add the indicator to the strategy
+    this.addTalibIndicator('sellMom', 'mom', sellMOMSettings);
 }
 
 
@@ -140,10 +142,8 @@ strat.check = function(candle) {
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
     var self = this;
 
-    var result = this.talibIndicators.mymom.result;
-
-    log.info("result: ");
-    console.log(result);
+    var buyMom = this.talibIndicators.buyMom.result;
+    var sellMom = this.talibIndicators.sellMom.result;
 
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
@@ -151,7 +151,8 @@ strat.check = function(candle) {
     log.info("currentProfit% :"+currentProfitPercent);
     log.info("previousProfit%: "+this.previousProfitPercent);
     log.info("predict: "+predictValue+" %: "+predictPercent);
-    log.info("MOM: "+result['outReal']);
+    log.info("buyMom: "+buyMom['outReal']);
+    log.info("sellMom: "+sellMom['outReal']);
 
     //log.info("predictEvolve: "+predictValueEvolve);
 
@@ -174,17 +175,16 @@ strat.check = function(candle) {
 
 
 
-
     function shouldBuy(){
         return !self.open_order &&
                 cs.isBullishHammerLike(candle) &&
-                result['outReal'] > 0 //&&
+                buyMom['outReal'] > 0 //&&
             //(predictPercent > 2);
     }
 
     function shouldSell(){
         return self.open_order &&
-            (result['outReal'] < 0 ||
+            (sellMom['outReal'] < 0 ||
                 (predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
             );
     }
