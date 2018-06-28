@@ -184,8 +184,8 @@ strat.check = function(candle) {
 
     function shouldSell(){
         return self.open_order &&
-            (sellMom['outReal'] < 0 ||
-                (predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
+            (sellMom['outReal'] < 0 //||
+                //(predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
             );
     }
 
