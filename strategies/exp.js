@@ -81,6 +81,12 @@ strat.init = function() {
     };
     // add the indicator to the strategy
     this.addTalibIndicator('sellMom', 'mom', sellMOMSettings);
+
+    var linearreg_slopeSettings = {
+        optInTimePeriod:this.settings.mom
+    }
+    this.addTalibIndicator('slope', 'linearreg_slope', linearreg_slopeSettings);
+
 }
 
 
@@ -142,8 +148,9 @@ strat.check = function(candle) {
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
     var self = this;
 
-    var buyMom = this.talibIndicators.buyMom.result;
-    var sellMom = this.talibIndicators.sellMom.result;
+    var buyMom = this.talibIndicators.buyMom.result['outReal'];
+    var sellMom = this.talibIndicators.sellMom.result['outReal'];
+    var slope = this.talibIndicators.slope.result['outReal'];
 
     log.info("input: "+currentPrice);
     log.info("input list: "+inputCandle);
@@ -151,8 +158,9 @@ strat.check = function(candle) {
     log.info("currentProfit% :"+currentProfitPercent);
     log.info("previousProfit%: "+this.previousProfitPercent);
     log.info("predict: "+predictValue+" %: "+predictPercent);
-    log.info("buyMom: "+buyMom['outReal']);
-    log.info("sellMom: "+sellMom['outReal']);
+    log.info("buyMom: "+buyMom);
+    log.info("sellMom: "+sellMom);
+    log.info("slope: "+slope);
 
     //log.info("predictEvolve: "+predictValueEvolve);
 
@@ -176,17 +184,18 @@ strat.check = function(candle) {
 
 
     function shouldBuy(){
-        return !self.open_order &&
-                cs.isBullishHammerLike(candle) &&
-                buyMom['outReal'] > 0 //&&
+        return !self.open_order
+                && cs.isBullishHammerLike(candle)
+                && buyMom > 0
+                && slope > 0
             //(predictPercent > 2);
     }
 
     function shouldSell(){
-        return self.open_order &&
-            (sellMom['outReal'] < 0 //||
-                //(predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
-            );
+        return self.open_order
+            && (sellMom < 0
+                //|| (predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
+                )
     }
 
 }
