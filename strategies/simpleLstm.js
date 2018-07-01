@@ -49,25 +49,26 @@ method.update = function(candle) {
 // check is executed after the minimum history input
 method.check = function(candle) {
 
+    var self = this;
     var currentPrice = candle.close * 1000;
     //let's predict the next close price on the current close price;
-    var predicted_value = this.network.activate(currentPrice);
-
+    var predictValue = this.network.activate(currentPrice);
     // % change in current close and predicted close
-    var percentage = ((predicted_value-currentPrice)/currentPrice)*100;
+    var predictPercent = ((predictValue-currentPrice)/currentPrice)*100;
 
     log.info("****** Check ******");
     log.info("Date: "+tu.getDate(candle));
     log.info("currentPrice: "+currentPrice);
-    log.info("Predict: "+predicted_value+" %: "+percentage);
+    log.info("Predict: "+predictValue+" %: "+predictPercent);
 
-    if(!this.open_order && percentage > 1) {
+
+    if(!this.open_order && predictPercent > .5) {
         log.info("Buy: $"+candle.close);
         this.price = candle.close;
         this.open_order = true;
         return this.advice('long');
 
-    } else if(this.open_order && percentage < 0.1) {
+    } else if(this.open_order && predictPercent < 0.2) {
         this.open_order = false;
         log.info("Sold: $"+candle.close);
         return this.advice('short');
