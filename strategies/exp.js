@@ -188,7 +188,7 @@ strat.check = function(candle) {
                 && cs.isBullishHammerLike(candle)
                 && buyMom > .000001
                 && slope > 0
-            //(predictPercent > 2);
+                && predictPercent > 2;
     }
 
     function shouldSell(){

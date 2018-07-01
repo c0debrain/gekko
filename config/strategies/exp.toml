@@ -13,4 +13,4 @@ lookbackIndex=6
 trainPeriod=13
 hitCounter=3
 
-mom=24
+mom=22
