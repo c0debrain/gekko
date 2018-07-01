@@ -5,6 +5,10 @@ const config = require ('../core/util.js').getConfig();
 const async = require ('async');
 const log = require('../core/log.js');
 
+const cs = require('../modules/candlestick.js');
+const tu = require('../modules/tradeutil.js');
+const ts = require("timeseries-analysis");
+
 // let's create our own method
 var method = {};
 
@@ -16,7 +20,7 @@ method.init = function() {
     this.open_order = false;
 
     // preprate neural network
-    this.network = new neataptic.architect.LSTM(1,6,6,1);
+    this.network = new neataptic.architect.LSTM(1,6,1);
     this.networkOptions = {
         log: 9000,
         iterations: 10000,
@@ -52,6 +56,8 @@ method.check = function(candle) {
     // % change in current close and predicted close
     var percentage = ((predicted_value-currentPrice)/currentPrice)*100;
 
+    log.info("****** Check ******");
+    log.info("Date: "+tu.getDate(candle));
     log.info("currentPrice: "+currentPrice);
     log.info("Predict: "+predicted_value+" %: "+percentage);
 
@@ -67,7 +73,6 @@ method.check = function(candle) {
         return this.advice('short');
     }
 
-    return this.advice();
 }
 
 method.end = function() {
