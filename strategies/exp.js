@@ -187,14 +187,14 @@ strat.check = function(candle) {
         return !self.open_order
                 && cs.isBullishHammerLike(candle)
                 && buyMom > .000001
-                //&& slope > .0000005
+                && slope > 0
             //(predictPercent > 2);
     }
 
     function shouldSell(){
         return self.open_order
-            && (sellMom < .00000004
-                //|| (predictPercent < 0 && (currentProfitPercent < self.previousProfitPercent))
+            && (sellMom < 0
+                || (slope < 0 && (currentProfitPercent < self.previousProfitPercent))
                 )
     }
 
