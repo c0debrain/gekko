@@ -172,32 +172,10 @@ method.update = function(candle) {
         log.info("Train Gap: "+this.trainGap);
         //log.info(this.trainingData);
 
-        //this.network = this.getPerceptron();
+        this.network = this.getPerceptron();
         //perceptron
-        //this.perceptOptions.batchSize = this.trainingData.length;
-        //var result = this.network.train(this.trainingData, this.perceptOptions);
-
-
-
-        var result;
-        this.network = this.getEvolveNet();
-        //evolve
-        //(async ()=>{
-          //await this.network.evolve(this.trainingData, this.evolveOptions);
-        //})();
-
-        /*
-        (async ()=> {
-            result = await this.network.evolve(this.trainingData, this.evolveOptions);
-            log.info(await result);
-        })();
-        */
-
-        (async ()=> {
-            await this.network.evolve(this.trainingData, this.evolveOptions);
-            log.info("trying to train");
-        })();
-
+        this.perceptOptions.batchSize = this.trainingData.length;
+        var result = this.network.train(this.trainingData, this.perceptOptions);
 
         //log.info("Training done with iteration: "+result.iterations);
         this.trained = true; //result.iterations < this.perceptOptions.iterations ? true : false;
