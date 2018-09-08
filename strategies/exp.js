@@ -39,7 +39,7 @@ strat.init = function() {
     tu.roundPoint = this.settings.roundPoint;
 
     this.weights ;//= tu.readJsonFromFile(this.weightFileName);
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,10,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
 
     if(this.weights!=null) {
         log.info("creating network from file");
@@ -83,9 +83,14 @@ strat.init = function() {
     this.addTalibIndicator('sellMom', 'mom', sellMOMSettings);
 
     var linearreg_slopeSettings = {
-        optInTimePeriod:this.settings.mom
+        optInTimePeriod:8
     }
     this.addTalibIndicator('slope', 'linearreg_slope', linearreg_slopeSettings);
+
+    var linearreg_slopeSettings_sell = {
+        optInTimePeriod:4
+    }
+    this.addTalibIndicator('sellSlope', 'linearreg_slope', linearreg_slopeSettings_sell);
 
 }
 
@@ -148,19 +153,10 @@ strat.check = function(candle) {
     var currentProfitPercent = tu.getPercent(currentPrice,this.price);
     var self = this;
 
-    var buyMom = this.talibIndicators.buyMom.result['outReal'];
-    var sellMom = this.talibIndicators.sellMom.result['outReal'];
-    var slope = this.talibIndicators.slope.result['outReal'];
-
-    log.info("input: "+currentPrice);
-    log.info("input list: "+inputCandle);
-    log.info("price: "+this.price);
-    log.info("currentProfit% :"+currentProfitPercent);
-    log.info("previousProfit%: "+this.previousProfitPercent);
-    log.info("predict: "+predictValue+" %: "+predictPercent);
-    log.info("buyMom: "+buyMom);
-    log.info("sellMom: "+sellMom);
-    log.info("slope: "+slope);
+    var buyMom = this.talibIndicators.buyMom.result['outReal'] * 1000;
+    var sellMom = this.talibIndicators.sellMom.result['outReal'] * 1000;
+    var slope = this.talibIndicators.slope.result['outReal'] * 1000;
+    var sellSlope = this.talibIndicators.sellSlope.result['outReal'] * 1000;
 
     //log.info("predictEvolve: "+predictValueEvolve);
 
@@ -169,6 +165,7 @@ strat.check = function(candle) {
         log.info("************* Buy "+this.actionCounter+"*************");
         this.open_order = true;
         this.price = currentPrice;
+        printDebugInfo();
         return this.advice('long');
 
     } else if(shouldSell()) {
@@ -176,27 +173,42 @@ strat.check = function(candle) {
         log.info("price: "+this.price+" sell: "+currentPrice+" profit%: "+currentProfitPercent);
         this.totalProfitPercen += currentProfitPercent;
         this.open_order = false;
+        printDebugInfo();
         return this.advice('short');
     }
 
     this.previousProfitPercent = currentProfitPercent;
 
 
-
     function shouldBuy(){
         return !self.open_order
-                //&& cs.isBullishHammerLike(candle)
-                && cs.isBullish(candle)
+                && cs.isBullishHammerLike(candle)
+                //&& cs.isBullish(candle)
                 && buyMom > .000001
-                && slope > 0
-                && predictPercent > 2;
+                //&& slope > 0
+                && predictPercent > 1;
     }
 
     function shouldSell(){
         return self.open_order
-            && (sellMom < 0
-                || (slope < 0 && (currentProfitPercent < self.previousProfitPercent))
-                )
+            && !isTotalUptrend
+            && slope < 0
+            //&& (sellMom < 0 || (slope < 0 && (currentProfitPercent < self.previousProfitPercent)))
+    }
+
+
+    function printDebugInfo() {
+        log.info("input: "+currentPrice);
+        log.info("input list: "+inputCandle);
+        log.info("price: "+self.price);
+        log.info("currentProfit% :"+currentProfitPercent);
+        log.info("previousProfit%: "+self.previousProfitPercent);
+        log.info("predict: "+predictValue+" %: "+predictPercent);
+        log.info("isTotalUpTrend: "+isTotalUptrend);
+        log.info("buyMom: "+buyMom);
+        log.info("sellMom: "+sellMom);
+        log.info("slope: "+slope);
+        log.info("sellSlope: "+sellSlope);
     }
 
 }

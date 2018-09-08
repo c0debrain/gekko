@@ -1,14 +1,17 @@
 trainSave=false
-fileDelim="labCLv1"
+fileDelim="labCI-v1"
 
 normalizer=1
-roundPoint=8
+roundPoint=10
 
-iterations=500000
-error=0.00000001
-rate=0.0001
+iterations=80000
+error=0.0000006
+rate=0.001
 
 debug=true
-lookbackIndex=13
-trainPeriod=89
+lookbackIndex=24
+trainPeriod=12
 hitCounter=3
+
+candleSize=6
+rampup=50
