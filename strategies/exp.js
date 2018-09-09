@@ -83,12 +83,12 @@ strat.init = function() {
     this.addTalibIndicator('sellMom', 'mom', sellMOMSettings);
 
     var linearreg_slopeSettings = {
-        optInTimePeriod:8
+        optInTimePeriod:this.settings.mom
     }
     this.addTalibIndicator('slope', 'linearreg_slope', linearreg_slopeSettings);
 
     var linearreg_slopeSettings_sell = {
-        optInTimePeriod:4
+        optInTimePeriod: 3
     }
     this.addTalibIndicator('sellSlope', 'linearreg_slope', linearreg_slopeSettings_sell);
 
@@ -177,25 +177,24 @@ strat.check = function(candle) {
         return this.advice('short');
     }
 
-    this.previousProfitPercent = currentProfitPercent;
 
+    this.previousProfitPercent = currentProfitPercent;
 
     function shouldBuy(){
         return !self.open_order
                 && cs.isBullishHammerLike(candle)
                 //&& cs.isBullish(candle)
                 && buyMom > .000001
-                //&& slope > 0
-                && predictPercent > 1;
+                && slope > 0
+                //&& predictPercent > 1;
     }
 
     function shouldSell(){
         return self.open_order
-            && !isTotalUptrend
+            //&& !isTotalUptrend
             && slope < 0
             //&& (sellMom < 0 || (slope < 0 && (currentProfitPercent < self.previousProfitPercent)))
     }
-
 
     function printDebugInfo() {
         log.info("input: "+currentPrice);
