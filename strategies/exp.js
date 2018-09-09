@@ -77,18 +77,18 @@ strat.init = function() {
     this.addTalibIndicator('buyMom', 'mom', buyMOMSettings);
 
     var sellMOMSettings = {
-        optInTimePeriod:this.settings.mom / 2
+        optInTimePeriod: this.settings.mom / 2
     };
     // add the indicator to the strategy
     this.addTalibIndicator('sellMom', 'mom', sellMOMSettings);
 
     var linearreg_slopeSettings = {
-        optInTimePeriod:this.settings.mom
+        optInTimePeriod: this.settings.mom
     }
     this.addTalibIndicator('slope', 'linearreg_slope', linearreg_slopeSettings);
 
     var linearreg_slopeSettings_sell = {
-        optInTimePeriod: 3
+        optInTimePeriod: this.settings.mom/3
     }
     this.addTalibIndicator('sellSlope', 'linearreg_slope', linearreg_slopeSettings_sell);
 
@@ -182,8 +182,8 @@ strat.check = function(candle) {
 
     function shouldBuy(){
         return !self.open_order
-                && cs.isBullishHammerLike(candle)
-                //&& cs.isBullish(candle)
+                //&& cs.isBullishHammerLike(candle)
+                && cs.isBullish(candle)
                 && buyMom > .000001
                 && slope > 0
                 //&& predictPercent > 1;
