@@ -39,7 +39,7 @@ strat.init = function() {
     tu.roundPoint = this.settings.roundPoint;
 
     this.weights ;//= tu.readJsonFromFile(this.weightFileName);
-    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,2,1);
+    this.perceptron = new neataptic.architect.Perceptron(this.lookbackIndex,4,1);
 
     if(this.weights!=null) {
         log.info("creating network from file");
@@ -160,6 +160,8 @@ strat.check = function(candle) {
 
     //log.info("predictEvolve: "+predictValueEvolve);
 
+    //printDebugInfo();
+
     if(shouldBuy()) {
         this.actionCounter ++;
         log.info("************* Buy "+this.actionCounter+"*************");
@@ -184,13 +186,15 @@ strat.check = function(candle) {
         return !self.open_order
                 //&& cs.isBullishHammerLike(candle)
                 && cs.isBullish(candle)
-                && buyMom > .000001
-                && slope > 0
+                && buyMom > .003
+                && slope > 0.00025
+                //&& sellMom > 0002
                 //&& predictPercent > 1;
     }
 
     function shouldSell(){
         return self.open_order
+            //&& predictPercent < 0
             //&& !isTotalUptrend
             && slope < 0
             //&& (sellMom < 0 || (slope < 0 && (currentProfitPercent < self.previousProfitPercent)))

@@ -5,11 +5,11 @@ normalizer=1
 roundPoint=10
 
 iterations=80000
-error=0.0000006
+error=0.00000000006
 rate=0.001
 
 debug=true
-lookbackIndex=24
+lookbackIndex=6
 trainPeriod=12
 hitCounter=3
 
