@@ -32,15 +32,20 @@ strat.log = function() {
 }
 
 strat.check = function(candle) {
-    this.data.push(candle);
-    return;
-
+    var csvCandle = tu.getCSVCandle(candle)
+    console.log(csvCandle)
+    this.data.push(csvCandle)
+    return
 }
 
 strat.end = function() {
-    log.info(this.data);
-    csv = tu.convertArrayOfObjectsToCSV(this.data);
-    log.info(csv);
+    //log.info(this.data);
+    var args = {};
+    args.data = this.data;
+    csv = tu.convertArrayOfObjectsToCSV(args);
+    //log.info(csv);
+    //tu.writeToFile(csv,"weights/eth-trx-2019-01-01-02-01.csv");
+    tu.writeToFile(csv,"weights/eth-trx.csv");
 }
 
 module.exports = strat;

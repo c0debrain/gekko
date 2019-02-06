@@ -69,6 +69,24 @@ tradeutil.getDate = function(candle) {
     return moment.utc(candle.start).format();
 }
 
+tradeutil.getHourOfDay = function(candle) {
+    return moment.utc(candle.start).format("H");
+}
+
+tradeutil.getCSVCandle = function(candle) {
+    var csvCandle = {}
+    csvCandle.start = this.getHourOfDay(candle)
+    csvCandle.open = candle.open
+    csvCandle.high = candle.high
+    csvCandle.low = candle.low
+    csvCandle.close = candle.close
+    csvCandle.vwp = candle.vwp
+    csvCandle.volume = candle.volume
+    csvCandle.trades = candle.trades
+    return csvCandle
+}
+
+
 tradeutil.isValidCandle = function(candle) {
     return !(candle.open == candle.close &&
     candle.close == candle.high &&
@@ -91,6 +109,15 @@ tradeutil.readJsonFromFile = function(filePath) {
         log.warn("No file found");
         return null;
     }
+}
+
+
+tradeutil.writeToFile = function(content, fileName) {
+    //const exported = network.toJSON();
+    //const content = JSON.stringify(exported);
+    fs.writeFile(fileName, content, function(err, data){
+        if (err) console.log(err);
+    });
 }
 
 tradeutil.convertArrayOfObjectsToCSV = function(args) {
