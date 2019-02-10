@@ -109,6 +109,20 @@ tradeutil.getLabeldCandle = function(candle) {
     return csvCandle
 }
 
+tradeutil.getLabeldCandleFloat32Array = function(candle) {
+    var csvCandle = new Float32Array(9)
+    csvCandle[0] = this.getHourOfDay(candle)
+    csvCandle[1] = this.getMonthOfYear(candle)
+    csvCandle[2] = candle.open
+    csvCandle[3] = candle.high
+    csvCandle[4] = candle.low
+    csvCandle[5] = candle.close
+    csvCandle[6] = candle.vwp
+    csvCandle[7] = candle.volume
+    csvCandle[8] = candle.trades
+    return csvCandle
+}
+
 tradeutil.isValidCandle = function(candle) {
     return !(candle.open == candle.close &&
     candle.close == candle.high &&

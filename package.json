@@ -66,6 +66,7 @@
     "toml": "^2.3.0",
     "tulind": "^0.8.9",
     "twitter": "^1.7.1",
+    "xgboost": "^1.1.0",
     "zaif.jp": "^0.1.4"
   },
   "devDependencies": {
