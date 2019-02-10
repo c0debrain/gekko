@@ -73,6 +73,14 @@ tradeutil.getHourOfDay = function(candle) {
     return moment.utc(candle.start).format("H");
 }
 
+tradeutil.getDayOfMonth = function(candle) {
+    return moment.utc(candle.start).format("D");
+}
+
+tradeutil.getMonthOfYear = function(candle) {
+    return moment.utc(candle.start).format("M");
+}
+
 tradeutil.getCSVCandle = function(candle) {
     var csvCandle = {}
     csvCandle.start = this.getHourOfDay(candle)
@@ -86,6 +94,20 @@ tradeutil.getCSVCandle = function(candle) {
     return csvCandle
 }
 
+tradeutil.getLabeldCandle = function(candle) {
+    var csvCandle = {}
+    csvCandle.label = 0;
+    csvCandle.start = this.getHourOfDay(candle)
+    csvCandle.month = this.getMonthOfYear(candle)
+    csvCandle.open = candle.open
+    csvCandle.high = candle.high
+    csvCandle.low = candle.low
+    csvCandle.close = candle.close
+    csvCandle.vwp = candle.vwp
+    csvCandle.volume = candle.volume
+    csvCandle.trades = candle.trades
+    return csvCandle
+}
 
 tradeutil.isValidCandle = function(candle) {
     return !(candle.open == candle.close &&

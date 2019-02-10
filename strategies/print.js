@@ -8,7 +8,9 @@ var strat = {};
 
 // Prepare everything our method needs
 strat.init = function() {
+  this.counter = 0;
   this.data = [];
+  this.dataBack = [];
   this.input = 'candle';
   this.currentTrend = 'short';
   this.requiredHistory = 0;
@@ -32,9 +34,24 @@ strat.log = function() {
 }
 
 strat.check = function(candle) {
+    if (this.counter == 0) {
+      this.dataBack = tu.getLabeldCandle(candle)
+      this.counter++
+      return
+    }
+    
+    var backCandle = this.dataBack
     var csvCandle = tu.getCSVCandle(candle)
-    console.log(csvCandle)
-    this.data.push(csvCandle)
+    
+    if(csvCandle.close > backCandle.close) {
+      backCandle.label = 1
+    }
+    
+    console.log(backCandle)
+    this.data.push(backCandle)
+    
+    this.dataBack = tu.getLabeldCandle(candle)
+    this.counter++
     return
 }
 
