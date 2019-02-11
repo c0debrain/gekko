@@ -58,6 +58,7 @@ strat.check = function(candle) {
   const result = this.model.predict(mat)
   //console.log(result)
   const val = result.value[0]
+  console.log(++this.counter+" Advice: "+val)
 
   if(this.openOrder && val < this.sellPoint) {
     this.didTransact = true;
