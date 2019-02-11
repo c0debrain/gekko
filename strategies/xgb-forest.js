@@ -60,6 +60,7 @@ strat.check = function(candle) {
   //console.log(result)
   this.result = result.value[0]
   console.log(++this.counter+" Advice: "+this.result)
+  console.log(tu.getDate(candle))
 
   if(this.shouldBuy()) {
     this.buy(candle)
@@ -73,7 +74,15 @@ strat.check = function(candle) {
     console.log("Current buy price: "+this.buyPrice)
 }
 
-strat.sell = function(candle) {
+strat.shouldSell = function() {
+  return this.openOrder && this.result < this.sellPoint
+}
+
+strat.shouldBuy = function() {
+  return this.result >= this.buyPoint
+}
+
+strat.buy = function(candle) {
   this.didTransact = true;
   this.openOrder = true;
   this.buyPrice = candle.close;
@@ -81,26 +90,15 @@ strat.sell = function(candle) {
   console.log("buy: "+this.result)
 }
 
-strat.buy = function (candle) {
+strat.sell = function (candle) {
   this.didTransact = true;
   this.openOrder = false
   this.advice('short')
   console.log("sell: "+this.result)
 }
 
-strat.shouldBuy = function() {
-  return this.openOrder && this.result < this.sellPoint
-}
-
-strat.shouldSell = function() {
-  return this.result >= this.buyPoint
-}
-
-
 strat.end = function() {
   log.info("end strategy")
 }
-
-
 
 module.exports = strat;
