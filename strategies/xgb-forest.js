@@ -23,6 +23,7 @@ strat.init = function() {
   this.buyPoint = this.settings.buy_point;
 
   this.buyPrice = 0;
+  this.result = 0;
   this.didTransact = false;
 
   this.model = xgboost.XGModel(this.weightFile);
@@ -57,21 +58,13 @@ strat.check = function(candle) {
   const mat = new xgboost.matrix(input, 1, 9)
   const result = this.model.predict(mat)
   //console.log(result)
-  const val = result.value[0]
-  console.log(++this.counter+" Advice: "+val)
+  this.result = result.value[0]
+  console.log(++this.counter+" Advice: "+this.result)
 
-  if(this.openOrder && val < this.sellPoint) {
-    this.didTransact = true;
-    this.openOrder = false
-    this.advice('short')
-    console.log("sell: "+val)
-
-  } else if(val >= this.buyPoint) {
-    this.didTransact = true;
-    this.openOrder = true;
-    this.buyPrice = candle.close;
-    this.advice('long');
-    console.log("buy: "+val)
+  if(this.shouldBuy()) {
+    this.buy(candle)
+  } else if(this.shouldSell()) {
+    this.sell(candle)
   } else {
     this.didTransact = false;
   }
@@ -80,8 +73,34 @@ strat.check = function(candle) {
     console.log("Current buy price: "+this.buyPrice)
 }
 
+strat.sell = function(candle) {
+  this.didTransact = true;
+  this.openOrder = true;
+  this.buyPrice = candle.close;
+  this.advice('long');
+  console.log("buy: "+this.result)
+}
+
+strat.buy = function (candle) {
+  this.didTransact = true;
+  this.openOrder = false
+  this.advice('short')
+  console.log("sell: "+this.result)
+}
+
+strat.shouldBuy = function() {
+  return this.openOrder && this.result < this.sellPoint
+}
+
+strat.shouldSell = function() {
+  return this.result >= this.buyPoint
+}
+
+
 strat.end = function() {
   log.info("end strategy")
 }
+
+
 
 module.exports = strat;
