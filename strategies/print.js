@@ -14,6 +14,7 @@ strat.init = function() {
   this.input = 'candle';
   this.currentTrend = 'short';
   this.requiredHistory = 0;
+  this.exportFile = "weights/"+this.settings.export_file;
   log.info("starting random strategy");
 }
 
@@ -62,7 +63,7 @@ strat.end = function() {
     csv = tu.convertArrayOfObjectsToCSV(args);
     //log.info(csv);
     //tu.writeToFile(csv,"weights/eth-trx-2019-01-01-02-01.csv");
-    tu.writeToFile(csv,"weights/eth-trx.csv");
+    tu.writeToFile(csv,this.exportFile);
 }
 
 module.exports = strat;

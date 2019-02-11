@@ -4,12 +4,6 @@ const tu = require('../modules/tradeutil.js');
 
 const xgboost = require('xgboost');
 //const model = xgboost.XGModel('iris.xg.model');
-const model = xgboost.XGModel('weights/eth-trx.model.bin');
-if (model.error) {
-    console.log(model.error);
-} else {
-    log.info("loaded model.")
-}
 
 // Let's create our own strat
 var strat = {};
@@ -24,9 +18,19 @@ strat.init = function() {
   this.requiredHistory = 0;
   this.openOrder = false;
   
+  this.weightFile = "weights/"+this.settings.weight_file;
+  this.sellPoint = this.settings.sell_point;
+  this.buyPoint = this.settings.buy_point;
+
   this.buyPrice = 0;
   this.didTransact = false;
 
+  this.model = xgboost.XGModel(this.weightFile);
+  if (this.model.error) {
+      console.log(model.error);
+  } else {
+      log.info("loaded model.")
+  }
   log.info("** starting random forest strategy **")
 }
 
@@ -51,16 +55,17 @@ strat.check = function(candle) {
 
   const input = tu.getLabeldCandleFloat32Array(candle)
   const mat = new xgboost.matrix(input, 1, 9)
-  const result = model.predict(mat)
+  const result = this.model.predict(mat)
   //console.log(result)
   const val = result.value[0]
 
-  if(this.openOrder && val < .3) {
+  if(this.openOrder && val < this.sellPoint) {
     this.didTransact = true;
     this.openOrder = false
     this.advice('short')
     console.log("sell: "+val)
-  } else if(val >= .4) {
+
+  } else if(val >= this.buyPoint) {
     this.didTransact = true;
     this.openOrder = true;
     this.buyPrice = candle.close;
