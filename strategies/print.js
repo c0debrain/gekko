@@ -48,7 +48,7 @@ strat.check = function(candle) {
       backCandle.label = 1
     }
     
-    console.log(backCandle)
+    //console.log(backCandle)
     this.data.push(backCandle)
     
     this.dataBack = tu.getLabeldCandle(candle)
