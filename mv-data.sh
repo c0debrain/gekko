@@ -1,0 +1,1 @@
+mv outdir/* /Users/shahin/Workspace/mlLab/data/

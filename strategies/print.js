@@ -14,7 +14,7 @@ strat.init = function() {
   this.input = 'candle';
   this.currentTrend = 'short';
   this.requiredHistory = 0;
-  this.exportFile = "weights/"+this.settings.export_file;
+  this.exportFile = "outdir/"+this.settings.export_file;
   log.info("starting random strategy");
 }
 
