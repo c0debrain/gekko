@@ -101,33 +101,33 @@ tradeutil.getCSVCandle = function(candle) {
 tradeutil.getLabeldCandle = function(candle) {
     var csvCandle = {}
     csvCandle.label = 0;
-    csvCandle.month = this.getMonthOfYear(candle)
-    csvCandle.day = this.getDayOfMonth(candle)
+    //csvCandle.month = this.getMonthOfYear(candle)
+    //csvCandle.day = this.getDayOfMonth(candle)
     csvCandle.start = this.getHourOfDay(candle)
-    csvCandle.minute = this.getMinuteOfHour(candle)
+    //csvCandle.minute = this.getMinuteOfHour(candle)
     csvCandle.open = candle.open
-    csvCandle.high = candle.high
-    csvCandle.low = candle.low
+    //csvCandle.high = candle.high
+    //csvCandle.low = candle.low
     csvCandle.close = candle.close
-    csvCandle.vwp = candle.vwp
+    //csvCandle.vwp = candle.vwp
     csvCandle.volume = candle.volume
     csvCandle.trades = candle.trades
     return csvCandle
 }
 
 tradeutil.getLabeldCandleFloat32Array = function(candle) {
-    var csvCandle = new Float32Array(11)
-    csvCandle[0] = this.getMonthOfYear(candle)
-    csvCandle[1] = this.getDayOfMonth(candle)
-    csvCandle[2] = this.getHourOfDay(candle)
-    csvCandle[3] = this.getMinuteOfHour(candle)
-    csvCandle[4] = candle.open
-    csvCandle[5] = candle.high
-    csvCandle[6] = candle.low
-    csvCandle[7] = candle.close
-    csvCandle[8] = candle.vwp
-    csvCandle[9] = candle.volume
-    csvCandle[10] = candle.trades
+    var csvCandle = new Float32Array(5)
+    //csvCandle[0] = this.getMonthOfYear(candle)
+    //csvCandle[1] = this.getDayOfMonth(candle)
+    csvCandle[0] = this.getHourOfDay(candle)
+    //csvCandle[3] = this.getMinuteOfHour(candle)
+    csvCandle[1] = candle.open
+    //csvCandle[2] = candle.high
+    //csvCandle[6] = candle.low
+    csvCandle[2] = candle.close
+    //csvCandle[8] = candle.vwp
+    csvCandle[3] = candle.volume
+    csvCandle[4] = candle.trades
     return csvCandle
 }
 
