@@ -19,6 +19,7 @@ strat.init = function() {
   this.openOrder = false;
   
   this.weightFile = "weights/"+this.settings.weight_file;
+  this.inputLength = 5
   this.sellPoint = this.settings.sell_point;
   this.buyPoint = this.settings.buy_point;
 
@@ -54,9 +55,8 @@ strat.check = function(candle) {
   const lcandle = tu.getLabeldCandle(candle)
 
   const input = tu.getLabeldCandleFloat32Array(candle)
-  const mat = new xgboost.matrix(input, 1, 9)
+  const mat = new xgboost.matrix(input, 1, this.inputLength)
   const result = this.model.predict(mat)
-  //console.log(result)
   this.result = result.value[0]
   console.log()
   console.log(++this.counter+" Advice: "+this.result)
