@@ -1,3 +1,3 @@
-weight_file="eth-trx-3r.model.bin"
+weight_file="eth-trx-3h.model.bin"
 sell_point=0.4
-buy_point=0.6
+buy_point=0.5
