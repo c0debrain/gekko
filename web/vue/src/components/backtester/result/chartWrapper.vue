@@ -9,7 +9,7 @@
 import chart from '../../../d3/chart3'
 import { draw as drawMessage, clear as clearMessage } from '../../../d3/message'
 
-const MIN_CANDLES = 4;
+const MIN_CANDLES = 1;
 
 export default {
   props: ['data', 'height'],
