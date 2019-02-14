@@ -5,12 +5,14 @@ import _ from 'lodash'
 export default function(_data, _trades) {
     let MAX_WIDTH = window.innerWidth - 20;
 
+    var parseIntradayDate = d3.timeParse("%Y-%m-%d%H:%M:%S%Z");
+
     var margin = {top: 20, right: 20, bottom: 30, left: 50},
             width = MAX_WIDTH - margin.left - margin.right,
             height = 500 - margin.top - margin.bottom;
 
-    var x = techan.scale.financetime()
-            .range([0, width]);
+    var x = techan.scale.financetime.utc()
+            .range([0, width]);        
 
     var y = d3.scaleLinear()
             .range([height, 0]);
@@ -81,7 +83,8 @@ export default function(_data, _trades) {
 
     const data = _data.map(function(d) {
         return {
-            date: new Date(d.start),
+            date: moment.utc(d.start).toDate(),//new Date(d.start),
+            //date: parseIntradayDate(d.start),
             open: +d.open,
             high: +d.high,
             low: +d.low,
@@ -94,7 +97,7 @@ export default function(_data, _trades) {
         let trade = _.pick(t, ['price']);
         trade.quantity = 1;
         trade.type = t.action;
-        trade.date = new Date(t.date);
+        trade.date = moment.utc(t.date).toDate();//new Date(t.date);
         return trade;
     });
 
