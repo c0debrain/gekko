@@ -12,7 +12,6 @@ tradeutil.getPercent = function(p1, p2) {
     return ((p1 - p2)/p2)*100;
 }
 
-
 tradeutil.isTotalUptrend = function(lookbackInput) {
     for(var i=0;i<lookbackInput.length-2;i++) {
         if(lookbackInput[i] > lookbackInput[i+1]) {
@@ -101,13 +100,13 @@ tradeutil.getCSVCandle = function(candle) {
 tradeutil.getLabeldCandle = function(candle) {
     var csvCandle = {}
     csvCandle.label = 0;
-    //csvCandle.month = this.getMonthOfYear(candle)
-    //csvCandle.day = this.getDayOfMonth(candle)
+    csvCandle.month = this.getMonthOfYear(candle)
+    csvCandle.day = this.getDayOfMonth(candle)
     csvCandle.start = this.getHourOfDay(candle)
-    //csvCandle.minute = this.getMinuteOfHour(candle)
+    csvCandle.minute = this.getMinuteOfHour(candle)
     csvCandle.open = candle.open
-    //csvCandle.high = candle.high
-    //csvCandle.low = candle.low
+    csvCandle.high = candle.high
+    csvCandle.low = candle.low
     csvCandle.close = candle.close
     //csvCandle.vwp = candle.vwp
     csvCandle.volume = candle.volume
@@ -185,7 +184,6 @@ tradeutil.convertArrayOfObjectsToCSV = function(args) {
         ctr = 0;
         keys.forEach(function(key) {
             if (ctr > 0) result += columnDelimiter;
-
             result += item[key];
             ctr++;
         });

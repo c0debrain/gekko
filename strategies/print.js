@@ -35,25 +35,37 @@ strat.log = function() {
 }
 
 strat.check = function(candle) {
-    if (this.counter == 0) {
-      this.dataBack = tu.getLabeldCandle(candle)
-      this.counter++
-      return
+    // if (this.counter == 0) {
+    //   this.dataBack = tu.getLabeldCandle(candle)
+    //   this.counter++
+    //   return
+    // }
+    
+    // var backCandle = this.dataBack
+    // var csvCandle = tu.getCSVCandle(candle)
+    
+    // if(csvCandle.close > backCandle.close) {
+    //   backCandle.label = 1
+    // }
+    
+    // //console.log(backCandle)
+    // this.data.push(backCandle)
+    
+    // this.dataBack = tu.getLabeldCandle(candle)
+    // this.counter++
+    // return
+
+    this.counter++;
+    var lcandle = tu.getLabeldCandle(candle);
+
+    if(this.counter >= 4){
+      this.dataBack[0].label = candle.close > this.dataBack[0].close ? 1 : 0;
+      //console.log(this.dataBack)
+      this.data.push(this.dataBack)
+      this.dataBack.pop()
     }
     
-    var backCandle = this.dataBack
-    var csvCandle = tu.getCSVCandle(candle)
-    
-    if(csvCandle.close > backCandle.close) {
-      backCandle.label = 1
-    }
-    
-    //console.log(backCandle)
-    this.data.push(backCandle)
-    
-    this.dataBack = tu.getLabeldCandle(candle)
-    this.counter++
-    return
+    this.dataBack.unshift(lcandle)
 }
 
 strat.end = function() {
@@ -61,9 +73,10 @@ strat.end = function() {
     var args = {};
     args.data = this.data;
     csv = tu.convertArrayOfObjectsToCSV(args);
+    console.log(csv)
     //log.info(csv);
     //tu.writeToFile(csv,"weights/eth-trx-2019-01-01-02-01.csv");
-    tu.writeToFile(csv,this.exportFile);
+    //tu.writeToFile(csv,this.exportFile);
 }
 
 module.exports = strat;
