@@ -61,7 +61,7 @@ method.update = function(candle) {
           shuffle:true,
           log: 0,
           iterations: 100000,
-          error: 0.00000000001,
+          error: 0.001,
           rate: 0.03,
 
       });
@@ -118,7 +118,7 @@ method.check = function(candle) {
     }
 
     //log.info("return no advice");
-    return this.advice();
+    //return this.advice();
 }
 
 module.exports = method;

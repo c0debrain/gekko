@@ -47,7 +47,8 @@ method.update = function(candle) {
     //log.info("Pushing train data "+this.trainCounter++);
     this.trainCounter++;
 
-    if(this.trainCounter == this.requiredHistory ) {
+    if(this.trainCounter >= this.requiredHistory ) {
+        
       log.info("Staring to train");
       log.info(this.obj['input']);
       log.info(this.obj['output']);
@@ -59,7 +60,7 @@ method.update = function(candle) {
           shuffle:true,
           log: 0,
           iterations: 100000,
-          error: 0.00000000001,
+          error: 0.001,
           rate: 0.03,
 
       });
@@ -97,12 +98,12 @@ method.check = function(candle) {
     // % change in current close and predicted close
     var percentage = ((predicted_value-candle.close)/candle.close)*100;
 
-    //log.info("=========================================");
-    //log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
-    //log.info("Predicted value: "+predicted_value);
-    //log.info("Percent: "+percentage);
+    log.info("=========================================");
+    log.info("Checking for candle: "+candle.start+" Close: "+candle.close);
+    log.info("Predicted value: "+predicted_value);
+    log.info("Percent: "+percentage);
 
-    if(percentage > 1 && !this.open_order)
+    if(percentage > 0.01 && !this.open_order)
     {
         log.info("Buy: $"+candle.close);
         this.price = candle.close;
