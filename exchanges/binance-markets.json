@@ -107,7 +107,8 @@
     "XRP",
     "XZC",
     "YOYO",
-    "ZEC"
+    "ZEC",
+    "ONT"
   ],
   "currencies": [
     "BNB",
@@ -2947,6 +2948,17 @@
       "pair": [
         "USDT",
         "ETH"
+      ],
+      "minimalOrder": {
+        "amount": 0.00001,
+        "price": 0.01,
+        "order": 1
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "ONT"
       ],
       "minimalOrder": {
         "amount": 0.00001,
