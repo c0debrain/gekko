@@ -2965,6 +2965,17 @@
         "price": 0.01,
         "order": 1
       }
+    },
+    {
+      "pair": [
+        "USDT",
+        "NULS"
+      ],
+      "minimalOrder": {
+        "amount": 0.00001,
+        "price": 0.01,
+        "order": 1
+      }
     }
   ]
 }
