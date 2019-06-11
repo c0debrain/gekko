@@ -58,6 +58,7 @@
     "ENG",
     "ENJ",
     "EVX",
+    "FET",
     "FUEL",
     "GTO",
     "GVT",
@@ -2970,6 +2971,17 @@
       "pair": [
         "USDT",
         "NULS"
+      ],
+      "minimalOrder": {
+        "amount": 0.00001,
+        "price": 0.01,
+        "order": 1
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "FET"
       ],
       "minimalOrder": {
         "amount": 0.00001,
