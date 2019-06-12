@@ -1,8 +1,10 @@
 {
   "assets": [
+    "ATOM",
     "NULS",
     "VEN",
     "BNB",
+    "CELR",
     "CTR",
     "NEO",
     "LINK",
@@ -73,6 +75,7 @@
     "LSK",
     "LUN",
     "MANA",
+    "MITH",
     "MDA",
     "MOD",
     "MTH",
@@ -2982,6 +2985,28 @@
       "pair": [
         "USDT",
         "FET"
+      ],
+      "minimalOrder": {
+        "amount": 0.00001,
+        "price": 0.01,
+        "order": 1
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "ADA"
+      ],
+      "minimalOrder": {
+        "amount": 0.00001,
+        "price": 0.01,
+        "order": 1
+      }
+    },
+    {
+      "pair": [
+        "USDT",
+        "CELR"
       ],
       "minimalOrder": {
         "amount": 0.00001,
