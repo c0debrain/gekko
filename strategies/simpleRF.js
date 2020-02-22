@@ -98,8 +98,12 @@ method.check = function(candle) {
     if(this.trainCounter < this.requiredHistory)
         return
     
-    var predicted_value = this.regression
-      .predict([[candle.open,candle.close,candle.high,candle.low]]);
+    log.info("Predict")
+    log.info([[candle.open,candle.close,candle.high,candle.low]])
+    
+    var predicted_value = 0
+    // var predicted_value = this.regression
+    //   .predict([[candle.open,candle.close,candle.high,candle.low]]);
 
     // % change in current close and predicted close
     var percentage = ((predicted_value-candle.close)/candle.close)*100;

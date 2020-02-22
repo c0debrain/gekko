@@ -60,7 +60,7 @@ method.update = function(candle) {
           //shuffle:true,
           log: 1,
           iterations: 100000,
-          error: 0.0000001,
+          error: 0.00001,
           rate: 0.03,
 
       });
